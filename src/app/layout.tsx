@@ -123,9 +123,9 @@ export default function RootLayout({
     },
     contactPoint: {
       "@type": "ContactPoint",
-      telephone: "+880-1XXX-XXXXXX",
+      telephone: "+880-1716-243949",
       contactType: "customer service",
-      email: "support@rakibpanjabihouse.com",
+      email: "info@alrakib.com",
     },
     sameAs: [
       "https://facebook.com/rakibpanjabihouse",

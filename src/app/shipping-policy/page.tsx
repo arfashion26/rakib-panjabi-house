@@ -187,7 +187,7 @@ export default function ShippingPolicyPage() {
               Contact our support team for any shipping-related inquiries.
             </p>
             <p className="mt-3 text-sm font-medium">
-              Email: support@rakibpanjabihouse.com · Phone: +880 1XXX-XXXXXX
+              Email: info@alrakib.com · Phone: +880 1716-243949
             </p>
           </div>
         </div>

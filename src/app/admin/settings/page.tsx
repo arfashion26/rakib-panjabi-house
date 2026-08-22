@@ -63,19 +63,19 @@ export default function AdminSettingsPage() {
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="email">Support Email</Label>
-              <Input id="email" type="email" defaultValue="support@rakibpanjabihouse.com" />
+              <Input id="email" type="email" defaultValue="info@alrakib.com" />
             </div>
             <div className="space-y-2">
               <Label htmlFor="phone">Support Phone</Label>
-              <Input id="phone" defaultValue="+880 1XXX-XXXXXX" />
+              <Input id="phone" defaultValue="+880 1716-243949" />
             </div>
             <div className="space-y-2">
               <Label htmlFor="whatsapp">WhatsApp</Label>
-              <Input id="whatsapp" defaultValue="+880 1XXX-XXXXXX" />
+              <Input id="whatsapp" defaultValue="+880 1716-243949" />
             </div>
             <div className="space-y-2">
               <Label htmlFor="address">Address</Label>
-              <Input id="address" defaultValue="Dhaka, Bangladesh" />
+              <Input id="address" defaultValue="Shop no- 78, Mukjoddha Super Market, 3rd Floor, Mirpur-1, Dhaka-1216" />
             </div>
           </div>
         </div>

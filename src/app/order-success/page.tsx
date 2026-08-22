@@ -145,7 +145,7 @@ export default function OrderSuccessPage() {
           <Link href="/contact" className="text-accent hover:underline">
             Contact our support team
           </Link>{" "}
-          or call us at +880 1XXX-XXXXXX
+          or call us at +880 1716-243949
         </p>
       </div>
     </Container>

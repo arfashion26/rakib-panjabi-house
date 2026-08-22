@@ -242,7 +242,7 @@ export default function CheckoutPage() {
                   <Input
                     id="phone"
                     type="tel"
-                    placeholder="+880 1XXX-XXXXXX"
+                    placeholder="+880 1716-243949"
                     value={form.phone}
                     onChange={(e) => updateField("phone", e.target.value)}
                     className="pl-10"

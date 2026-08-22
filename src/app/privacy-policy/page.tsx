@@ -64,7 +64,7 @@ export default function PrivacyPolicyPage() {
     {
       title: "Contact Us",
       content: [
-        "If you have any questions about this Privacy Policy or our data practices, please contact us at support@rakibpanjabihouse.com or call +880 1XXX-XXXXXX.",
+        "If you have any questions about this Privacy Policy or our data practices, please contact us at info@alrakib.com or call +880 1716-243949.",
       ],
     },
   ];

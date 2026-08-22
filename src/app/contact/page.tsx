@@ -49,7 +49,7 @@ export default function ContactPage() {
               <h2 className="mb-4 font-serif text-2xl font-medium">Contact Information</h2>
               <div className="space-y-4">
                 <a
-                  href="mailto:support@rakibpanjabihouse.com"
+                  href="mailto:info@alrakib.com"
                   className="flex items-start gap-3 rounded-lg border border-border/60 bg-card p-4 transition-colors hover:border-accent/40"
                 >
                   <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/10 text-accent">
@@ -57,7 +57,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <p className="text-sm font-medium">Email Us</p>
-                    <p className="text-sm text-muted-foreground">support@rakibpanjabihouse.com</p>
+                    <p className="text-sm text-muted-foreground">info@alrakib.com</p>
                     <p className="mt-1 text-xs text-muted-foreground">We reply within 24 hours</p>
                   </div>
                 </a>
@@ -70,7 +70,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <p className="text-sm font-medium">Call Us</p>
-                    <p className="text-sm text-muted-foreground">+880 1XXX-XXXXXX</p>
+                    <p className="text-sm text-muted-foreground">+880 1716-243949</p>
                     <p className="mt-1 text-xs text-muted-foreground">Sat–Thu, 10AM–8PM</p>
                   </div>
                 </a>
@@ -85,7 +85,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <p className="text-sm font-medium">WhatsApp</p>
-                    <p className="text-sm text-muted-foreground">+880 1XXX-XXXXXX</p>
+                    <p className="text-sm text-muted-foreground">+880 1716-243949</p>
                     <p className="mt-1 text-xs text-muted-foreground">Quick responses on chat</p>
                   </div>
                 </a>
@@ -95,7 +95,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <p className="text-sm font-medium">Visit Us</p>
-                    <p className="text-sm text-muted-foreground">Dhaka, Bangladesh</p>
+                    <p className="text-sm text-muted-foreground">Shop no- 78, Mukjoddha Super Market, 3rd Floor, Mirpur-1, Dhaka-1216</p>
                     <p className="mt-1 text-xs text-muted-foreground">Our flagship store</p>
                   </div>
                 </div>
@@ -142,7 +142,7 @@ export default function ContactPage() {
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="phone">Phone</Label>
-                  <Input id="phone" type="tel" placeholder="+880 1XXX-XXXXXX" />
+                  <Input id="phone" type="tel" placeholder="+880 1716-243949" />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="subject">Subject *</Label>
