@@ -102,8 +102,8 @@ export default function AddressesPage() {
       toast.success("Address updated");
     } else {
       const newAddr: Address = {
-        id: Date.now().toString(),
         ...(formData as Address),
+        id: Date.now().toString(),
       };
       setAddresses((prev) =>
         newAddr.isDefault

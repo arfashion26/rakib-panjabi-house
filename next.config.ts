@@ -6,9 +6,6 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: false,
   },
-  eslint: {
-    ignoreDuringBuilds: false,
-  },
   // Allow dev origin for preview environments
   allowedDevOrigins: ["*.space-z.ai", "*.vercel.app"],
   // Image optimization

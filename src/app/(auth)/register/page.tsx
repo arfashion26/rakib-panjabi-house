@@ -11,7 +11,7 @@ import { Separator } from "@/components/ui/separator";
 import { Mail, Lock, User, Phone, Eye, EyeOff, Loader2, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 
-export default function RegisterPage() {
+function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirect") || "/dashboard";
@@ -326,5 +326,13 @@ export default function RegisterPage() {
         </p>
       </div>
     </div>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <React.Suspense fallback={<div className="w-full max-w-md" style={{ height: 500 }} />}>
+      <RegisterForm />
+    </React.Suspense>
   );
 }

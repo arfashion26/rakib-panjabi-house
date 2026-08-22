@@ -203,7 +203,7 @@ export const collections = [
 /**
  * Main navigation links (top-level + dropdowns)
  */
-export const mainNav = [
+export const mainNav: { title: string; href: string; hasMegaMenu?: boolean; highlight?: boolean }[] = [
   { title: "Home", href: "/" },
   { title: "Shop", href: "/shop", hasMegaMenu: true },
   { title: "New Arrivals", href: "/new-arrivals" },
@@ -213,7 +213,7 @@ export const mainNav = [
   { title: "Blog", href: "/blog" },
   { title: "About Us", href: "/about" },
   { title: "Contact", href: "/contact" },
-] as const;
+];
 
 /**
  * Footer navigation
@@ -269,7 +269,7 @@ export const footerNav = {
       { title: "FAQ", href: "/faq" },
     ],
   },
-} as const;
+};
 
 /**
  * Available sizes per category type

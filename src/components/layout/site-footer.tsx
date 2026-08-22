@@ -125,7 +125,7 @@ function FooterColumn({
   links,
 }: {
   title: string;
-  links: { title: string; href: string }[];
+  links: readonly { title: string; href: string }[];
 }) {
   return (
     <div>

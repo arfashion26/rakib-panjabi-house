@@ -57,7 +57,7 @@ const ALL_COLORS = [
   { name: "Emerald", value: "#0F5132" },
 ];
 
-export default function ShopPage() {
+function ShopContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -369,5 +369,13 @@ export default function ShopPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ShopPage() {
+  return (
+    <React.Suspense fallback={<div className="py-20 text-center">Loading...</div>}>
+      <ShopContent />
+    </React.Suspense>
   );
 }

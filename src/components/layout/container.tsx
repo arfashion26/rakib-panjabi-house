@@ -9,6 +9,12 @@ interface ContainerProps extends React.HTMLAttributes<HTMLDivElement> {
   size?: "sm" | "md" | "lg" | "xl" | "full";
 }
 
+interface SectionProps extends React.HTMLAttributes<HTMLElement> {
+  as?: React.ElementType;
+  containerClassName?: string;
+  containerSize?: "sm" | "md" | "lg" | "xl" | "full";
+}
+
 /**
  * Centered max-width container with responsive padding
  */
@@ -47,7 +53,7 @@ export function Section({
   containerSize = "lg",
   children,
   ...props
-}: ContainerProps) {
+}: SectionProps) {
   return (
     <Component className={cn("py-12 md:py-16 lg:py-20", className)} {...props}>
       <Container size={containerSize} className={containerClassName}>

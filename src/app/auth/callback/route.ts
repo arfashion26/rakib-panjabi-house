@@ -7,7 +7,7 @@ import { createServerClientHelper } from "@/lib/supabase";
  * We exchange the code for a session and redirect to the original page.
  */
 export async function GET(request: Request) {
-  const requestUrl = new URL(request.url());
+  const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get("code");
   const next = requestUrl.searchParams.get("next") || "/dashboard";
 
