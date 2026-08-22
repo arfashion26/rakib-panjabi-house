@@ -1,38 +1,20 @@
 "use client";
 
+import * as React from "react";
 import Link from "next/link";
-import { Package, ChevronRight, Search } from "lucide-react";
+import { Package, ChevronRight, Search, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { formatPrice } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
+import { formatPrice } from "@/lib/types";
 
-// Sample orders (in production, fetched from database)
-const sampleOrders = [
-  {
-    id: "1",
-    orderNumber: "RPH-260815-12345",
-    date: "Aug 15, 2026",
-    status: "DELIVERED",
-    total: 4498,
-    items: 3,
-  },
-  {
-    id: "2",
-    orderNumber: "RPH-260808-67890",
-    date: "Aug 8, 2026",
-    status: "SHIPPED",
-    total: 9999,
-    items: 1,
-  },
-  {
-    id: "3",
-    orderNumber: "RPH-260801-11111",
-    date: "Aug 1, 2026",
-    status: "PROCESSING",
-    total: 2799,
-    items: 2,
-  },
-];
+interface Order {
+  id: string;
+  order_number: string;
+  placed_at: string;
+  status: string;
+  payment_status: string;
+  grand_total: number;
+}
 
 const statusColors: Record<string, string> = {
   DELIVERED: "bg-green-500/10 text-green-600",
@@ -43,6 +25,40 @@ const statusColors: Record<string, string> = {
 };
 
 export default function OrdersPage() {
+  const [orders, setOrders] = React.useState<Order[]>([]);
+  const [loading, setLoading] = React.useState(true);
+  const [search, setSearch] = React.useState("");
+
+  React.useEffect(() => {
+    async function fetchOrders() {
+      try {
+        const res = await fetch("/api/dashboard/orders");
+        const data = await res.json();
+        if (data.success) {
+          setOrders(data.orders || []);
+        }
+      } catch {
+        setOrders([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchOrders();
+  }, []);
+
+  const filtered = orders.filter((o) =>
+    o.order_number.toLowerCase().includes(search.toLowerCase())
+  );
+
+  if (loading) {
+    return (
+      <div className="py-16 text-center">
+        <Loader2 className="mx-auto mb-3 h-8 w-8 animate-spin text-muted-foreground" />
+        <p className="text-sm text-muted-foreground">Loading your orders...</p>
+      </div>
+    );
+  }
+
   return (
     <div>
       <div className="mb-8">
@@ -50,28 +66,28 @@ export default function OrdersPage() {
           My Orders
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          View and track all your orders
+          {orders.length} {orders.length === 1 ? "order" : "orders"} placed
         </p>
       </div>
 
-      {/* Search */}
       <div className="mb-6">
         <div className="relative max-w-md">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             placeholder="Search by order number..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
             className="pl-10"
           />
         </div>
       </div>
 
-      {/* Orders list */}
-      {sampleOrders.length === 0 ? (
+      {orders.length === 0 ? (
         <div className="rounded-lg border border-dashed border-border bg-background p-8 text-center">
           <Package className="mx-auto mb-3 h-12 w-12 text-muted-foreground/40" />
-          <p className="text-sm font-medium">No orders found</p>
+          <p className="text-sm font-medium">No orders yet</p>
           <p className="mt-1 text-xs text-muted-foreground">
-            You haven&apos;t placed any orders yet.
+            You haven&apos;t placed any orders yet. Start shopping!
           </p>
           <Link
             href="/shop"
@@ -82,7 +98,7 @@ export default function OrdersPage() {
         </div>
       ) : (
         <div className="space-y-3">
-          {sampleOrders.map((order) => (
+          {filtered.map((order) => (
             <Link
               key={order.id}
               href={`/dashboard/orders/${order.id}`}
@@ -95,24 +111,25 @@ export default function OrdersPage() {
                   </div>
                   <div>
                     <p className="font-serif text-base font-medium">
-                      {order.orderNumber}
+                      {order.order_number}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      Placed on {order.date} · {order.items}{" "}
-                      {order.items === 1 ? "item" : "items"}
+                      Placed on{" "}
+                      {new Date(order.placed_at).toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                      })}
                     </p>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-4">
-                  <Badge
-                    variant="secondary"
-                    className={statusColors[order.status] || ""}
-                  >
+                  <Badge variant="secondary" className={statusColors[order.status] || ""}>
                     {order.status.charAt(0) + order.status.slice(1).toLowerCase()}
                   </Badge>
                   <div className="text-right">
-                    <p className="font-medium">{formatPrice(order.total)}</p>
+                    <p className="font-medium">{formatPrice(order.grand_total)}</p>
                   </div>
                   <ChevronRight className="h-5 w-5 text-muted-foreground" />
                 </div>
