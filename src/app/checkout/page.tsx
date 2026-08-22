@@ -167,18 +167,11 @@ export default function CheckoutPage() {
 
       if (result.success) {
         clearCart();
-        if (result.isNewUser) {
-          toast.success(
-            `Order placed! We've created an account for you. Login with your phone number.`
-          );
-        } else {
-          toast.success("Order placed successfully!");
-        }
-        // Store order number for the success page
+        toast.success("Order placed successfully!");
+        // Store order info for the success page
         sessionStorage.setItem("lastOrderNumber", result.orderNumber || "");
-        if (result.isNewUser && result.tempPassword) {
-          sessionStorage.setItem("tempPassword", result.tempPassword);
-        }
+        sessionStorage.setItem("lastOrderPhone", form.phone);
+        sessionStorage.setItem("lastOrderNewUser", String(result.isNewUser || false));
         router.push("/order-success");
       } else {
         toast.error(result.error || "Failed to place order. Please try again.");

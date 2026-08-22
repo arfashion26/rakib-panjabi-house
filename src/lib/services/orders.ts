@@ -69,20 +69,23 @@ export async function findOrCreateUserByPhone(
     }
 
     // Step 3: Create a new user account
-    // Generate a phone-based email that customers can use to login
-    // Format: 8801716243949@alrakib.com — customer types their phone to login
+    // Email format: 8801716243949@alrakib.com
+    // Password: the phone number itself (so customer only needs phone to login)
     const cleanPhone = phone.replace(/[^0-9]/g, "");
-    const userEmail = email || `${cleanPhone}@alrakib.com`;
-
-    // Generate a random temporary password (user can reset it later)
-    const tempPassword = generateTempPassword();
+    // Ensure phone starts with 880 for consistent format
+    let normalizedPhone = cleanPhone;
+    if (cleanPhone.startsWith("01")) {
+      normalizedPhone = "88" + cleanPhone; // 01716... → 8801716...
+    }
+    const userEmail = email || `${normalizedPhone}@alrakib.com`;
+    const userPassword = normalizedPhone; // Phone number IS the password
 
     // Create auth user via Admin API
     const { data: newUser, error: createError } = await admin.auth.admin.createUser({
       email: userEmail,
-      password: tempPassword,
+      password: userPassword,
       phone: phone,
-      email_confirm: true, // Auto-confirm since they placed an order
+      email_confirm: true,
       phone_confirm: true,
       user_metadata: {
         full_name: name,
@@ -110,7 +113,7 @@ export async function findOrCreateUserByPhone(
     return {
       userId: newUser.user.id,
       isNewUser: true,
-      tempPassword,
+      tempPassword: normalizedPhone, // Return the phone number as the "password"
     };
   } catch (error) {
     console.error("Error in findOrCreateUserByPhone:", error);
@@ -225,7 +228,9 @@ export async function placeOrder(data: {
         grand_total: data.total,
         currency: "BDT",
         customer_name: data.name,
-        customer_email: userResult.userId ? userEmail : `${data.phone.replace(/[^0-9]/g, "")}@alrakib.com`,
+        customer_email: userResult.userId && userResult.tempPassword
+          ? `${userResult.tempPassword}@alrakib.com`
+          : `${data.phone.replace(/[^0-9]/g, "")}@alrakib.com`,
         customer_phone: data.phone,
         shipping_address_json: shippingAddressJson,
         payment_method: data.payment,

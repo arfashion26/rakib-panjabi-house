@@ -2,26 +2,26 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { CheckCircle2, Package, Truck, Mail, ArrowRight, User, Phone, KeyRound } from "lucide-react";
+import { CheckCircle2, Package, Truck, Mail, ArrowRight, Phone, User } from "lucide-react";
 import { Container, ButtonLink } from "@/components/layout/container";
 import { Button } from "@/components/ui/button";
 
 export default function OrderSuccessPage() {
   const [orderNumber, setOrderNumber] = React.useState("");
-  const [tempPassword, setTempPassword] = React.useState("");
   const [isNewUser, setIsNewUser] = React.useState(false);
+  const [phoneNumber, setPhoneNumber] = React.useState("");
 
   React.useEffect(() => {
     const num = sessionStorage.getItem("lastOrderNumber") || "";
-    const pass = sessionStorage.getItem("tempPassword") || "";
+    const phone = sessionStorage.getItem("lastOrderPhone") || "";
+    const newUser = sessionStorage.getItem("lastOrderNewUser") === "true";
     setOrderNumber(num);
-    if (pass && !pass.includes("database not connected")) {
-      setTempPassword(pass);
-      setIsNewUser(true);
-    }
+    setPhoneNumber(phone);
+    setIsNewUser(newUser);
     // Clear after reading
     sessionStorage.removeItem("lastOrderNumber");
-    sessionStorage.removeItem("tempPassword");
+    sessionStorage.removeItem("lastOrderPhone");
+    sessionStorage.removeItem("lastOrderNewUser");
   }, []);
 
   return (
@@ -37,46 +37,39 @@ export default function OrderSuccessPage() {
           Thank You for Your Order!
         </h1>
         <p className="mt-3 text-base text-muted-foreground">
-          Your order has been placed successfully. We&apos;ve sent a confirmation
-          email with your order details.
+          Your order has been placed successfully. We&apos;ve created an account for you
+          so you can track your order anytime.
         </p>
 
         {/* New user account notice */}
-        {isNewUser && (
+        {isNewUser && phoneNumber && (
           <div className="mt-6 rounded-lg border border-accent/30 bg-accent/5 p-6 text-left">
             <div className="mb-3 flex items-center gap-2">
               <User className="h-5 w-5 text-accent" />
               <h2 className="font-serif text-lg font-medium text-accent">
-                Your Account Has Been Created!
+                Your Account is Ready!
               </h2>
             </div>
             <p className="text-sm text-muted-foreground">
-              We&apos;ve automatically created an account for you so you can track
-              your order, view order history, and shop faster next time.
+              We&apos;ve automatically created an account for you. You can login anytime
+              using just your phone number — no password needed!
             </p>
 
-            <div className="mt-4 space-y-2 rounded-md bg-background p-4">
-              <div className="flex items-center gap-2 text-sm">
-                <KeyRound className="h-4 w-4 text-muted-foreground" />
-                <span className="text-muted-foreground">Temporary Password:</span>
-                <code className="rounded bg-muted px-2 py-0.5 font-mono text-accent">
-                  {tempPassword}
-                </code>
+            <div className="mt-4 flex items-center gap-3 rounded-md bg-background p-4">
+              <Phone className="h-5 w-5 text-accent" />
+              <div>
+                <p className="text-xs text-muted-foreground">Login with phone:</p>
+                <p className="text-sm font-medium">{phoneNumber}</p>
               </div>
             </div>
 
-            <p className="mt-3 text-xs text-muted-foreground">
-              <strong>Important:</strong> Please change this password after your first
-              login for security. You can login using your phone number and this password.
-            </p>
-
             <Button asChild className="mt-4 w-full">
-              <Link href="/login">Login to Your Account</Link>
+              <Link href="/login">Login Now</Link>
             </Button>
           </div>
         )}
 
-        {/* Order number card */}
+        {/* Order number */}
         {orderNumber && (
           <div className="mt-8 rounded-lg border border-border/60 bg-card p-6 text-left">
             <div className="grid gap-4 sm:grid-cols-2">
@@ -109,7 +102,7 @@ export default function OrderSuccessPage() {
             <Mail className="mb-2 h-6 w-6 text-accent" />
             <h3 className="text-sm font-semibold">1. Confirmation</h3>
             <p className="mt-1 text-xs text-muted-foreground">
-              You&apos;ll receive an email confirmation shortly
+              You&apos;ll receive updates as your order progresses
             </p>
           </div>
           <div className="rounded-lg border border-border/60 bg-card p-4">
@@ -133,10 +126,12 @@ export default function OrderSuccessPage() {
           <ButtonLink href="/track-order" variant="outline">
             Track My Order
           </ButtonLink>
-          <ButtonLink href="/shop">
-            Continue Shopping
-            <ArrowRight className="ml-2 h-4 w-4" />
-          </ButtonLink>
+          <Button asChild>
+            <Link href="/login">
+              Login to View My Orders
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Link>
+          </Button>
         </div>
 
         {/* Support note */}

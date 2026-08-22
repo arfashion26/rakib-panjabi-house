@@ -3,12 +3,11 @@
 import * as React from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { signInWithEmail, signInWithGoogle } from "@/lib/auth-actions";
+import { signInWithPhone } from "@/lib/auth-actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
-import { Mail, Lock, Eye, EyeOff, Loader2 } from "lucide-react";
+import { Phone, Loader2, ArrowRight, ShoppingBag } from "lucide-react";
 import { toast } from "sonner";
 
 function LoginForm() {
@@ -16,74 +15,32 @@ function LoginForm() {
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirect") || "/dashboard";
 
-  const [identifier, setIdentifier] = React.useState(""); // email OR phone
-  const [password, setPassword] = React.useState("");
-  const [showPassword, setShowPassword] = React.useState(false);
+  const [phone, setPhone] = React.useState("");
   const [loading, setLoading] = React.useState(false);
-  const [googleLoading, setGoogleLoading] = React.useState(false);
-
-  // Convert phone number to email format for login
-  // If user types "01716-243949" or "+880 1716-243949", convert to "8801716243949@alrakib.com"
-  function phoneToEmail(input: string): string {
-    const trimmed = input.trim();
-    // Check if it looks like a phone number (starts with + or 0, or is all digits/dashes/spaces)
-    if (/^[+0]/.test(trimmed) || /^\d[\d\s-]+$/.test(trimmed)) {
-      const cleanPhone = trimmed.replace(/[^0-9]/g, "");
-      // If starts with 01, convert to 8801...
-      if (cleanPhone.startsWith("01")) {
-        return `88${cleanPhone}@alrakib.com`;
-      }
-      // If starts with 8801..., use as-is
-      if (cleanPhone.startsWith("880")) {
-        return `${cleanPhone}@alrakib.com`;
-      }
-      // Fallback: just clean and add domain
-      return `${cleanPhone}@alrakib.com`;
-    }
-    // Not a phone number — treat as email
-    return trimmed;
-  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!identifier || !password) return;
+    if (!phone.trim()) return;
 
     setLoading(true);
     try {
-      const email = phoneToEmail(identifier);
-      const result = await signInWithEmail({ email, password });
+      const result = await signInWithPhone(phone);
       if (result.success) {
         const target = result.redirectTo || redirectTo;
         if (result.role && ["SUPER_ADMIN", "ADMIN", "MANAGER", "STAFF"].includes(result.role)) {
-          toast.success("Welcome back, Admin! Redirecting to dashboard...");
+          toast.success("Welcome back, Admin!");
         } else {
-          toast.success("Welcome back! Login successful.");
+          toast.success("Login successful! Welcome back.");
         }
         router.push(target);
         router.refresh();
       } else {
-        toast.error(result.error || "Login failed. Please check your credentials.");
+        toast.error(result.error || "Login failed.");
       }
-    } catch (e: any) {
-      toast.error("An unexpected error occurred. Please try again.");
+    } catch {
+      toast.error("An unexpected error occurred.");
     } finally {
       setLoading(false);
-    }
-  }
-
-  async function handleGoogleLogin() {
-    setGoogleLoading(true);
-    try {
-      const result = await signInWithGoogle(redirectTo);
-      if (result.success && result.url) {
-        window.location.href = result.url;
-      } else {
-        toast.error(result.error || "Google login failed.");
-        setGoogleLoading(false);
-      }
-    } catch (e: any) {
-      toast.error("Google login failed. Please try again.");
-      setGoogleLoading(false);
     }
   }
 
@@ -92,148 +49,84 @@ function LoginForm() {
       <div className="rounded-xl border border-border/60 bg-background p-6 shadow-sm md:p-8">
         <div className="mb-6 text-center">
           <h1 className="font-serif text-2xl font-medium tracking-tight md:text-3xl">
-            Welcome Back
+            Login to Your Account
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            Sign in to your account to continue shopping
+            Enter your phone number to access your orders and account
           </p>
         </div>
 
-        {/* Google sign-in */}
-        <Button
-          type="button"
-          variant="outline"
-          className="w-full"
-          onClick={handleGoogleLogin}
-          disabled={googleLoading || loading}
-        >
-          {googleLoading ? (
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          ) : (
-            <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
-              <path
-                fill="#4285F4"
-                d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-              />
-              <path
-                fill="#34A853"
-                d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-              />
-              <path
-                fill="#FBBC05"
-                d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-              />
-              <path
-                fill="#EA4335"
-                d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-              />
-            </svg>
-          )}
-          Continue with Google
-        </Button>
-
-        <div className="my-6 flex items-center gap-3">
-          <Separator className="flex-1" />
-          <span className="text-xs uppercase tracking-wider text-muted-foreground">
-            or
-          </span>
-          <Separator className="flex-1" />
-        </div>
-
-        {/* Email/password form */}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="email">Email Address</Label>
+            <Label htmlFor="phone">Phone Number</Label>
             <div className="relative">
-              <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Phone className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
-                id="email"
-                type="email"
-                placeholder="you@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                id="phone"
+                type="tel"
+                placeholder="01XXX-XXXXXX"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
                 className="pl-10"
                 required
-                autoComplete="email"
                 autoFocus
               />
             </div>
-          </div>
-
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="password">Password</Label>
-              <Link
-                href="/forgot-password"
-                className="text-xs text-muted-foreground hover:text-accent"
-              >
-                Forgot password?
-              </Link>
-            </div>
-            <div className="relative">
-              <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                id="password"
-                type={showPassword ? "text" : "password"}
-                placeholder="Enter your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="pl-10 pr-10"
-                required
-                autoComplete="current-password"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                aria-label={showPassword ? "Hide password" : "Show password"}
-              >
-                {showPassword ? (
-                  <EyeOff className="h-4 w-4" />
-                ) : (
-                  <Eye className="h-4 w-4" />
-                )}
-              </button>
-            </div>
+            <p className="text-xs text-muted-foreground">
+              Use the phone number you provided when placing your order.
+            </p>
           </div>
 
           <Button
             type="submit"
-            className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
-            disabled={loading || googleLoading}
+            className="w-full"
+            size="lg"
+            disabled={loading || !phone.trim()}
           >
             {loading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Signing in...
+                Logging in...
               </>
             ) : (
-              "Sign In"
+              <>
+                Login
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </>
             )}
           </Button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-muted-foreground">
-          Don&apos;t have an account?{" "}
-          <Link
-            href={`/register${redirectTo !== "/dashboard" ? `?redirect=${redirectTo}` : ""}`}
-            className="font-medium text-accent hover:underline"
-          >
-            Create one
-          </Link>
-        </p>
+        {/* Help text */}
+        <div className="mt-6 rounded-lg bg-muted/50 p-4 text-xs text-muted-foreground">
+          <p className="font-medium text-foreground">No account yet?</p>
+          <p className="mt-1">
+            Your account is automatically created when you place your first order.
+            Just shop, checkout, and your account will be ready!
+          </p>
+          <Button asChild variant="outline" size="sm" className="mt-3 w-full">
+            <Link href="/shop">
+              <ShoppingBag className="mr-2 h-3.5 w-3.5" />
+              Start Shopping
+            </Link>
+          </Button>
+        </div>
       </div>
 
-      <p className="mt-6 text-center text-xs text-muted-foreground">
-        By signing in, you agree to our{" "}
-        <Link href="/terms" className="underline hover:text-accent">
-          Terms
-        </Link>{" "}
-        and{" "}
-        <Link href="/privacy-policy" className="underline hover:text-accent">
-          Privacy Policy
+      {/* Admin login link */}
+      <div className="mt-4 text-center">
+        <Link
+          href="/admin/login"
+          className="text-xs text-muted-foreground hover:text-accent"
+        >
+          Admin Login →
         </Link>
-        .
+      </div>
+
+      <p className="mt-4 text-center text-xs text-muted-foreground">
+        By logging in, you agree to our{" "}
+        <Link href="/terms" className="underline hover:text-accent">Terms</Link> and{" "}
+        <Link href="/privacy-policy" className="underline hover:text-accent">Privacy Policy</Link>.
       </p>
     </div>
   );
