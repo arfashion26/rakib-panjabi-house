@@ -19,13 +19,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
   // Routes that have their own full-page layout (no header/footer)
+  // ALL /admin/* routes are standalone (admin panel has its own sidebar)
   const isStandaloneRoute =
-    pathname.startsWith("/admin/login") ||
-    (pathname.startsWith("/admin") && !pathname.startsWith("/admin/")) ||
-    pathname.startsWith("/dashboard") ||
+    pathname === "/admin" ||
+    pathname.startsWith("/admin/") ||
+    pathname === "/dashboard" ||
+    pathname.startsWith("/dashboard/") ||
+    pathname === "/login" ||
     pathname.startsWith("/login") ||
+    pathname === "/register" ||
     pathname.startsWith("/register") ||
-    pathname.startsWith("/forgot-password") ||
+    pathname === "/forgot-password" ||
     pathname.startsWith("/api");
 
   if (isStandaloneRoute) {
