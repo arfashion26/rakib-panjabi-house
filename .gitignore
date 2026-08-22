@@ -52,3 +52,33 @@ prompt
 server.log
 # Skills directory
 /skills/
+
+# Sandbox / runtime artifacts
+.zscripts/dev.log
+.zscripts/mini-service-*.log
+.zscripts/dev.pid
+.bun-version
+tests/
+
+# Migration artifacts (keep SQL files, ignore local DB)
+*.db
+*.db-journal
+/prisma/*.db
+
+# OS files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Temp files
+*.tmp
+*.bak
+*.cache
