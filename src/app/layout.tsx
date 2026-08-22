@@ -106,8 +106,57 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const orgJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "Rakib Panjabi House",
+    alternateName: "RPH",
+    url: siteUrl,
+    logo: `${siteUrl}/logo.svg`,
+    description:
+      "Premium quality Panjabis, shirts, pants, and ethnic wear with timeless elegance and modern designs.",
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: "Dhaka",
+      addressCountry: "BD",
+    },
+    contactPoint: {
+      "@type": "ContactPoint",
+      telephone: "+880-1XXX-XXXXXX",
+      contactType: "customer service",
+      email: "support@rakibpanjabihouse.com",
+    },
+    sameAs: [
+      "https://facebook.com/rakibpanjabihouse",
+      "https://instagram.com/rakibpanjabihouse",
+      "https://youtube.com/@rakibpanjabihouse",
+    ],
+  };
+
+  const websiteJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "Rakib Panjabi House",
+    url: siteUrl,
+    potentialAction: {
+      "@type": "SearchAction",
+      target: `${siteUrl}/shop?q={search_term_string}`,
+      "query-input": "required name=search_term_string",
+    },
+  };
+
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+        />
+      </head>
       <body
         className={`${inter.variable} ${playfair.variable} antialiased bg-background text-foreground`}
       >
