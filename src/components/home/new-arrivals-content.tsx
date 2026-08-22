@@ -25,24 +25,21 @@ interface Product {
   review_count?: number;
 }
 
-/**
- * Trending Products Section (client component that receives data from server)
- */
-export function TrendingProducts({ products }: { products: Product[] }) {
+export function NewArrivalsContent({ products }: { products: Product[] }) {
   if (products.length === 0) return null;
 
   return (
-    <section className="py-12 md:py-16 lg:py-20">
+    <section className="bg-muted/30 py-12 md:py-16 lg:py-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mb-10 md:mb-12 flex flex-col items-end justify-between gap-4 md:flex-row">
           <div className="max-w-xl">
-            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-accent">Hot Right Now</p>
-            <h2 className="font-serif text-3xl font-medium tracking-tight md:text-4xl">Trending Products</h2>
+            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-accent">Just Arrived</p>
+            <h2 className="font-serif text-3xl font-medium tracking-tight md:text-4xl">New Arrivals</h2>
             <p className="mt-4 text-base text-muted-foreground md:text-lg">
-              Our most-loved pieces that everyone is talking about this season.
+              Discover the latest additions to our collection, featuring fresh designs and seasonal must-haves.
             </p>
           </div>
-          <ButtonLink href="/best-sellers" variant="ghost" className="shrink-0">
+          <ButtonLink href="/new-arrivals" variant="ghost" className="shrink-0">
             View All
             <ArrowRight className="ml-2 h-4 w-4" />
           </ButtonLink>

@@ -1,11 +1,10 @@
 "use server";
 
-import { createServerClientHelper } from "@/lib/supabase";
+import { createServerClientHelper, createAdminClient } from "@/lib/supabase";
 import type { Product, Category, ProductImage, Review } from "@/lib/types";
 
 /**
- * Check if the database is configured (tables exist).
- * If not, we use placeholder data for development/preview.
+ * Check if the database is ready (tables exist and accessible).
  */
 export async function isDatabaseReady(): Promise<boolean> {
   try {
@@ -13,7 +12,6 @@ export async function isDatabaseReady(): Promise<boolean> {
     const { count, error } = await supabase
       .from("categories")
       .select("*", { count: "exact", head: true });
-
     if (error) return false;
     return (count ?? 0) > 0;
   } catch {
@@ -22,7 +20,7 @@ export async function isDatabaseReady(): Promise<boolean> {
 }
 
 /**
- * Fetch all active categories.
+ * Fetch all active categories from database.
  */
 export async function getCategories(): Promise<Category[]> {
   const supabase = await createServerClientHelper();
@@ -32,18 +30,14 @@ export async function getCategories(): Promise<Category[]> {
     .eq("is_active", true)
     .order("order", { ascending: true });
 
-  if (error || !data) {
-    return [];
-  }
+  if (error || !data) return [];
   return data as Category[];
 }
 
 /**
  * Fetch a single category by slug.
  */
-export async function getCategoryBySlug(
-  slug: string
-): Promise<Category | null> {
+export async function getCategoryBySlug(slug: string): Promise<Category | null> {
   const supabase = await createServerClientHelper();
   const { data, error } = await supabase
     .from("categories")
@@ -57,7 +51,7 @@ export async function getCategoryBySlug(
 }
 
 /**
- * Fetch products with filters.
+ * Fetch products with filters from database.
  */
 export interface ProductFilters {
   categorySlug?: string;
@@ -75,7 +69,7 @@ export interface ProductFilters {
 
 export async function getProducts(
   filters: ProductFilters = {}
-): Promise<{ products: Product[]; total: number }> {
+): Promise<{ products: any[]; total: number }> {
   const supabase = await createServerClientHelper();
 
   let query = supabase
@@ -87,34 +81,24 @@ export async function getProducts(
     const category = await getCategoryBySlug(filters.categorySlug);
     if (category) {
       query = query.eq("category_id", category.id);
+    } else {
+      return { products: [], total: 0 };
     }
   }
 
   if (filters.search) {
     query = query.or(
-      `name.ilike.%${filters.search}%,description.ilike.%${filters.search}%,sku.ilike.%${filters.search}%`
+      `name.ilike.%${filters.search}%,description.ilike.%${filters.search}%,sku.ilike.%${filters.search}%,search_keywords.ilike.%${filters.search}%`
     );
   }
 
-  if (filters.isFeatured !== undefined) {
-    query = query.eq("is_featured", filters.isFeatured);
-  }
-  if (filters.isBestSeller !== undefined) {
-    query = query.eq("is_best_seller", filters.isBestSeller);
-  }
-  if (filters.isNewArrival !== undefined) {
-    query = query.eq("is_new_arrival", filters.isNewArrival);
-  }
-  if (filters.isFlashSale !== undefined) {
-    query = query.eq("is_flash_sale", filters.isFlashSale);
-  }
+  if (filters.isFeatured !== undefined) query = query.eq("is_featured", filters.isFeatured);
+  if (filters.isBestSeller !== undefined) query = query.eq("is_best_seller", filters.isBestSeller);
+  if (filters.isNewArrival !== undefined) query = query.eq("is_new_arrival", filters.isNewArrival);
+  if (filters.isFlashSale !== undefined) query = query.eq("is_flash_sale", filters.isFlashSale);
 
-  if (filters.minPrice !== undefined) {
-    query = query.gte("price", filters.minPrice);
-  }
-  if (filters.maxPrice !== undefined) {
-    query = query.lte("price", filters.maxPrice);
-  }
+  if (filters.minPrice !== undefined) query = query.gte("price", filters.minPrice);
+  if (filters.maxPrice !== undefined) query = query.lte("price", filters.maxPrice);
 
   switch (filters.sortBy) {
     case "price_asc":
@@ -124,10 +108,10 @@ export async function getProducts(
       query = query.order("price", { ascending: false });
       break;
     case "popular":
-      query = query.order("is_best_seller", { ascending: false });
+      query = query.order("is_best_seller", { ascending: false }).order("created_at", { ascending: false });
       break;
     case "rating":
-      query = query.order("is_featured", { ascending: false });
+      query = query.order("is_featured", { ascending: false }).order("created_at", { ascending: false });
       break;
     case "newest":
     default:
@@ -140,12 +124,31 @@ export async function getProducts(
 
   const { data, error, count } = await query;
 
-  if (error || !data) {
-    return { products: [], total: 0 };
-  }
+  if (error || !data) return { products: [], total: 0 };
+
+  // For each product, fetch its sizes, colors, and images
+  const productsWithVariants = await Promise.all(
+    (data || []).map(async (product) => {
+      const admin = createAdminClient();
+      const [sizesRes, colorsRes, imagesRes] = await Promise.all([
+        admin.from("product_sizes").select("*").eq("product_id", product.id).order("sort_order", { ascending: true }),
+        admin.from("product_colors").select("*").eq("product_id", product.id),
+        admin.from("product_images").select("*").eq("product_id", product.id).order("position", { ascending: true }),
+      ]);
+      return {
+        ...product,
+        sizes: sizesRes.data || [],
+        colors: colorsRes.data || [],
+        images: imagesRes.data || [],
+        // For display compatibility
+        rating: 0,
+        review_count: 0,
+      };
+    })
+  );
 
   return {
-    products: data as Product[],
+    products: productsWithVariants,
     total: count ?? 0,
   };
 }
@@ -153,13 +156,11 @@ export async function getProducts(
 /**
  * Fetch a single product by slug with all related data.
  */
-export async function getProductBySlug(
-  slug: string
-): Promise<{
-  product: Product | null;
+export async function getProductBySlug(slug: string): Promise<{
+  product: any | null;
   images: ProductImage[];
   reviews: Review[];
-  relatedProducts: Product[];
+  relatedProducts: any[];
 }> {
   const supabase = await createServerClientHelper();
 
@@ -171,41 +172,46 @@ export async function getProductBySlug(
     .single();
 
   if (error || !product) {
-    return {
-      product: null,
-      images: [],
-      reviews: [],
-      relatedProducts: [],
-    };
+    return { product: null, images: [], reviews: [], relatedProducts: [] };
   }
 
-  const [imagesRes, reviewsRes, relatedRes] = await Promise.all([
-    supabase
-      .from("product_images")
-      .select("*")
-      .eq("product_id", product.id)
-      .order("position", { ascending: true }),
-    supabase
-      .from("reviews")
-      .select(`*, user:profiles(name, image)`)
-      .eq("product_id", product.id)
-      .eq("status", "APPROVED")
-      .order("created_at", { ascending: false })
-      .limit(20),
-    supabase
-      .from("products")
-      .select("*")
-      .eq("category_id", product.category_id)
-      .eq("status", "ACTIVE")
-      .neq("id", product.id)
-      .limit(4),
+  const admin = createAdminClient();
+  const [sizesRes, colorsRes, imagesRes, reviewsRes, relatedRes] = await Promise.all([
+    admin.from("product_sizes").select("*").eq("product_id", product.id).order("sort_order", { ascending: true }),
+    admin.from("product_colors").select("*").eq("product_id", product.id),
+    admin.from("product_images").select("*").eq("product_id", product.id).order("position", { ascending: true }),
+    admin.from("reviews").select(`*, user:profiles(name, image)`).eq("product_id", product.id).eq("status", "APPROVED").order("created_at", { ascending: false }).limit(20),
+    admin.from("products").select("*").eq("category_id", product.category_id).eq("status", "ACTIVE").neq("id", product.id).limit(4),
   ]);
 
+  // Fetch specs for related products
+  const relatedWithVariants = await Promise.all(
+    (relatedRes.data || []).map(async (rp) => {
+      const [rSizes, rColors, rImages] = await Promise.all([
+        admin.from("product_sizes").select("*").eq("product_id", rp.id).order("sort_order", { ascending: true }),
+        admin.from("product_colors").select("*").eq("product_id", rp.id),
+        admin.from("product_images").select("*").eq("product_id", rp.id).order("position", { ascending: true }),
+      ]);
+      return {
+        ...rp,
+        sizes: rSizes.data || [],
+        colors: rColors.data || [],
+        images: rImages.data || [],
+        rating: 0,
+        review_count: 0,
+      };
+    })
+  );
+
   return {
-    product: product as Product,
+    product: {
+      ...product,
+      sizes: sizesRes.data || [],
+      colors: colorsRes.data || [],
+    },
     images: (imagesRes.data as ProductImage[]) || [],
     reviews: (reviewsRes.data as Review[]) || [],
-    relatedProducts: (relatedRes.data as Product[]) || [],
+    relatedProducts: relatedWithVariants || [],
   };
 }
 
@@ -215,15 +221,7 @@ export async function getProductBySlug(
 export async function searchProducts(
   query: string,
   limit: number = 8
-): Promise<
-  {
-    id: string;
-    name: string;
-    slug: string;
-    price: number;
-    discount_price: number | null;
-  }[]
-> {
+): Promise<{ id: string; name: string; slug: string; price: number; discount_price: number | null }[]> {
   if (!query || query.length < 2) return [];
 
   const supabase = await createServerClientHelper();

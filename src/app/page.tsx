@@ -1,6 +1,8 @@
+import { getProducts } from "@/lib/services/products";
 import { HeroBanner } from "@/components/home/hero-banner";
 import { FeaturedCategories } from "@/components/home/featured-categories";
-import { NewArrivals, TrendingProducts } from "@/components/home/product-sections";
+import { NewArrivals } from "@/components/home/new-arrivals";
+import { TrendingProducts } from "@/components/home/product-sections";
 import { FlashSale } from "@/components/home/flash-sale";
 import { PremiumCollectionCTA } from "@/components/home/premium-collection-cta";
 import { BrandStory } from "@/components/home/brand-story";
@@ -8,37 +10,21 @@ import { CustomerReviews } from "@/components/home/customer-reviews";
 import { InstagramFeed } from "@/components/home/instagram-feed";
 import { BlogPosts } from "@/components/home/blog-posts";
 
-export default function Home() {
+export default async function Home() {
+  // Fetch trending products (best sellers) on the server
+  const { products: trending } = await getProducts({ isBestSeller: true, sortBy: "popular", limit: 4 });
+
   return (
     <>
-      {/* Hero Section */}
       <HeroBanner />
-
-      {/* Featured Categories */}
       <FeaturedCategories />
-
-      {/* New Arrivals */}
       <NewArrivals />
-
-      {/* Flash Sale (with countdown) */}
       <FlashSale />
-
-      {/* Trending Products */}
-      <TrendingProducts />
-
-      {/* Premium Collection CTA */}
+      <TrendingProducts products={trending} />
       <PremiumCollectionCTA />
-
-      {/* Brand Story */}
       <BrandStory />
-
-      {/* Customer Reviews */}
       <CustomerReviews />
-
-      {/* Instagram Feed */}
       <InstagramFeed />
-
-      {/* Blog Posts */}
       <BlogPosts />
     </>
   );

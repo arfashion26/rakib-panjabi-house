@@ -3,42 +3,69 @@
 import * as React from "react";
 import Link from "next/link";
 import { Heart, ShoppingBag, Trash2, ArrowRight } from "lucide-react";
-import { useWishlist, useCart } from "@/lib/store";
-import { Container, ButtonLink } from "@/components/layout/container";
+import { useWishlist } from "@/lib/store";
+import { getProducts } from "@/lib/services/products";
 import { Button } from "@/components/ui/button";
 import { ProductCard } from "@/components/product/product-card";
-import { placeholderProducts } from "@/lib/placeholder-data";
+import { Container, ButtonLink } from "@/components/layout/container";
 import { toast } from "sonner";
+
+interface Product {
+  id: string;
+  name: string;
+  slug: string;
+  sku: string;
+  price: number;
+  discount_price: number | null;
+  is_featured?: boolean;
+  is_best_seller?: boolean;
+  is_new_arrival?: boolean;
+  is_flash_sale?: boolean;
+  status: string;
+  sizes?: { size: string; stock: number }[];
+  colors?: { name: string; hex_value: string }[];
+  images?: { url: string; is_primary: boolean }[];
+  rating?: number;
+  review_count?: number;
+}
 
 export default function WishlistPage() {
   const productIds = useWishlist((s) => s.productIds);
-  const toggle = useWishlist((s) => s.toggle);
-  const addItem = useCart((s) => s.addItem);
   const clearWishlist = useWishlist((s) => s.clear);
+  const [products, setProducts] = React.useState<Product[]>([]);
+  const [loading, setLoading] = React.useState(true);
 
-  // Match wishlist IDs with placeholder products
-  const wishlistProducts = React.useMemo(() => {
-    return placeholderProducts.filter((p) => productIds.includes(p.id));
+  React.useEffect(() => {
+    async function fetchProducts() {
+      if (productIds.length === 0) {
+        setProducts([]);
+        setLoading(false);
+        return;
+      }
+      setLoading(true);
+      try {
+        // Fetch each product by ID
+        const { products: fetched } = await getProducts({ limit: 100 });
+        const filtered = fetched.filter((p) => productIds.includes(p.id));
+        setProducts(filtered);
+      } catch {
+        setProducts([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchProducts();
   }, [productIds]);
 
-  function handleAddAllToCart() {
-    wishlistProducts.forEach((p) => {
-      addItem({
-        productId: p.id,
-        slug: p.slug,
-        name: p.name,
-        image: null,
-        price: p.price,
-        discountPrice: p.discount_price ?? null,
-        sku: p.sku,
-        selectedSize: null,
-        selectedColor: null,
-      });
-    });
-    toast.success(`Added ${wishlistProducts.length} items to cart`);
+  if (loading) {
+    return (
+      <Container className="py-16">
+        <div className="text-center">Loading your wishlist...</div>
+      </Container>
+    );
   }
 
-  if (wishlistProducts.length === 0) {
+  if (products.length === 0) {
     return (
       <Container className="py-16">
         <div className="mx-auto flex max-w-md flex-col items-center justify-center gap-6 py-16 text-center">
@@ -48,8 +75,7 @@ export default function WishlistPage() {
           <div>
             <h1 className="font-serif text-2xl font-medium">Your Wishlist is Empty</h1>
             <p className="mt-2 text-sm text-muted-foreground">
-              Save your favorite items here for easy access later. Click the heart
-              icon on any product to add it to your wishlist.
+              Save your favorite items here for easy access later. Click the heart icon on any product to add it to your wishlist.
             </p>
           </div>
           <Button asChild size="lg">
@@ -65,7 +91,6 @@ export default function WishlistPage() {
 
   return (
     <Container className="py-8">
-      {/* Header */}
       <nav className="mb-6 text-xs text-muted-foreground">
         <Link href="/" className="hover:text-accent">Home</Link>
         <span className="mx-1">/</span>
@@ -74,39 +99,30 @@ export default function WishlistPage() {
 
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="font-serif text-3xl font-medium tracking-tight md:text-4xl">
-            My Wishlist
-          </h1>
+          <h1 className="font-serif text-3xl font-medium tracking-tight md:text-4xl">My Wishlist</h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            {wishlistProducts.length} {wishlistProducts.length === 1 ? "item" : "items"} in your wishlist
+            {products.length} {products.length === 1 ? "item" : "items"} in your wishlist
           </p>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={handleAddAllToCart}>
-            <ShoppingBag className="mr-2 h-4 w-4" />
-            Add All to Cart
-          </Button>
-          <Button
-            variant="ghost"
-            onClick={() => {
-              clearWishlist();
-              toast.success("Wishlist cleared");
-            }}
-            className="text-muted-foreground hover:text-red-500"
-          >
-            <Trash2 className="mr-2 h-4 w-4" />
-            Clear
-          </Button>
-        </div>
+        <Button
+          variant="ghost"
+          onClick={() => {
+            clearWishlist();
+            toast.success("Wishlist cleared");
+          }}
+          className="text-muted-foreground hover:text-red-500"
+        >
+          <Trash2 className="mr-2 h-4 w-4" />
+          Clear All
+        </Button>
       </div>
 
-      {/* Products grid */}
       <div className="grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-3 lg:grid-cols-4 lg:gap-x-6">
-        {wishlistProducts.map((product) => (
+        {products.map((product) => (
           <ProductCard
             key={product.id}
             product={product}
-            images={product.images}
+            images={product.images?.map((img) => img.url) || []}
             colors={product.colors}
             rating={product.rating}
             reviewCount={product.review_count}

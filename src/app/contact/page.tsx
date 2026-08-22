@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Mail, Phone, MapPin, Send, MessageCircle, Clock } from "lucide-react";
+import { Mail, Phone, MapPin, Send, Clock } from "lucide-react";
 import { Container } from "@/components/layout/container";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -62,7 +62,7 @@ export default function ContactPage() {
                   </div>
                 </a>
                 <a
-                  href="tel:+8801XXXXXXXXX"
+                  href="tel:+8801716243949"
                   className="flex items-start gap-3 rounded-lg border border-border/60 bg-card p-4 transition-colors hover:border-accent/40"
                 >
                   <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/10 text-accent">
@@ -72,21 +72,6 @@ export default function ContactPage() {
                     <p className="text-sm font-medium">Call Us</p>
                     <p className="text-sm text-muted-foreground">+880 1716-243949</p>
                     <p className="mt-1 text-xs text-muted-foreground">Sat–Thu, 10AM–8PM</p>
-                  </div>
-                </a>
-                <a
-                  href="https://wa.me/8801XXXXXXXXX"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-start gap-3 rounded-lg border border-border/60 bg-card p-4 transition-colors hover:border-accent/40"
-                >
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/10 text-accent">
-                    <MessageCircle className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium">WhatsApp</p>
-                    <p className="text-sm text-muted-foreground">+880 1716-243949</p>
-                    <p className="mt-1 text-xs text-muted-foreground">Quick responses on chat</p>
                   </div>
                 </a>
                 <div className="flex items-start gap-3 rounded-lg border border-border/60 bg-card p-4">
