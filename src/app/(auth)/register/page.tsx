@@ -61,11 +61,12 @@ function RegisterForm() {
     try {
       const result = await signUpWithEmail({ email, password, name, phone });
       if (result.success) {
-        if (result.needsEmailConfirmation) {
-          setEmailSent(true);
-          toast.success("Account created! Please check your email to verify.");
+        // No email verification needed — auto-confirm is handled in signUpWithEmail
+        if (result.autoLoginFailed) {
+          toast.success("Account created! Please login with your credentials.");
+          router.push("/login");
         } else {
-          toast.success("Welcome to Rakib Panjabi House!");
+          toast.success("Welcome to Rakib Panjabi House! Your account is ready.");
           router.push(redirectTo);
           router.refresh();
         }

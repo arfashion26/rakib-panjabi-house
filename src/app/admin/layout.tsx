@@ -43,6 +43,11 @@ export default function AdminLayout({
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
+  // Don't show admin sidebar on login page — it should be a standalone page
+  if (pathname === "/admin/login") {
+    return <>{children}</>;
+  }
+
   const sidebarContent = (
     <div className="flex h-full flex-col bg-primary text-primary-foreground">
       {/* Logo */}

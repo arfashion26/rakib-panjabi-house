@@ -6,8 +6,13 @@ import { redirect } from "next/navigation";
 
 /**
  * Sign up a new user with email and password.
- * Supabase will create the auth.users entry and our trigger
- * will auto-create a profile entry.
+ * NO email verification required — user can login immediately.
+ *
+ * Flow:
+ * 1. Create auth user via supabase.auth.signUp
+ * 2. Auto-confirm email using admin API (bypass email verification)
+ * 3. Update profile with phone number
+ * 4. Try to sign in immediately (so user gets a session)
  */
 export async function signUpWithEmail({
   email,
@@ -22,6 +27,7 @@ export async function signUpWithEmail({
 }) {
   const supabase = await createServerClientHelper();
 
+  // Step 1: Create the user
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
@@ -38,24 +44,46 @@ export async function signUpWithEmail({
     return { success: false, error: error.message };
   }
 
-  // If user is immediately created (no email confirmation needed),
-  // update their profile with phone.
-  if (data.user && phone) {
-    try {
-      const admin = createAdminClient();
-      await admin
-        .from("profiles")
-        .update({ phone, name })
-        .eq("id", data.user.id);
-    } catch (e) {
-      console.error("Failed to update profile phone:", e);
-    }
+  if (!data.user) {
+    return { success: false, error: "Failed to create user account." };
+  }
+
+  // Step 2: Auto-confirm email using admin API (bypass email verification)
+  try {
+    const admin = createAdminClient();
+    await admin.auth.admin.updateUserById(data.user.id, {
+      email_confirm: true,
+    });
+
+    // Step 3: Update profile with phone and name
+    await admin
+      .from("profiles")
+      .update({ phone, name })
+      .eq("id", data.user.id);
+  } catch (e: any) {
+    console.error("Auto-confirm failed:", e?.message || e);
+    // Continue anyway — the user was created
+  }
+
+  // Step 4: Try to sign in immediately
+  const { data: signInData, error: signInError } =
+    await supabase.auth.signInWithPassword({ email, password });
+
+  if (signInError) {
+    // User was created but auto-login failed
+    // They can login manually from /login
+    return {
+      success: true,
+      user: data.user,
+      needsEmailConfirmation: false,
+      autoLoginFailed: true,
+    };
   }
 
   return {
     success: true,
-    user: data.user,
-    needsEmailConfirmation: !data.session,
+    user: signInData.user || data.user,
+    needsEmailConfirmation: false,
   };
 }
 
