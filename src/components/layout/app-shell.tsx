@@ -20,7 +20,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   // Routes that have their own full-page layout (no header/footer)
   const isStandaloneRoute =
-    pathname.startsWith("/admin") ||
+    pathname.startsWith("/admin/login") ||
+    (pathname.startsWith("/admin") && !pathname.startsWith("/admin/")) ||
     pathname.startsWith("/dashboard") ||
     pathname.startsWith("/login") ||
     pathname.startsWith("/register") ||

@@ -16,6 +16,7 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { useCart } from "@/lib/store";
+import { placeOrder } from "@/lib/services/orders";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -133,16 +134,59 @@ export default function CheckoutPage() {
     return true;
   }
 
-  async function placeOrder() {
+  async function placeOrderHandler() {
     if (!validate()) return;
 
     setProcessing(true);
-    // Simulate order processing
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    setProcessing(false);
-    clearCart();
-    toast.success("Order placed successfully!");
-    router.push("/order-success");
+    try {
+      const result = await placeOrder({
+        name: form.name,
+        phone: form.phone,
+        address: form.address,
+        area: form.area,
+        payment: form.payment,
+        note: form.note,
+        items: items.map((item) => ({
+          productId: item.productId,
+          name: item.name,
+          slug: item.slug,
+          sku: item.sku,
+          price: item.price,
+          discountPrice: item.discountPrice,
+          quantity: item.quantity,
+          selectedSize: item.selectedSize,
+          selectedColor: item.selectedColor,
+        })),
+        subtotal,
+        shippingCost,
+        codCharge,
+        total,
+      });
+
+      setProcessing(false);
+
+      if (result.success) {
+        clearCart();
+        if (result.isNewUser) {
+          toast.success(
+            `Order placed! We've created an account for you. Login with your phone number.`
+          );
+        } else {
+          toast.success("Order placed successfully!");
+        }
+        // Store order number for the success page
+        sessionStorage.setItem("lastOrderNumber", result.orderNumber || "");
+        if (result.isNewUser && result.tempPassword) {
+          sessionStorage.setItem("tempPassword", result.tempPassword);
+        }
+        router.push("/order-success");
+      } else {
+        toast.error(result.error || "Failed to place order. Please try again.");
+      }
+    } catch (error: any) {
+      setProcessing(false);
+      toast.error("An unexpected error occurred. Please try again.");
+    }
   }
 
   if (items.length === 0) {
@@ -338,7 +382,7 @@ export default function CheckoutPage() {
 
           {/* Place order button (mobile) */}
           <Button
-            onClick={placeOrder}
+            onClick={placeOrderHandler}
             disabled={processing}
             size="lg"
             className="w-full bg-accent text-accent-foreground hover:bg-accent/90 lg:hidden"
@@ -444,7 +488,7 @@ export default function CheckoutPage() {
 
             {/* Place order button (desktop) */}
             <Button
-              onClick={placeOrder}
+              onClick={placeOrderHandler}
               disabled={processing}
               size="lg"
               className="mt-6 hidden w-full bg-accent text-accent-foreground hover:bg-accent/90 lg:flex"

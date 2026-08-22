@@ -61,6 +61,7 @@ export async function signUpWithEmail({
 
 /**
  * Sign in with email and password.
+ * Returns the redirect URL based on user's role.
  */
 export async function signInWithEmail({
   email,
@@ -80,7 +81,10 @@ export async function signInWithEmail({
     return { success: false, error: error.message };
   }
 
-  // Update last_login_at
+  let redirectTo = "/dashboard"; // default for customers
+  let role = "CUSTOMER";
+
+  // Fetch user's profile to determine role
   if (data.user) {
     try {
       const admin = createAdminClient();
@@ -88,12 +92,36 @@ export async function signInWithEmail({
         .from("profiles")
         .update({ last_login_at: new Date().toISOString() })
         .eq("id", data.user.id);
+
+      const { data: profile } = await admin
+        .from("profiles")
+        .select("role, status")
+        .eq("id", data.user.id)
+        .single();
+
+      if (profile) {
+        role = profile.role;
+
+        // Check if account is suspended
+        if (profile.status === "SUSPENDED") {
+          await supabase.auth.signOut();
+          return {
+            success: false,
+            error: "Your account has been suspended. Please contact support.",
+          };
+        }
+
+        // Redirect based on role
+        if (["SUPER_ADMIN", "ADMIN", "MANAGER", "STAFF"].includes(profile.role)) {
+          redirectTo = "/admin";
+        }
+      }
     } catch (e) {
-      console.error("Failed to update last_login_at:", e);
+      console.error("Failed to fetch profile:", e);
     }
   }
 
-  return { success: true, user: data.user };
+  return { success: true, user: data.user, redirectTo, role };
 }
 
 /**

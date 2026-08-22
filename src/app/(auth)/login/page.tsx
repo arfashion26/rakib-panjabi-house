@@ -30,8 +30,13 @@ function LoginForm() {
     try {
       const result = await signInWithEmail({ email, password });
       if (result.success) {
-        toast.success("Welcome back! Login successful.");
-        router.push(redirectTo);
+        const target = result.redirectTo || redirectTo;
+        if (result.role && ["SUPER_ADMIN", "ADMIN", "MANAGER", "STAFF"].includes(result.role)) {
+          toast.success("Welcome back, Admin! Redirecting to dashboard...");
+        } else {
+          toast.success("Welcome back! Login successful.");
+        }
+        router.push(target);
         router.refresh();
       } else {
         toast.error(result.error || "Login failed. Please check your credentials.");

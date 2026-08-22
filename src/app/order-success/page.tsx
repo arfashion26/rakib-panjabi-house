@@ -1,17 +1,28 @@
 "use client";
 
+import * as React from "react";
 import Link from "next/link";
-import { CheckCircle2, Package, Truck, Mail, ArrowRight } from "lucide-react";
+import { CheckCircle2, Package, Truck, Mail, ArrowRight, User, Phone, KeyRound } from "lucide-react";
 import { Container, ButtonLink } from "@/components/layout/container";
+import { Button } from "@/components/ui/button";
 
 export default function OrderSuccessPage() {
-  // Generate a random order number (in real app, this comes from the order record)
-  const orderNumber = `RPH-${new Date()
-    .toISOString()
-    .slice(2, 10)
-    .replace(/-/g, "")}-${Math.floor(Math.random() * 100000)
-    .toString()
-    .padStart(5, "0")}`;
+  const [orderNumber, setOrderNumber] = React.useState("");
+  const [tempPassword, setTempPassword] = React.useState("");
+  const [isNewUser, setIsNewUser] = React.useState(false);
+
+  React.useEffect(() => {
+    const num = sessionStorage.getItem("lastOrderNumber") || "";
+    const pass = sessionStorage.getItem("tempPassword") || "";
+    setOrderNumber(num);
+    if (pass && !pass.includes("database not connected")) {
+      setTempPassword(pass);
+      setIsNewUser(true);
+    }
+    // Clear after reading
+    sessionStorage.removeItem("lastOrderNumber");
+    sessionStorage.removeItem("tempPassword");
+  }, []);
 
   return (
     <Container className="py-16">
@@ -30,30 +41,67 @@ export default function OrderSuccessPage() {
           email with your order details.
         </p>
 
-        {/* Order number card */}
-        <div className="mt-8 rounded-lg border border-border/60 bg-card p-6 text-left">
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div>
-              <p className="text-xs uppercase tracking-wider text-muted-foreground">
-                Order Number
-              </p>
-              <p className="mt-1 font-serif text-xl font-medium text-accent">
-                {orderNumber}
-              </p>
+        {/* New user account notice */}
+        {isNewUser && (
+          <div className="mt-6 rounded-lg border border-accent/30 bg-accent/5 p-6 text-left">
+            <div className="mb-3 flex items-center gap-2">
+              <User className="h-5 w-5 text-accent" />
+              <h2 className="font-serif text-lg font-medium text-accent">
+                Your Account Has Been Created!
+              </h2>
             </div>
-            <div>
-              <p className="text-xs uppercase tracking-wider text-muted-foreground">
-                Estimated Delivery
-              </p>
-              <p className="mt-1 font-medium">
-                {new Date(Date.now() + 4 * 24 * 60 * 60 * 1000).toLocaleDateString(
-                  "en-US",
-                  { weekday: "long", month: "short", day: "numeric" }
-                )}
-              </p>
+            <p className="text-sm text-muted-foreground">
+              We&apos;ve automatically created an account for you so you can track
+              your order, view order history, and shop faster next time.
+            </p>
+
+            <div className="mt-4 space-y-2 rounded-md bg-background p-4">
+              <div className="flex items-center gap-2 text-sm">
+                <KeyRound className="h-4 w-4 text-muted-foreground" />
+                <span className="text-muted-foreground">Temporary Password:</span>
+                <code className="rounded bg-muted px-2 py-0.5 font-mono text-accent">
+                  {tempPassword}
+                </code>
+              </div>
+            </div>
+
+            <p className="mt-3 text-xs text-muted-foreground">
+              <strong>Important:</strong> Please change this password after your first
+              login for security. You can login using your phone number and this password.
+            </p>
+
+            <Button asChild className="mt-4 w-full">
+              <Link href="/login">Login to Your Account</Link>
+            </Button>
+          </div>
+        )}
+
+        {/* Order number card */}
+        {orderNumber && (
+          <div className="mt-8 rounded-lg border border-border/60 bg-card p-6 text-left">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div>
+                <p className="text-xs uppercase tracking-wider text-muted-foreground">
+                  Order Number
+                </p>
+                <p className="mt-1 font-serif text-xl font-medium text-accent">
+                  {orderNumber}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs uppercase tracking-wider text-muted-foreground">
+                  Estimated Delivery
+                </p>
+                <p className="mt-1 font-medium">
+                  {new Date(Date.now() + 4 * 24 * 60 * 60 * 1000).toLocaleDateString(
+                    "en-US",
+                    { weekday: "long", month: "short", day: "numeric" }
+                  )}
+                </p>
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* Next steps */}
         <div className="mt-8 grid gap-4 text-left sm:grid-cols-3">

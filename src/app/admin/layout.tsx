@@ -17,6 +17,7 @@ import {
   TrendingUp,
   DollarSign,
   ShoppingBag,
+  Lock,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -87,6 +88,16 @@ export default function AdminLayout({
 
       {/* Sign out */}
       <div className="border-t border-primary-foreground/10 p-3">
+        <Button
+          variant="ghost"
+          className="w-full justify-start text-primary-foreground/80 hover:bg-primary-foreground/10 hover:text-primary-foreground"
+          asChild
+        >
+          <Link href="/admin/login">
+            <Lock className="mr-3 h-4 w-4" />
+            Admin Login
+          </Link>
+        </Button>
         <Button
           variant="ghost"
           className="w-full justify-start text-primary-foreground/80 hover:bg-primary-foreground/10 hover:text-primary-foreground"
