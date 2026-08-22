@@ -1,5 +1,3 @@
-import { SiteHeader } from "@/components/layout/site-header";
-import { SiteFooter } from "@/components/layout/site-footer";
 import { HeroBanner } from "@/components/home/hero-banner";
 import { FeaturedCategories } from "@/components/home/featured-categories";
 import { NewArrivals, TrendingProducts } from "@/components/home/product-sections";
@@ -12,42 +10,36 @@ import { BlogPosts } from "@/components/home/blog-posts";
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen flex-col">
-      <SiteHeader />
+    <>
+      {/* Hero Section */}
+      <HeroBanner />
 
-      <main className="flex-1">
-        {/* Hero Section */}
-        <HeroBanner />
+      {/* Featured Categories */}
+      <FeaturedCategories />
 
-        {/* Featured Categories */}
-        <FeaturedCategories />
+      {/* New Arrivals */}
+      <NewArrivals />
 
-        {/* New Arrivals */}
-        <NewArrivals />
+      {/* Flash Sale (with countdown) */}
+      <FlashSale />
 
-        {/* Flash Sale (with countdown) */}
-        <FlashSale />
+      {/* Trending Products */}
+      <TrendingProducts />
 
-        {/* Trending Products */}
-        <TrendingProducts />
+      {/* Premium Collection CTA */}
+      <PremiumCollectionCTA />
 
-        {/* Premium Collection CTA */}
-        <PremiumCollectionCTA />
+      {/* Brand Story */}
+      <BrandStory />
 
-        {/* Brand Story */}
-        <BrandStory />
+      {/* Customer Reviews */}
+      <CustomerReviews />
 
-        {/* Customer Reviews */}
-        <CustomerReviews />
+      {/* Instagram Feed */}
+      <InstagramFeed />
 
-        {/* Instagram Feed */}
-        <InstagramFeed />
-
-        {/* Blog Posts */}
-        <BlogPosts />
-      </main>
-
-      <SiteFooter />
-    </div>
+      {/* Blog Posts */}
+      <BlogPosts />
+    </>
   );
 }
