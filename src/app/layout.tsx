@@ -43,9 +43,14 @@ export const metadata: Metadata = {
   creator: "Rakib Panjabi House",
   publisher: "Rakib Panjabi House",
   icons: {
-    icon: "/logo.svg",
-    shortcut: "/logo.svg",
-    apple: "/logo.svg",
+    icon: "/logo.jpg",
+    shortcut: "/logo.jpg",
+    apple: "/logo.jpg",
+    other: {
+      rel: "icon",
+      type: "image/jpeg",
+      url: "/logo.jpg",
+    },
   },
   openGraph: {
     type: "website",

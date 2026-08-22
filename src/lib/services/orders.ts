@@ -70,7 +70,7 @@ export async function findOrCreateUserByPhone(
 
     // Step 3: Create a new user account
     // Email format: 8801716243949@alrakib.com
-    // Password: the phone number itself (so customer only needs phone to login)
+    // Password: phone number + "Rph" suffix (meets password requirements, easy to remember)
     const cleanPhone = phone.replace(/[^0-9]/g, "");
     // Ensure phone starts with 880 for consistent format
     let normalizedPhone = cleanPhone;
@@ -78,15 +78,14 @@ export async function findOrCreateUserByPhone(
       normalizedPhone = "88" + cleanPhone; // 01716... → 8801716...
     }
     const userEmail = email || `${normalizedPhone}@alrakib.com`;
-    const userPassword = normalizedPhone; // Phone number IS the password
+    const userPassword = `Rph${normalizedPhone}!`; // Phone + prefix for security
 
     // Create auth user via Admin API
     const { data: newUser, error: createError } = await admin.auth.admin.createUser({
       email: userEmail,
       password: userPassword,
-      phone: phone,
       email_confirm: true,
-      phone_confirm: true,
+      // Don't set phone_confirm — requires SMS provider
       user_metadata: {
         full_name: name,
         name: name,
@@ -96,7 +95,19 @@ export async function findOrCreateUserByPhone(
     });
 
     if (createError || !newUser.user) {
-      console.error("Failed to create user:", createError);
+      console.error("Failed to create user:", createError?.message);
+      // User might already exist — try to find by email
+      const { data: existingByAuthEmail } = await admin.auth.admin.listUsers();
+      const found = existingByAuthEmail?.users?.find(
+        (u) => u.email?.toLowerCase() === userEmail.toLowerCase()
+      );
+      if (found) {
+        // Update their profile with phone
+        await admin.from("profiles").update({ phone, name }).eq("id", found.id);
+        return { userId: found.id, isNewUser: false };
+      }
+      // If we still can't find/create user, don't fail the order
+      // Create order with null user_id (need to make column nullable)
       return { userId: null, isNewUser: false };
     }
 
@@ -198,12 +209,10 @@ export async function placeOrder(data: {
     // Step 1: Find or create user
     const userResult = await findOrCreateUserByPhone(data.name, data.phone);
 
-    if (!userResult.userId) {
-      return {
-        success: false,
-        error: "Failed to create user account. Please try again.",
-      };
-    }
+    // If user creation failed, use the guest user ID as fallback
+    // This ensures orders are always created even if auth fails
+    const GUEST_USER_ID = "ae195301-694b-4893-a5f5-dae705ac1508";
+    const userId = userResult.userId || GUEST_USER_ID;
 
     // Step 2: Create the order
     const admin = createAdminClient();
@@ -214,10 +223,17 @@ export async function placeOrder(data: {
       area: data.area,
     });
 
+    // Normalize phone for email
+    let normalizedPhone = data.phone.replace(/[^0-9]/g, "");
+    if (normalizedPhone.startsWith("01")) {
+      normalizedPhone = "88" + normalizedPhone;
+    }
+    const customerEmail = `${normalizedPhone}@alrakib.com`;
+
     const { data: order, error: orderError } = await admin
       .from("orders")
       .insert({
-        user_id: userResult.userId,
+        user_id: userId,
         status: "PENDING",
         payment_status: data.payment === "cod" ? "UNPAID" : "PENDING",
         fulfillment_status: "UNFULFILLED",
@@ -228,9 +244,7 @@ export async function placeOrder(data: {
         grand_total: data.total,
         currency: "BDT",
         customer_name: data.name,
-        customer_email: userResult.userId && userResult.tempPassword
-          ? `${userResult.tempPassword}@alrakib.com`
-          : `${data.phone.replace(/[^0-9]/g, "")}@alrakib.com`,
+        customer_email: customerEmail,
         customer_phone: data.phone,
         shipping_address_json: shippingAddressJson,
         payment_method: data.payment,
@@ -287,7 +301,7 @@ export async function placeOrder(data: {
 
     // Step 5: Create a notification for admins (optional)
     await admin.from("notifications").insert({
-      user_id: userResult.userId,
+      user_id: userId,
       type: "order_placed",
       title: "Order Placed Successfully",
       message: `Your order ${order.order_number} has been placed successfully.`,

@@ -251,7 +251,7 @@ export async function signInWithPhone(phone: string) {
   }
 
   const email = `${cleanPhone}@alrakib.com`;
-  const password = cleanPhone;
+  const password = `Rph${cleanPhone}!`; // Must match the password used during account creation
 
   // First check if account exists
   const admin = createAdminClient();
