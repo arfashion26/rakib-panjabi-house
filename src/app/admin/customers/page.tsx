@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Search, Mail, Phone, ShoppingBag, Eye, Users, Shield } from "lucide-react";
+import { Search, Mail, Phone, ShoppingBag, Eye, Users, Shield, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -17,31 +17,31 @@ interface Customer {
   role: string;
   status: string;
   created_at: string;
+  order_count?: number;
+  total_spent?: number;
 }
 
-// Sample data shown when DB is not yet set up
-const sampleCustomers: Customer[] = [
-  { id: "1", email: "tanvir@example.com", name: "Tanvir Ahmed", phone: "+880 1711-123456", role: "CUSTOMER", status: "ACTIVE", created_at: "2026-01-15" },
-  { id: "2", email: "rakibul@example.com", name: "Rakibul Hasan", phone: "+880 1712-234567", role: "CUSTOMER", status: "ACTIVE", created_at: "2026-02-20" },
-  { id: "3", email: "imran@example.com", name: "Imran Khan", phone: "+880 1713-345678", role: "CUSTOMER", status: "ACTIVE", created_at: "2025-12-10" },
-  { id: "4", email: "sadia@example.com", name: "Sadia Islam", phone: "+880 1714-456789", role: "CUSTOMER", status: "ACTIVE", created_at: "2026-03-05" },
-  { id: "5", email: "mahmud@example.com", name: "Mahmud Hasan", phone: "+880 1715-567890", role: "CUSTOMER", status: "INACTIVE", created_at: "2026-02-18" },
-  { id: "6", email: "nusrat@example.com", name: "Nusrat Jahan", phone: "+880 1716-678901", role: "CUSTOMER", status: "ACTIVE", created_at: "2026-01-22" },
-];
-
-// Sample order counts (in production, fetched from DB)
-const sampleOrderStats: Record<string, { orders: number; spent: number }> = {
-  "1": { orders: 12, spent: 28540 },
-  "2": { orders: 8, spent: 19980 },
-  "3": { orders: 15, spent: 42300 },
-  "4": { orders: 3, spent: 5397 },
-  "5": { orders: 6, spent: 14494 },
-  "6": { orders: 10, spent: 21990 },
-};
-
 export default function AdminCustomersPage() {
+  const [allUsers, setAllUsers] = React.useState<Customer[]>([]);
+  const [loading, setLoading] = React.useState(true);
   const [search, setSearch] = React.useState("");
-  const [allUsers, setAllUsers] = React.useState<Customer[]>(sampleCustomers);
+
+  React.useEffect(() => {
+    async function fetchUsers() {
+      try {
+        const res = await fetch("/api/admin/customers");
+        const data = await res.json();
+        if (data.success) {
+          setAllUsers(data.users || []);
+        }
+      } catch {
+        setAllUsers([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchUsers();
+  }, []);
 
   const filtered = allUsers.filter((c) => {
     const q = search.toLowerCase();
@@ -52,6 +52,8 @@ export default function AdminCustomersPage() {
     );
   });
 
+  const customers = filtered.filter((u) => u.role === "CUSTOMER");
+
   const roleColors: Record<string, string> = {
     SUPER_ADMIN: "bg-red-100 text-red-700",
     ADMIN: "bg-purple-100 text-purple-700",
@@ -59,6 +61,15 @@ export default function AdminCustomersPage() {
     STAFF: "bg-green-100 text-green-700",
     CUSTOMER: "bg-muted text-muted-foreground",
   };
+
+  if (loading) {
+    return (
+      <div className="py-16 text-center">
+        <Loader2 className="mx-auto mb-3 h-8 w-8 animate-spin text-muted-foreground" />
+        <p className="text-sm text-muted-foreground">Loading users...</p>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -71,23 +82,17 @@ export default function AdminCustomersPage() {
         </p>
       </div>
 
-      <Tabs defaultValue="admins">
+      <Tabs defaultValue="customers">
         <TabsList className="mb-6">
+          <TabsTrigger value="customers">
+            <Users className="mr-2 h-4 w-4" />
+            Customers ({customers.length})
+          </TabsTrigger>
           <TabsTrigger value="admins">
             <Shield className="mr-2 h-4 w-4" />
             Admin & Staff
           </TabsTrigger>
-          <TabsTrigger value="customers">
-            <Users className="mr-2 h-4 w-4" />
-            Customers ({filtered.length})
-          </TabsTrigger>
         </TabsList>
-
-        <TabsContent value="admins">
-          <div className="rounded-lg border border-border/60 bg-background p-6">
-            <AdminUserManager users={allUsers} />
-          </div>
-        </TabsContent>
 
         <TabsContent value="customers">
           {/* Search */}
@@ -95,7 +100,7 @@ export default function AdminCustomersPage() {
             <div className="relative max-w-md">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
-                placeholder="Search customers..."
+                placeholder="Search customers by name, email, or phone..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="pl-10"
@@ -104,29 +109,39 @@ export default function AdminCustomersPage() {
           </div>
 
           {/* Customers table */}
-          <div className="overflow-hidden rounded-lg border border-border/60 bg-background">
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[700px]">
-                <thead className="border-b border-border bg-muted/30">
-                  <tr>
-                    <th className="p-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Customer</th>
-                    <th className="p-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Contact</th>
-                    <th className="p-3 text-center text-xs font-semibold uppercase tracking-wider text-muted-foreground">Orders</th>
-                    <th className="p-3 text-right text-xs font-semibold uppercase tracking-wider text-muted-foreground">Total Spent</th>
-                    <th className="p-3 text-center text-xs font-semibold uppercase tracking-wider text-muted-foreground">Role</th>
-                    <th className="p-3 text-center text-xs font-semibold uppercase tracking-wider text-muted-foreground">Status</th>
-                    <th className="p-3"></th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border/40">
-                  {filtered.map((customer) => {
-                    const stats = sampleOrderStats[customer.id] || { orders: 0, spent: 0 };
-                    return (
+          {customers.length === 0 ? (
+            <div className="rounded-lg border border-dashed border-border p-12 text-center">
+              <Users className="mx-auto mb-3 h-12 w-12 text-muted-foreground/40" />
+              <p className="text-sm font-medium">
+                {search ? "No customers match your search" : "No customers yet"}
+              </p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                {search
+                  ? "Try a different search term"
+                  : "Customers will appear here when they place orders"}
+              </p>
+            </div>
+          ) : (
+            <div className="overflow-hidden rounded-lg border border-border/60 bg-background">
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-[700px]">
+                  <thead className="border-b border-border bg-muted/30">
+                    <tr>
+                      <th className="p-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Customer</th>
+                      <th className="p-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Contact</th>
+                      <th className="p-3 text-center text-xs font-semibold uppercase tracking-wider text-muted-foreground">Orders</th>
+                      <th className="p-3 text-right text-xs font-semibold uppercase tracking-wider text-muted-foreground">Total Spent</th>
+                      <th className="p-3 text-center text-xs font-semibold uppercase tracking-wider text-muted-foreground">Status</th>
+                      <th className="p-3"></th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border/40">
+                    {customers.map((customer) => (
                       <tr key={customer.id} className="hover:bg-muted/20">
                         <td className="p-3">
                           <div className="flex items-center gap-3">
                             <div className="flex h-9 w-9 items-center justify-center rounded-full bg-accent/10 text-sm font-semibold text-accent">
-                              {customer.name?.split(" ").map((n) => n[0]).join("") || "?"}
+                              {customer.name?.split(" ").map((n) => n[0]).join("") || customer.email[0].toUpperCase()}
                             </div>
                             <p className="text-sm font-medium">{customer.name || "Unnamed"}</p>
                           </div>
@@ -144,16 +159,11 @@ export default function AdminCustomersPage() {
                         <td className="p-3 text-center text-sm">
                           <span className="inline-flex items-center gap-1">
                             <ShoppingBag className="h-3 w-3" />
-                            {stats.orders}
+                            {customer.order_count || 0}
                           </span>
                         </td>
                         <td className="p-3 text-right text-sm font-medium">
-                          {formatPrice(stats.spent)}
-                        </td>
-                        <td className="p-3 text-center">
-                          <Badge variant="secondary" className={roleColors[customer.role] || roleColors.CUSTOMER}>
-                            {customer.role.replace("_", " ")}
-                          </Badge>
+                          {formatPrice(customer.total_spent || 0)}
                         </td>
                         <td className="p-3 text-center">
                           <Badge variant="secondary" className={customer.status === "ACTIVE" ? "bg-green-100 text-green-700" : "bg-muted text-muted-foreground"}>
@@ -166,11 +176,17 @@ export default function AdminCustomersPage() {
                           </Button>
                         </td>
                       </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
+          )}
+        </TabsContent>
+
+        <TabsContent value="admins">
+          <div className="rounded-lg border border-border/60 bg-background p-6">
+            <AdminUserManager users={allUsers} />
           </div>
         </TabsContent>
       </Tabs>

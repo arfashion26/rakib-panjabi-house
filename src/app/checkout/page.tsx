@@ -167,7 +167,10 @@ export default function CheckoutPage() {
 
       if (result.success) {
         clearCart();
-        toast.success("Order placed successfully!");
+        toast.success(`✓ Order Confirmed! Order #${result.orderNumber}`, {
+          duration: 5000,
+          description: "Your order has been placed successfully. We'll contact you soon!",
+        });
         // Store order info for the success page
         sessionStorage.setItem("lastOrderNumber", result.orderNumber || "");
         sessionStorage.setItem("lastOrderPhone", form.phone);
