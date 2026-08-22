@@ -21,6 +21,8 @@ import {
   categories,
   siteConfig,
 } from "@/lib/brand";
+import { useCart } from "@/lib/store";
+import { CartDrawer } from "@/components/cart/cart-drawer";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -146,6 +148,8 @@ function ShopMegaMenu() {
  */
 function DesktopHeader() {
   const pathname = usePathname();
+  const totalItems = useCart((s) => s.getTotalItems());
+  const openCart = useCart((s) => s.openCart);
 
   return (
     <div className="hidden md:block border-b border-border/60 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
@@ -176,13 +180,13 @@ function DesktopHeader() {
                 <User className="h-5 w-5" />
               </Link>
             </Button>
-            <Button variant="ghost" size="icon" asChild aria-label="Cart" className="relative">
-              <Link href="/cart">
-                <ShoppingBag className="h-5 w-5" />
+            <Button variant="ghost" size="icon" aria-label="Cart" className="relative" onClick={openCart}>
+              <ShoppingBag className="h-5 w-5" />
+              {totalItems > 0 && (
                 <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-accent text-[10px] font-bold text-accent-foreground">
-                  0
+                  {totalItems > 99 ? "99+" : totalItems}
                 </span>
-              </Link>
+              )}
             </Button>
           </div>
         </div>
@@ -271,6 +275,8 @@ function SearchBar() {
 function MobileHeader() {
   const [open, setOpen] = React.useState(false);
   const pathname = usePathname();
+  const totalItems = useCart((s) => s.getTotalItems());
+  const openCart = useCart((s) => s.openCart);
 
   return (
     <div className="md:hidden border-b border-border/60 bg-background">
@@ -340,13 +346,13 @@ function MobileHeader() {
               <Heart className="h-5 w-5" />
             </Link>
           </Button>
-          <Button variant="ghost" size="icon" asChild aria-label="Cart" className="relative">
-            <Link href="/cart">
-              <ShoppingBag className="h-5 w-5" />
+          <Button variant="ghost" size="icon" aria-label="Cart" className="relative" onClick={openCart}>
+            <ShoppingBag className="h-5 w-5" />
+            {totalItems > 0 && (
               <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-accent text-[10px] font-bold text-accent-foreground">
-                0
+                {totalItems > 99 ? "99+" : totalItems}
               </span>
-            </Link>
+            )}
           </Button>
         </div>
       </div>
@@ -363,6 +369,7 @@ export function SiteHeader() {
       <AnnouncementBar />
       <DesktopHeader />
       <MobileHeader />
+      <CartDrawer />
     </header>
   );
 }
