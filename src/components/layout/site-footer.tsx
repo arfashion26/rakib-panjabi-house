@@ -163,25 +163,12 @@ export function SiteFooter() {
       <TrustBadges />
       <Newsletter />
 
-      {/* Brand section — BLACK background, logo CENTERED */}
+      {/* Brand section — BLACK background, 3-column layout with logo CENTER */}
       <div className="bg-primary text-primary-foreground">
         <div className="mx-auto max-w-7xl px-4 py-10">
-          {/* Logo centered */}
-          <div className="flex justify-center">
-            <Link href="/" aria-label="Al-Rakib Panjabi House - Home">
-              <Logo size="md" variant="light" />
-            </Link>
-          </div>
-
-          {/* Description centered */}
-          <p className="mx-auto mt-4 max-w-md text-center text-sm leading-relaxed text-primary-foreground/70">
-            {siteConfig.description}
-          </p>
-
-          {/* Contact info + Social — centered below */}
-          <div className="mt-8 flex flex-col items-center gap-6 md:flex-row md:justify-center md:gap-12">
-            {/* Contact info */}
-            <div className="text-center md:text-left">
+          <div className="grid grid-cols-1 items-center gap-6 md:grid-cols-3">
+            {/* Left: Contact info */}
+            <div className="order-2 text-center md:order-1 md:text-left">
               <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-accent">
                 Contact Us
               </p>
@@ -201,17 +188,24 @@ export function SiteFooter() {
               </a>
               <p className="mt-1 flex items-start justify-center gap-2 text-sm text-primary-foreground/80 md:justify-start">
                 <MapPin className="mt-0.5 h-4 w-4 shrink-0" />
-                <span className="text-center md:text-left">{siteConfig.address}</span>
+                <span>{siteConfig.address}</span>
               </p>
             </div>
 
-            {/* Social */}
-            {socials.length > 0 && (
-              <div className="text-center">
-                <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-accent">
-                  Follow Us
-                </p>
-                <div className="flex justify-center gap-3">
+            {/* Center: Logo */}
+            <div className="order-1 flex justify-center md:order-2">
+              <Link href="/" aria-label="Al-Rakib Panjabi House - Home">
+                <Logo size="md" variant="light" />
+              </Link>
+            </div>
+
+            {/* Right: Social + Description */}
+            <div className="order-3 text-center md:text-right">
+              <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-accent">
+                Follow Us
+              </p>
+              {socials.length > 0 && (
+                <div className="flex justify-center gap-3 md:justify-end">
                   {socials.map((social) => (
                     <a
                       key={social.label}
@@ -225,8 +219,11 @@ export function SiteFooter() {
                     </a>
                   ))}
                 </div>
-              </div>
-            )}
+              )}
+              <p className="mt-3 text-xs leading-relaxed text-primary-foreground/60">
+                {siteConfig.description}
+              </p>
+            </div>
           </div>
         </div>
       </div>
