@@ -69,8 +69,10 @@ export async function findOrCreateUserByPhone(
     }
 
     // Step 3: Create a new user account
-    // Generate a temporary email if none provided (phone@rakibpanjabihouse.com)
-    const userEmail = email || `${phone.replace(/[^0-9]/g, "")}@guest.rakibpanjabihouse.com`;
+    // Generate a phone-based email that customers can use to login
+    // Format: 8801716243949@alrakib.com — customer types their phone to login
+    const cleanPhone = phone.replace(/[^0-9]/g, "");
+    const userEmail = email || `${cleanPhone}@alrakib.com`;
 
     // Generate a random temporary password (user can reset it later)
     const tempPassword = generateTempPassword();
@@ -223,7 +225,7 @@ export async function placeOrder(data: {
         grand_total: data.total,
         currency: "BDT",
         customer_name: data.name,
-        customer_email: `${data.phone.replace(/[^0-9]/g, "")}@guest.rakibpanjabihouse.com`,
+        customer_email: userResult.userId ? userEmail : `${data.phone.replace(/[^0-9]/g, "")}@alrakib.com`,
         customer_phone: data.phone,
         shipping_address_json: shippingAddressJson,
         payment_method: data.payment,

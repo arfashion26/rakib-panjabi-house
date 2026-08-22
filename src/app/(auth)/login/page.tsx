@@ -16,18 +16,41 @@ function LoginForm() {
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirect") || "/dashboard";
 
-  const [email, setEmail] = React.useState("");
+  const [identifier, setIdentifier] = React.useState(""); // email OR phone
   const [password, setPassword] = React.useState("");
   const [showPassword, setShowPassword] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const [googleLoading, setGoogleLoading] = React.useState(false);
 
+  // Convert phone number to email format for login
+  // If user types "01716-243949" or "+880 1716-243949", convert to "8801716243949@alrakib.com"
+  function phoneToEmail(input: string): string {
+    const trimmed = input.trim();
+    // Check if it looks like a phone number (starts with + or 0, or is all digits/dashes/spaces)
+    if (/^[+0]/.test(trimmed) || /^\d[\d\s-]+$/.test(trimmed)) {
+      const cleanPhone = trimmed.replace(/[^0-9]/g, "");
+      // If starts with 01, convert to 8801...
+      if (cleanPhone.startsWith("01")) {
+        return `88${cleanPhone}@alrakib.com`;
+      }
+      // If starts with 8801..., use as-is
+      if (cleanPhone.startsWith("880")) {
+        return `${cleanPhone}@alrakib.com`;
+      }
+      // Fallback: just clean and add domain
+      return `${cleanPhone}@alrakib.com`;
+    }
+    // Not a phone number — treat as email
+    return trimmed;
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!email || !password) return;
+    if (!identifier || !password) return;
 
     setLoading(true);
     try {
+      const email = phoneToEmail(identifier);
       const result = await signInWithEmail({ email, password });
       if (result.success) {
         const target = result.redirectTo || redirectTo;
