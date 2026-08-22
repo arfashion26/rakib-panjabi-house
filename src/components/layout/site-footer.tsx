@@ -163,44 +163,52 @@ export function SiteFooter() {
       <TrustBadges />
       <Newsletter />
 
-      {/* Main footer */}
-      <div className="border-b border-border/60">
-        <div className="mx-auto max-w-7xl px-4 py-12">
-          <div className="grid grid-cols-2 gap-8 md:grid-cols-3 lg:grid-cols-6">
-            {/* Brand + contact */}
-            <div className="col-span-2 lg:col-span-2">
-              <Link href="/" aria-label="Rakib Panjabi House - Home">
-                <Logo size="md" />
+      {/* Brand section — BLACK background so logo blends in */}
+      <div className="bg-primary text-primary-foreground">
+        <div className="mx-auto max-w-7xl px-4 py-10">
+          <div className="flex flex-col items-center text-center md:flex-row md:items-start md:justify-between md:gap-8">
+            {/* Logo + description */}
+            <div className="flex flex-col items-center md:max-w-xs md:items-start">
+              <Link href="/" aria-label="Al-Rakib Panjabi House - Home">
+                <Logo size="md" variant="light" />
               </Link>
-              <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted-foreground">
+              <p className="mt-4 text-sm leading-relaxed text-primary-foreground/70">
                 {siteConfig.description}
               </p>
+            </div>
 
-              {/* Contact info */}
-              <div className="mt-6 space-y-2">
-                <a
-                  href={`mailto:${siteConfig.email}`}
-                  className="flex items-center gap-2 text-sm text-muted-foreground hover:text-accent"
-                >
-                  <Mail className="h-4 w-4" />
-                  {siteConfig.email}
-                </a>
-                <a
-                  href={`tel:${siteConfig.phone}`}
-                  className="flex items-center gap-2 text-sm text-muted-foreground hover:text-accent"
-                >
-                  <Phone className="h-4 w-4" />
-                  {siteConfig.phone}
-                </a>
-                <p className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <MapPin className="h-4 w-4" />
-                  {siteConfig.address}
+            {/* Contact info */}
+            <div className="mt-6 space-y-2 md:mt-0">
+              <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-accent">
+                Contact Us
+              </p>
+              <a
+                href={`mailto:${siteConfig.email}`}
+                className="flex items-center gap-2 text-sm text-primary-foreground/80 hover:text-accent"
+              >
+                <Mail className="h-4 w-4" />
+                {siteConfig.email}
+              </a>
+              <a
+                href={`tel:${siteConfig.phone}`}
+                className="flex items-center gap-2 text-sm text-primary-foreground/80 hover:text-accent"
+              >
+                <Phone className="h-4 w-4" />
+                {siteConfig.phone}
+              </a>
+              <p className="flex items-start gap-2 text-sm text-primary-foreground/80">
+                <MapPin className="mt-0.5 h-4 w-4 shrink-0" />
+                {siteConfig.address}
+              </p>
+            </div>
+
+            {/* Social */}
+            {socials.length > 0 && (
+              <div className="mt-6 md:mt-0">
+                <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-accent">
+                  Follow Us
                 </p>
-              </div>
-
-              {/* Social */}
-              {socials.length > 0 && (
-                <div className="mt-6 flex gap-3">
+                <div className="flex justify-center gap-3 md:justify-start">
                   {socials.map((social) => (
                     <a
                       key={social.label}
@@ -208,16 +216,22 @@ export function SiteFooter() {
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label={social.label}
-                      className="flex h-9 w-9 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors hover:border-accent hover:bg-accent hover:text-accent-foreground"
+                      className="flex h-9 w-9 items-center justify-center rounded-full border border-primary-foreground/20 text-primary-foreground transition-colors hover:border-accent hover:bg-accent hover:text-accent-foreground"
                     >
                       <social.icon className="h-4 w-4" />
                     </a>
                   ))}
                 </div>
-              )}
-            </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
 
-            {/* Footer link columns */}
+      {/* Link columns */}
+      <div className="border-b border-border/60 bg-muted/20">
+        <div className="mx-auto max-w-7xl px-4 py-10">
+          <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
             <FooterColumn
               title={footerNav.shop.title}
               links={footerNav.shop.links}
@@ -239,7 +253,7 @@ export function SiteFooter() {
       </div>
 
       {/* Bottom bar */}
-      <div className="bg-muted/30">
+      <div className="bg-muted/40">
         <div className="mx-auto max-w-7xl px-4 py-6">
           <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
             <p className="text-xs text-muted-foreground">

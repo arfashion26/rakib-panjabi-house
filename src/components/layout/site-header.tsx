@@ -52,7 +52,7 @@ import {
  */
 function AnnouncementBar() {
   return (
-    <div className="bg-primary text-primary-foreground">
+    <div className="bg-accent text-accent-foreground">
       <div className="mx-auto max-w-7xl px-4">
         <div className="flex h-9 items-center justify-between text-xs">
           <div className="hidden md:flex items-center gap-2">
@@ -76,7 +76,7 @@ function AnnouncementBar() {
                 <DropdownMenuItem>বাংলা</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            <span className="text-primary-foreground/60">|</span>
+            <span className="text-accent-foreground/60">|</span>
             <span>৳ BDT</span>
           </div>
         </div>
@@ -145,6 +145,11 @@ function ShopMegaMenu() {
 
 /**
  * Main desktop header
+ *
+ * Design: Premium 3-row layout
+ * Row 1: Top action bar (search left, account/cart right) — cream background
+ * Row 2: Logo centered on BLACK background (logo blends seamlessly)
+ * Row 3: Navigation menu — black background with gold accents
  */
 function DesktopHeader() {
   const pathname = usePathname();
@@ -152,53 +157,61 @@ function DesktopHeader() {
   const openCart = useCart((s) => s.openCart);
 
   return (
-    <div className="hidden md:block border-b border-border/60 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
-      <div className="mx-auto max-w-7xl px-4">
-        {/* Top row: search | logo | actions */}
-        <div className="grid grid-cols-3 items-center py-5">
-          {/* Left: Search */}
-          <div className="flex items-center justify-start">
-            <SearchBar />
-          </div>
+    <div className="hidden md:block">
+      {/* Top row: search + actions — light background */}
+      <div className="border-b border-border bg-background">
+        <div className="mx-auto max-w-7xl px-4">
+          <div className="flex items-center justify-between py-3">
+            {/* Left: Search */}
+            <div className="flex-1 max-w-xs">
+              <SearchBar />
+            </div>
 
-          {/* Center: Logo */}
-          <div className="flex justify-center">
-            <Link href="/" aria-label="Rakib Panjabi House - Home">
-              <Logo size="md" />
-            </Link>
-          </div>
-
-          {/* Right: Action icons */}
-          <div className="flex items-center justify-end gap-1">
-            <Button variant="ghost" size="icon" asChild aria-label="Wishlist">
-              <Link href="/wishlist">
-                <Heart className="h-5 w-5" />
-              </Link>
-            </Button>
-            <Button variant="ghost" size="icon" asChild aria-label="Account">
-              <Link href="/dashboard">
-                <User className="h-5 w-5" />
-              </Link>
-            </Button>
-            <Button variant="ghost" size="icon" aria-label="Cart" className="relative" onClick={openCart}>
-              <ShoppingBag className="h-5 w-5" />
-              {totalItems > 0 && (
-                <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-accent text-[10px] font-bold text-accent-foreground">
-                  {totalItems > 99 ? "99+" : totalItems}
-                </span>
-              )}
-            </Button>
+            {/* Right: Action icons */}
+            <div className="flex items-center gap-1">
+              <Button variant="ghost" size="icon" asChild aria-label="Wishlist">
+                <Link href="/wishlist">
+                  <Heart className="h-5 w-5" />
+                </Link>
+              </Button>
+              <Button variant="ghost" size="icon" asChild aria-label="Account">
+                <Link href="/dashboard">
+                  <User className="h-5 w-5" />
+                </Link>
+              </Button>
+              <Button variant="ghost" size="icon" aria-label="Cart" className="relative" onClick={openCart}>
+                <ShoppingBag className="h-5 w-5" />
+                {totalItems > 0 && (
+                  <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-accent text-[10px] font-bold text-accent-foreground">
+                    {totalItems > 99 ? "99+" : totalItems}
+                  </span>
+                )}
+              </Button>
+            </div>
           </div>
         </div>
+      </div>
 
-        {/* Bottom row: Navigation */}
-        <nav className="flex items-center justify-center border-t border-border/60 py-3">
-          <NavigationMenu>
-            <NavigationMenuList>
+      {/* Logo row — BLACK background so logo blends in */}
+      <div className="bg-primary py-6">
+        <div className="mx-auto max-w-7xl px-4">
+          <div className="flex items-center justify-center">
+            <Link href="/" aria-label="Al-Rakib Panjabi House - Home" className="group">
+              <Logo size="lg" variant="light" />
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      {/* Navigation row — BLACK background with gold accents */}
+      <nav className="bg-primary border-t border-accent/20">
+        <div className="mx-auto max-w-7xl px-4">
+          <NavigationMenu className=" [&>div]:bg-transparent">
+            <NavigationMenuList className="flex-wrap justify-center py-3">
               {mainNav.map((item) =>
                 item.hasMegaMenu ? (
                   <NavigationMenuItem key={item.href}>
-                    <NavigationMenuTrigger className="bg-transparent font-medium tracking-wide">
+                    <NavigationMenuTrigger className="bg-transparent font-medium tracking-wide text-primary-foreground hover:bg-accent hover:text-accent-foreground data-[state=open]:bg-accent data-[state=open]:text-accent-foreground">
                       {item.title}
                     </NavigationMenuTrigger>
                     <ShopMegaMenu />
@@ -209,7 +222,7 @@ function DesktopHeader() {
                       <NavigationMenuLink
                         className={cn(
                           navigationMenuTriggerStyle(),
-                          "bg-transparent font-medium tracking-wide",
+                          "bg-transparent font-medium tracking-wide text-primary-foreground/90 hover:bg-accent hover:text-accent-foreground",
                           item.highlight && "text-accent font-semibold"
                         )}
                         data-active={pathname === item.href}
@@ -222,8 +235,8 @@ function DesktopHeader() {
               )}
             </NavigationMenuList>
           </NavigationMenu>
-        </nav>
-      </div>
+        </div>
+      </nav>
     </div>
   );
 }
@@ -271,6 +284,11 @@ function SearchBar() {
 
 /**
  * Mobile header
+ *
+ * Design: Black background with centered logo
+ * Top: Announcement bar (gold)
+ * Logo row: Black background with centered logo
+ * Action row: Menu (left), Search/Wishlist/Cart (right) on black bg
  */
 function MobileHeader() {
   const [open, setOpen] = React.useState(false);
@@ -279,16 +297,24 @@ function MobileHeader() {
   const openCart = useCart((s) => s.openCart);
 
   return (
-    <div className="md:hidden border-b border-border/60 bg-background">
-      <div className="flex items-center justify-between px-4 py-3">
+    <div className="md:hidden bg-primary text-primary-foreground">
+      {/* Logo row — centered on black */}
+      <div className="flex items-center justify-center py-4">
+        <Link href="/" aria-label="Home">
+          <Logo size="sm" variant="light" />
+        </Link>
+      </div>
+
+      {/* Action row — black background */}
+      <div className="flex items-center justify-between border-t border-accent/20 px-4 py-2.5">
         {/* Left: menu button */}
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild>
-            <Button variant="ghost" size="icon" aria-label="Open menu">
+            <Button variant="ghost" size="icon" aria-label="Open menu" className="text-primary-foreground hover:bg-accent hover:text-accent-foreground">
               <Menu className="h-5 w-5" />
             </Button>
           </SheetTrigger>
-          <SheetContent side="left" className="w-[300px] sm:w-[350px] overflow-y-auto">
+          <SheetContent side="left" className="w-[300px] sm:w-[350px] overflow-y-auto bg-background">
             <SheetHeader>
               <SheetTitle className="text-left">
                 <Logo size="sm" />
@@ -329,24 +355,22 @@ function MobileHeader() {
           </SheetContent>
         </Sheet>
 
-        {/* Center: Logo */}
-        <Link href="/" aria-label="Home">
-          <Logo size="sm" />
-        </Link>
+        {/* Center: spacer */}
+        <div className="flex-1" />
 
         {/* Right: Action icons */}
         <div className="flex items-center gap-1">
-          <Button variant="ghost" size="icon" asChild aria-label="Search">
+          <Button variant="ghost" size="icon" asChild aria-label="Search" className="text-primary-foreground hover:bg-accent hover:text-accent-foreground">
             <Link href="/shop">
               <Search className="h-5 w-5" />
             </Link>
           </Button>
-          <Button variant="ghost" size="icon" asChild aria-label="Wishlist">
+          <Button variant="ghost" size="icon" asChild aria-label="Wishlist" className="text-primary-foreground hover:bg-accent hover:text-accent-foreground">
             <Link href="/wishlist">
               <Heart className="h-5 w-5" />
             </Link>
           </Button>
-          <Button variant="ghost" size="icon" aria-label="Cart" className="relative" onClick={openCart}>
+          <Button variant="ghost" size="icon" aria-label="Cart" className="relative text-primary-foreground hover:bg-accent hover:text-accent-foreground" onClick={openCart}>
             <ShoppingBag className="h-5 w-5" />
             {totalItems > 0 && (
               <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-accent text-[10px] font-bold text-accent-foreground">
