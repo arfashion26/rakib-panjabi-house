@@ -146,10 +146,13 @@ function ShopMegaMenu() {
 /**
  * Main desktop header
  *
- * Design: Premium 3-row layout
- * Row 1: Top action bar (search left, account/cart right) — cream background
- * Row 2: Logo centered on BLACK background (logo blends seamlessly)
- * Row 3: Navigation menu — black background with gold accents
+ * Design: Clean single-row layout
+ * - Top: Announcement bar (gold)
+ * - Main row: Search (left) | Logo CENTER (black bg, large) | Actions (right)
+ * - Bottom: Navigation (cream bg with gold accents)
+ *
+ * The logo is on black background so it blends seamlessly with the
+ * logo's own black background. Logo is large and prominent.
  */
 function DesktopHeader() {
   const pathname = usePathname();
@@ -158,28 +161,53 @@ function DesktopHeader() {
 
   return (
     <div className="hidden md:block">
-      {/* Top row: search + actions — light background */}
-      <div className="border-b border-border bg-background">
+      {/* Main row: search | logo | actions on BLACK background */}
+      <div className="bg-primary">
         <div className="mx-auto max-w-7xl px-4">
-          <div className="flex items-center justify-between py-3">
-            {/* Left: Search */}
-            <div className="flex-1 max-w-xs">
+          <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-4 py-4">
+            {/* Left: Search (on black bg) */}
+            <div className="flex items-center">
               <SearchBar />
             </div>
 
-            {/* Right: Action icons */}
-            <div className="flex items-center gap-1">
-              <Button variant="ghost" size="icon" asChild aria-label="Wishlist">
+            {/* Center: Logo (large, blends with black bg) */}
+            <div className="flex justify-center">
+              <Link href="/" aria-label="Al-Rakib Panjabi House - Home" className="group">
+                <Logo size="md" variant="light" />
+              </Link>
+            </div>
+
+            {/* Right: Action icons (on black bg) */}
+            <div className="flex items-center justify-end gap-1">
+              <Button
+                variant="ghost"
+                size="icon"
+                asChild
+                aria-label="Wishlist"
+                className="text-primary-foreground hover:bg-accent hover:text-accent-foreground"
+              >
                 <Link href="/wishlist">
                   <Heart className="h-5 w-5" />
                 </Link>
               </Button>
-              <Button variant="ghost" size="icon" asChild aria-label="Account">
+              <Button
+                variant="ghost"
+                size="icon"
+                asChild
+                aria-label="Account"
+                className="text-primary-foreground hover:bg-accent hover:text-accent-foreground"
+              >
                 <Link href="/dashboard">
                   <User className="h-5 w-5" />
                 </Link>
               </Button>
-              <Button variant="ghost" size="icon" aria-label="Cart" className="relative" onClick={openCart}>
+              <Button
+                variant="ghost"
+                size="icon"
+                aria-label="Cart"
+                className="relative text-primary-foreground hover:bg-accent hover:text-accent-foreground"
+                onClick={openCart}
+              >
                 <ShoppingBag className="h-5 w-5" />
                 {totalItems > 0 && (
                   <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-accent text-[10px] font-bold text-accent-foreground">
@@ -192,26 +220,15 @@ function DesktopHeader() {
         </div>
       </div>
 
-      {/* Logo row — BLACK background so logo blends in */}
-      <div className="bg-primary py-6">
+      {/* Navigation row — cream background with gold accents */}
+      <nav className="border-b border-border bg-background">
         <div className="mx-auto max-w-7xl px-4">
-          <div className="flex items-center justify-center">
-            <Link href="/" aria-label="Al-Rakib Panjabi House - Home" className="group">
-              <Logo size="lg" variant="light" />
-            </Link>
-          </div>
-        </div>
-      </div>
-
-      {/* Navigation row — BLACK background with gold accents */}
-      <nav className="bg-primary border-t border-accent/20">
-        <div className="mx-auto max-w-7xl px-4">
-          <NavigationMenu className=" [&>div]:bg-transparent">
+          <NavigationMenu>
             <NavigationMenuList className="flex-wrap justify-center py-3">
               {mainNav.map((item) =>
                 item.hasMegaMenu ? (
                   <NavigationMenuItem key={item.href}>
-                    <NavigationMenuTrigger className="bg-transparent font-medium tracking-wide text-primary-foreground hover:bg-accent hover:text-accent-foreground data-[state=open]:bg-accent data-[state=open]:text-accent-foreground">
+                    <NavigationMenuTrigger className="bg-transparent font-medium tracking-wide hover:bg-accent hover:text-accent-foreground data-[state=open]:bg-accent data-[state=open]:text-accent-foreground">
                       {item.title}
                     </NavigationMenuTrigger>
                     <ShopMegaMenu />
@@ -222,7 +239,7 @@ function DesktopHeader() {
                       <NavigationMenuLink
                         className={cn(
                           navigationMenuTriggerStyle(),
-                          "bg-transparent font-medium tracking-wide text-primary-foreground/90 hover:bg-accent hover:text-accent-foreground",
+                          "bg-transparent font-medium tracking-wide hover:bg-accent hover:text-accent-foreground",
                           item.highlight && "text-accent font-semibold"
                         )}
                         data-active={pathname === item.href}
@@ -243,6 +260,7 @@ function DesktopHeader() {
 
 /**
  * Search bar with autocomplete placeholder
+ * Designed for dark background — uses semi-transparent white bg
  */
 function SearchBar() {
   const [open, setOpen] = React.useState(false);
@@ -259,7 +277,7 @@ function SearchBar() {
         }}
       >
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-primary-foreground/50" />
           <input
             type="search"
             placeholder="Search products..."
@@ -267,7 +285,7 @@ function SearchBar() {
             onChange={(e) => setQuery(e.target.value)}
             onFocus={() => setOpen(true)}
             onBlur={() => setTimeout(() => setOpen(false), 150)}
-            className="h-9 w-full rounded-full border border-border bg-muted/50 pl-9 pr-4 text-sm focus:border-accent focus:bg-background focus:outline-none focus:ring-1 focus:ring-accent/30 transition-colors"
+            className="h-9 w-full rounded-full border border-primary-foreground/20 bg-primary-foreground/5 pl-9 pr-4 text-sm text-primary-foreground placeholder:text-primary-foreground/40 focus:border-accent focus:bg-primary-foreground/10 focus:outline-none focus:ring-1 focus:ring-accent/30 transition-colors"
           />
         </div>
       </form>

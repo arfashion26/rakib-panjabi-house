@@ -163,52 +163,55 @@ export function SiteFooter() {
       <TrustBadges />
       <Newsletter />
 
-      {/* Brand section — BLACK background so logo blends in */}
+      {/* Brand section — BLACK background, logo CENTERED */}
       <div className="bg-primary text-primary-foreground">
         <div className="mx-auto max-w-7xl px-4 py-10">
-          <div className="flex flex-col items-center text-center md:flex-row md:items-start md:justify-between md:gap-8">
-            {/* Logo + description */}
-            <div className="flex flex-col items-center md:max-w-xs md:items-start">
-              <Link href="/" aria-label="Al-Rakib Panjabi House - Home">
-                <Logo size="md" variant="light" />
-              </Link>
-              <p className="mt-4 text-sm leading-relaxed text-primary-foreground/70">
-                {siteConfig.description}
-              </p>
-            </div>
+          {/* Logo centered */}
+          <div className="flex justify-center">
+            <Link href="/" aria-label="Al-Rakib Panjabi House - Home">
+              <Logo size="md" variant="light" />
+            </Link>
+          </div>
 
+          {/* Description centered */}
+          <p className="mx-auto mt-4 max-w-md text-center text-sm leading-relaxed text-primary-foreground/70">
+            {siteConfig.description}
+          </p>
+
+          {/* Contact info + Social — centered below */}
+          <div className="mt-8 flex flex-col items-center gap-6 md:flex-row md:justify-center md:gap-12">
             {/* Contact info */}
-            <div className="mt-6 space-y-2 md:mt-0">
+            <div className="text-center md:text-left">
               <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-accent">
                 Contact Us
               </p>
               <a
                 href={`mailto:${siteConfig.email}`}
-                className="flex items-center gap-2 text-sm text-primary-foreground/80 hover:text-accent"
+                className="flex items-center justify-center gap-2 text-sm text-primary-foreground/80 hover:text-accent md:justify-start"
               >
                 <Mail className="h-4 w-4" />
                 {siteConfig.email}
               </a>
               <a
                 href={`tel:${siteConfig.phone}`}
-                className="flex items-center gap-2 text-sm text-primary-foreground/80 hover:text-accent"
+                className="mt-1 flex items-center justify-center gap-2 text-sm text-primary-foreground/80 hover:text-accent md:justify-start"
               >
                 <Phone className="h-4 w-4" />
                 {siteConfig.phone}
               </a>
-              <p className="flex items-start gap-2 text-sm text-primary-foreground/80">
+              <p className="mt-1 flex items-start justify-center gap-2 text-sm text-primary-foreground/80 md:justify-start">
                 <MapPin className="mt-0.5 h-4 w-4 shrink-0" />
-                {siteConfig.address}
+                <span className="text-center md:text-left">{siteConfig.address}</span>
               </p>
             </div>
 
             {/* Social */}
             {socials.length > 0 && (
-              <div className="mt-6 md:mt-0">
+              <div className="text-center">
                 <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-accent">
                   Follow Us
                 </p>
-                <div className="flex justify-center gap-3 md:justify-start">
+                <div className="flex justify-center gap-3">
                   {socials.map((social) => (
                     <a
                       key={social.label}

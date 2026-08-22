@@ -1,5 +1,4 @@
 import { cn } from "@/lib/utils";
-import { siteConfig } from "@/lib/brand";
 
 interface LogoProps {
   variant?: "default" | "light" | "dark";
@@ -14,8 +13,9 @@ interface LogoProps {
  * Uses the actual logo image (public/logo.jpg) — a royal crest design
  * with gold text on black background: "AL-RAKIB PUNJABI HOUSE"
  *
- * The logo is a circular crest, so we display it as a rounded image.
- * For best results, it should be placed on a dark background (header/footer).
+ * The logo is a circular crest. Since the logo itself has a black background,
+ * we display it WITHOUT any border or ring so it blends seamlessly
+ * with the dark background behind it.
  */
 export function Logo({
   variant = "default",
@@ -24,28 +24,23 @@ export function Logo({
   className,
 }: LogoProps) {
   const sizes = {
-    sm: { container: "h-12 w-12", text: "text-xs" },
-    md: { container: "h-16 w-16 md:h-20 md:w-20", text: "text-sm" },
-    lg: { container: "h-24 w-24 md:h-28 md:w-28", text: "text-base" },
+    sm: { container: "h-12 w-12 sm:h-14 sm:w-14", text: "text-xs" },
+    md: { container: "h-20 w-20 md:h-24 md:w-24", text: "text-sm" },
+    lg: { container: "h-28 w-28 md:h-32 md:w-32", text: "text-base" },
   };
 
   const s = sizes[size];
 
   return (
     <div className={cn("flex items-center gap-3", className)}>
-      {/* Logo image — circular crest */}
-      <div
-        className={cn(
-          "relative shrink-0 overflow-hidden rounded-full ring-2 ring-accent/30",
-          s.container
-        )}
-      >
+      {/* Logo image — circular crest, no border (blends with bg) */}
+      <div className={cn("relative shrink-0 overflow-hidden rounded-full", s.container)}>
         <img
           src="/logo.jpg"
           alt="Al-Rakib Panjabi House Logo"
           className="h-full w-full object-cover"
-          width={80}
-          height={80}
+          width={128}
+          height={128}
         />
       </div>
 
@@ -80,12 +75,7 @@ export function Logo({
  */
 export function LogoMark({ className }: { className?: string }) {
   return (
-    <div
-      className={cn(
-        "relative h-10 w-10 shrink-0 overflow-hidden rounded-full ring-2 ring-accent/30",
-        className
-      )}
-    >
+    <div className={cn("relative h-10 w-10 shrink-0 overflow-hidden rounded-full", className)}>
       <img
         src="/logo.jpg"
         alt="Al-Rakib Panjabi House"
