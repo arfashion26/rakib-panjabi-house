@@ -1,12 +1,13 @@
 "use client";
 
 import * as React from "react";
-import { Save, Loader2, RotateCcw, Eye } from "lucide-react";
+import { Save, Loader2, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
+import { ImageUpload } from "@/components/admin/image-upload";
 import { toast } from "sonner";
 import Link from "next/link";
 
@@ -26,6 +27,8 @@ interface HomepageContent {
     stat2Label: string;
     stat3Value: string;
     stat3Label: string;
+    image: string;
+    badgeText: string;
   };
   premiumCta: {
     eyebrow: string;
@@ -42,6 +45,7 @@ interface HomepageContent {
     description: string;
     description2: string;
     description3: string;
+    image: string;
   };
   reviewsSection: {
     eyebrow: string;
@@ -55,6 +59,14 @@ interface HomepageContent {
   newsletter: {
     title: string;
     description: string;
+  };
+  instagram: {
+    image1: string;
+    image2: string;
+    image3: string;
+    image4: string;
+    image5: string;
+    image6: string;
   };
 }
 
@@ -227,6 +239,17 @@ export default function AdminHomepagePage() {
               {field("Stat 3 Value", content.hero.stat3Value, (v) => updateSection("hero", "stat3Value", v))}
               {field("Stat 3 Label", content.hero.stat3Label, (v) => updateSection("hero", "stat3Label", v))}
             </div>
+            <Separator />
+            <p className="text-sm font-semibold">Images</p>
+            <ImageUpload
+              label="Hero Image (right side)"
+              value={content.hero.image || ""}
+              onChange={(v) => updateSection("hero", "image", v)}
+              folder="hero"
+              aspectRatio="aspect-[4/5]"
+              hint="Recommended: 800×1000px (portrait)"
+            />
+            {field("Badge Text (on hero image)", content.hero.badgeText || "", (v) => updateSection("hero", "badgeText", v), "input", "e.g. Handcrafted")}
           </>
         ))}
 
@@ -253,6 +276,16 @@ export default function AdminHomepagePage() {
             {field("Paragraph 1", content.brandStory.description, (v) => updateSection("brandStory", "description", v), "textarea")}
             {field("Paragraph 2", content.brandStory.description2, (v) => updateSection("brandStory", "description2", v), "textarea")}
             {field("Paragraph 3", content.brandStory.description3, (v) => updateSection("brandStory", "description3", v), "textarea")}
+            <Separator />
+            <p className="text-sm font-semibold">Images</p>
+            <ImageUpload
+              label="Brand Story Image (left side)"
+              value={content.brandStory.image || ""}
+              onChange={(v) => updateSection("brandStory", "image", v)}
+              folder="brand-story"
+              aspectRatio="aspect-square"
+              hint="Recommended: 600×600px (square)"
+            />
           </>
         ))}
 
@@ -262,6 +295,21 @@ export default function AdminHomepagePage() {
             {field("Eyebrow", content.reviewsSection.eyebrow, (v) => updateSection("reviewsSection", "eyebrow", v))}
             {field("Title", content.reviewsSection.title, (v) => updateSection("reviewsSection", "title", v))}
             {field("Subtitle", content.reviewsSection.subtitle, (v) => updateSection("reviewsSection", "subtitle", v), "textarea")}
+          </>
+        ))}
+
+        {/* Instagram Feed Images */}
+        {sectionWrapper("📸 Instagram Feed Images", (
+          <>
+            <p className="text-xs text-muted-foreground">Upload images for the Instagram feed section on homepage. If empty, placeholder gradient will be shown.</p>
+            <div className="grid gap-4 sm:grid-cols-3">
+              <ImageUpload label="Image 1" value={content.instagram?.image1 || ""} onChange={(v) => updateSection("instagram", "image1", v)} folder="instagram" aspectRatio="aspect-square" />
+              <ImageUpload label="Image 2" value={content.instagram?.image2 || ""} onChange={(v) => updateSection("instagram", "image2", v)} folder="instagram" aspectRatio="aspect-square" />
+              <ImageUpload label="Image 3" value={content.instagram?.image3 || ""} onChange={(v) => updateSection("instagram", "image3", v)} folder="instagram" aspectRatio="aspect-square" />
+              <ImageUpload label="Image 4" value={content.instagram?.image4 || ""} onChange={(v) => updateSection("instagram", "image4", v)} folder="instagram" aspectRatio="aspect-square" />
+              <ImageUpload label="Image 5" value={content.instagram?.image5 || ""} onChange={(v) => updateSection("instagram", "image5", v)} folder="instagram" aspectRatio="aspect-square" />
+              <ImageUpload label="Image 6" value={content.instagram?.image6 || ""} onChange={(v) => updateSection("instagram", "image6", v)} folder="instagram" aspectRatio="aspect-square" />
+            </div>
           </>
         ))}
 

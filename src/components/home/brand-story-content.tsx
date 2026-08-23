@@ -8,6 +8,7 @@ interface Content {
   description: string;
   description2: string;
   description3: string;
+  image: string;
 }
 
 export function BrandStoryContent({ content }: { content: Content }) {
@@ -24,12 +25,20 @@ export function BrandStoryContent({ content }: { content: Content }) {
         <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
           <div className="relative">
             <div className="relative aspect-square overflow-hidden rounded-lg bg-gradient-to-br from-accent/20 via-muted to-primary/5">
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-center">
-                  <div className="font-serif text-[200px] font-light leading-none text-accent/15">RPH</div>
-                  <p className="mt-4 text-sm uppercase tracking-[0.3em] text-muted-foreground">Est. 2026</p>
+              {content.image ? (
+                <img
+                  src={content.image}
+                  alt="Brand Story"
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="text-center">
+                    <div className="font-serif text-[200px] font-light leading-none text-accent/15">RPH</div>
+                    <p className="mt-4 text-sm uppercase tracking-[0.3em] text-muted-foreground">Est. 2026</p>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
             <div className="absolute inset-4 rounded-lg border border-accent/20" />
             <div className="absolute inset-8 rounded-lg border border-accent/10" />

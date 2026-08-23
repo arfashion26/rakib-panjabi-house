@@ -18,6 +18,8 @@ const DEFAULT_CONTENT = {
     stat2Label: "Premium Products",
     stat3Value: "4.9",
     stat3Label: "Customer Rating",
+    image: "",
+    badgeText: "Handcrafted",
   },
   premiumCta: {
     eyebrow: "Exclusive Edition",
@@ -34,6 +36,7 @@ const DEFAULT_CONTENT = {
     description: "Rakib Panjabi House was founded with a singular vision — to bring premium quality ethnic and contemporary fashion to the modern Bangladeshi gentleman.",
     description2: "From our humble beginnings in Dhaka, we have grown into a trusted destination for discerning customers who appreciate the finer details. Each piece in our collection is a testament to our commitment to quality, from the carefully sourced fabrics to the final stitches applied by our skilled artisans.",
     description3: "Today, Rakib Panjabi House serves thousands of customers across Bangladesh and beyond. But our mission remains the same: to create clothing that makes you feel confident, comfortable, and connected to your cultural heritage.",
+    image: "",
   },
   reviewsSection: {
     eyebrow: "Loved by Thousands",
@@ -47,6 +50,14 @@ const DEFAULT_CONTENT = {
   newsletter: {
     title: "Join Our Exclusive Circle",
     description: "Subscribe to receive early access to new collections, private sales, and style inspiration straight to your inbox.",
+  },
+  instagram: {
+    image1: "",
+    image2: "",
+    image3: "",
+    image4: "",
+    image5: "",
+    image6: "",
   },
 };
 

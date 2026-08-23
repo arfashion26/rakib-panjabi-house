@@ -18,6 +18,8 @@ interface HeroContent {
   stat2Label: string;
   stat3Value: string;
   stat3Label: string;
+  image: string;
+  badgeText: string;
 }
 
 interface Announcement {
@@ -114,17 +116,27 @@ export function HeroBannerContent({ content, announcement }: { content: HeroCont
             {/* Right: Visual */}
             <div className="relative hidden lg:block">
               <div className="relative aspect-[4/5] overflow-hidden rounded-lg">
-                <div className="absolute inset-0 bg-gradient-to-br from-accent/20 via-accent/5 to-transparent" />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-center">
-                    <div className="font-serif text-9xl font-light text-accent/30">RPH</div>
-                    <p className="mt-4 text-sm uppercase tracking-[0.3em] text-primary-foreground/40">
-                      Premium Fashion
-                    </p>
-                  </div>
-                </div>
-                <div className="absolute inset-4 border border-accent/20 rounded" />
-                <div className="absolute inset-6 border border-accent/10 rounded" />
+                {content.image ? (
+                  <img
+                    src={content.image}
+                    alt="Hero"
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <>
+                    <div className="absolute inset-0 bg-gradient-to-br from-accent/20 via-accent/5 to-transparent" />
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="text-center">
+                        <div className="font-serif text-9xl font-light text-accent/30">RPH</div>
+                        <p className="mt-4 text-sm uppercase tracking-[0.3em] text-primary-foreground/40">
+                          Premium Fashion
+                        </p>
+                      </div>
+                    </div>
+                    <div className="absolute inset-4 border border-accent/20 rounded" />
+                    <div className="absolute inset-6 border border-accent/10 rounded" />
+                  </>
+                )}
               </div>
               <div className="absolute -bottom-6 -left-6 rounded-lg bg-background p-4 shadow-xl">
                 <div className="flex items-center gap-3">
@@ -132,7 +144,7 @@ export function HeroBannerContent({ content, announcement }: { content: HeroCont
                     <Sparkles className="h-5 w-5" />
                   </div>
                   <div>
-                    <div className="text-sm font-semibold text-foreground">Handcrafted</div>
+                    <div className="text-sm font-semibold text-foreground">{content.badgeText || "Handcrafted"}</div>
                     <div className="text-xs text-muted-foreground">Premium quality</div>
                   </div>
                 </div>
