@@ -162,17 +162,19 @@ export default function CheckoutPage() {
         total,
       });
 
-      setProcessing(false);
-
       if (result.success) {
+        // Set orderPlaced FIRST, before clearing cart
+        setOrderPlaced(true);
         clearCart();
         // Store order info for the thank you page
         sessionStorage.setItem("lastOrderNumber", result.orderNumber || "");
         sessionStorage.setItem("lastOrderPhone", form.phone);
         sessionStorage.setItem("lastOrderNewUser", String(result.isNewUser || false));
-        // Redirect to thank you page
-        router.push("/thank-you");
+        // Redirect to thank you page — use replace so back button doesn't return here
+        router.replace("/thank-you");
+        return; // Don't set processing to false — we're redirecting
       } else {
+        setProcessing(false);
         toast.error(result.error || "Failed to place order. Please try again.");
       }
     } catch (error: any) {
