@@ -14,6 +14,7 @@ import {
   User,
   Phone,
   CheckCircle2,
+  Sparkles,
 } from "lucide-react";
 import { useCart } from "@/lib/store";
 import { placeOrder } from "@/lib/services/orders";
@@ -23,17 +24,17 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Container } from "@/components/layout/container";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { formatPrice } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
-// Shipping rates
-const SHIPPING_RATES = {
-  inside_dhaka: 80,
-  outside_dhaka: 130,
-  free_threshold: 2000,
+// No shipping charge — only COD charge based on area
+const COD_CHARGES = {
+  inside_dhaka: 70,
+  outside_dhaka: 120,
 };
-const COD_CHARGE = 50;
+// No free shipping threshold — shipping is always free
 
 // Payment methods (in production, these would come from admin settings)
 // Admin can enable/disable these in /admin/settings → Payment Methods
@@ -87,6 +88,12 @@ export default function CheckoutPage() {
   const router = useRouter();
   const { items, getSubtotal, clearCart } = useCart();
   const [processing, setProcessing] = React.useState(false);
+  const [showConfirmation, setShowConfirmation] = React.useState(false);
+  const [confirmationData, setConfirmationData] = React.useState({
+    orderNumber: "",
+    phone: "",
+    isNewUser: false,
+  });
 
   // Form state — simplified: name, address, phone, area, payment
   const [form, setForm] = React.useState({
@@ -99,9 +106,8 @@ export default function CheckoutPage() {
   });
 
   const subtotal = getSubtotal();
-  const isFreeShipping = subtotal >= SHIPPING_RATES.free_threshold;
-  const shippingCost = isFreeShipping ? 0 : SHIPPING_RATES[form.area];
-  const codCharge = form.payment === "cod" ? COD_CHARGE : 0;
+  const shippingCost = 0; // No shipping charge — always free
+  const codCharge = form.payment === "cod" ? COD_CHARGES[form.area] : 0;
   const total = subtotal + shippingCost + codCharge;
 
   // Available payment methods (filtered by admin-enabled)
@@ -167,15 +173,14 @@ export default function CheckoutPage() {
 
       if (result.success) {
         clearCart();
-        toast.success(`✓ Order Confirmed! Order #${result.orderNumber}`, {
-          duration: 5000,
-          description: "Your order has been placed successfully. We'll contact you soon!",
+        // Show confirmation popup (no redirect — stay on page)
+        setConfirmationData({
+          orderNumber: result.orderNumber || "",
+          phone: form.phone,
+          isNewUser: result.isNewUser || false,
         });
-        // Store order info for the success page
-        sessionStorage.setItem("lastOrderNumber", result.orderNumber || "");
-        sessionStorage.setItem("lastOrderPhone", form.phone);
-        sessionStorage.setItem("lastOrderNewUser", String(result.isNewUser || false));
-        router.push("/order-success");
+        setShowConfirmation(true);
+        setProcessing(false);
       } else {
         toast.error(result.error || "Failed to place order. Please try again.");
       }
@@ -281,7 +286,7 @@ export default function CheckoutPage() {
                     <div>
                       <div className="text-sm font-medium">Inside Dhaka</div>
                       <div className="text-xs text-muted-foreground">
-                        {isFreeShipping ? "FREE shipping" : `৳${SHIPPING_RATES.inside_dhaka} shipping`}
+                        COD charge: ৳{COD_CHARGES.inside_dhaka}
                       </div>
                     </div>
                   </label>
@@ -297,16 +302,11 @@ export default function CheckoutPage() {
                     <div>
                       <div className="text-sm font-medium">Outside Dhaka</div>
                       <div className="text-xs text-muted-foreground">
-                        {isFreeShipping ? "FREE shipping" : `৳${SHIPPING_RATES.outside_dhaka} shipping`}
+                        COD charge: ৳{COD_CHARGES.outside_dhaka}
                       </div>
                     </div>
                   </label>
                 </RadioGroup>
-                {isFreeShipping && (
-                  <p className="text-xs text-accent">
-                    ✓ You qualify for FREE shipping (order over ৳{SHIPPING_RATES.free_threshold.toLocaleString()})
-                  </p>
-                )}
               </div>
 
               {/* Optional note */}
@@ -359,7 +359,7 @@ export default function CheckoutPage() {
                     <div className="text-xs text-muted-foreground">{method.desc}</div>
                     {method.id === "cod" && (
                       <div className="mt-1 text-xs text-orange-600">
-                        + ৳{COD_CHARGE} COD charge applies
+                        + ৳{COD_CHARGES[form.area]} COD charge
                       </div>
                     )}
                   </div>
@@ -458,18 +458,14 @@ export default function CheckoutPage() {
                 <span className="font-medium">{formatPrice(subtotal)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">
-                  Shipping ({form.area === "inside_dhaka" ? "Inside Dhaka" : "Outside Dhaka"})
-                </span>
-                {shippingCost === 0 ? (
-                  <span className="font-medium text-accent">FREE</span>
-                ) : (
-                  <span className="font-medium">{formatPrice(shippingCost)}</span>
-                )}
+                <span className="text-muted-foreground">Shipping</span>
+                <span className="font-medium text-accent">FREE</span>
               </div>
               {codCharge > 0 && (
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">COD Charge</span>
+                  <span className="text-muted-foreground">
+                    COD Charge ({form.area === "inside_dhaka" ? "Inside Dhaka" : "Outside Dhaka"})
+                  </span>
                   <span className="font-medium">{formatPrice(codCharge)}</span>
                 </div>
               )}
@@ -528,6 +524,99 @@ export default function CheckoutPage() {
           </Button>
         </aside>
       </div>
+
+      {/* Order Confirmation Popup */}
+      <Dialog open={showConfirmation} onOpenChange={setShowConfirmation}>
+        <DialogContent className="max-w-md overflow-hidden p-0" >
+          {/* Gradient header */}
+          <div className="relative bg-gradient-to-br from-accent/20 via-accent/5 to-transparent px-6 py-8 text-center">
+            <Sparkles className="absolute left-1/4 top-3 h-4 w-4 text-accent/40" />
+            <Sparkles className="absolute right-1/4 top-5 h-3 w-3 text-accent/30" />
+            <div className="mx-auto mb-3 flex h-20 w-20 items-center justify-center rounded-full bg-accent/10">
+              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-accent">
+                <CheckCircle2 className="h-9 w-9 text-accent-foreground" />
+              </div>
+            </div>
+            <h2 className="font-serif text-2xl font-bold tracking-tight">
+              Order Confirmed!
+            </h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Thank you! Your order has been placed successfully.
+            </p>
+          </div>
+
+          {/* Order details */}
+          <div className="px-6 py-4">
+            {confirmationData.orderNumber && (
+              <div className="mb-4 rounded-xl border border-accent/30 bg-accent/5 px-4 py-3 text-center">
+                <p className="text-xs uppercase tracking-wider text-muted-foreground">
+                  Order Number
+                </p>
+                <p className="mt-1 font-serif text-xl font-bold text-accent">
+                  {confirmationData.orderNumber}
+                </p>
+              </div>
+            )}
+
+            {/* New user notice */}
+            {confirmationData.isNewUser && (
+              <div className="mb-4 rounded-lg border border-accent/20 bg-accent/5 p-3">
+                <div className="flex items-center gap-2">
+                  <User className="h-4 w-4 text-accent" />
+                  <p className="text-sm font-medium text-accent">Account Created!</p>
+                </div>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  We&apos;ve created an account for you. Login with your phone number to track your order.
+                </p>
+                <div className="mt-2 flex items-center gap-2 rounded bg-background px-3 py-1.5">
+                  <Phone className="h-4 w-4 text-accent" />
+                  <span className="text-sm font-medium">{confirmationData.phone}</span>
+                </div>
+              </div>
+            )}
+
+            {/* Next steps */}
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 text-sm">
+                <CheckCircle2 className="h-4 w-4 text-green-500" />
+                <span>We&apos;ll call you to confirm the order</span>
+              </div>
+              <div className="flex items-center gap-2 text-sm">
+                <Truck className="h-4 w-4 text-accent" />
+                <span>Delivery in 3-5 business days</span>
+              </div>
+              <div className="flex items-center gap-2 text-sm">
+                <Phone className="h-4 w-4 text-accent" />
+                <span>Pay cash when you receive your order</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Actions */}
+          <div className="flex gap-2 border-t border-border px-6 py-4">
+            <Button
+              variant="outline"
+              className="flex-1"
+              onClick={() => {
+                setShowConfirmation(false);
+                router.push("/shop");
+              }}
+            >
+              Continue Shopping
+            </Button>
+            <Button
+              className="flex-1"
+              onClick={() => {
+                setShowConfirmation(false);
+                router.push("/login");
+              }}
+            >
+              Track My Order
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </Container>
   );
 }
