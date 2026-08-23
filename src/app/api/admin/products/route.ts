@@ -388,6 +388,25 @@ export async function PUT(request: NextRequest) {
       }
     }
 
+    // Update images (replace all) — THIS WAS MISSING!
+    if (body.images !== undefined) {
+      await admin.from("product_images").delete().eq("product_id", productId);
+      if (body.images.length > 0) {
+        const imagesToInsert = body.images
+          .filter((img: any) => img.url) // Only insert images with a URL
+          .map((img: any, idx: number) => ({
+            product_id: productId,
+            url: img.url,
+            alt_text: img.altText || body.name || "Product image",
+            is_primary: img.isPrimary || idx === 0,
+            position: idx,
+          }));
+        if (imagesToInsert.length > 0) {
+          await admin.from("product_images").insert(imagesToInsert);
+        }
+      }
+    }
+
     return NextResponse.json({ success: true });
   } catch (error: any) {
     console.error("Update product error:", error);
