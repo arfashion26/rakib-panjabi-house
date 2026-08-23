@@ -25,7 +25,7 @@ export default async function Home() {
       <PremiumCTAContent content={content.premiumCta} />
       <BrandStoryContent content={content.brandStory} />
       <CustomerReviewsContent content={content.reviewsSection} />
-      <InstagramFeed />
+      <InstagramFeed content={content.instagram} />
       <BlogPosts />
     </>
   );
