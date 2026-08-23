@@ -2,12 +2,13 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Plus, Search, Edit, Trash2, Eye, Package, X, Loader2, AlertCircle } from "lucide-react";
+import { Plus, Search, Edit, Trash2, Eye, Package, X, Loader2, AlertCircle, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import { ImageUpload } from "@/components/admin/image-upload";
 import {
   Select,
   SelectContent,
@@ -745,6 +746,63 @@ function ProductFormDialog({
                   />
                   {color.name}
                 </Button>
+              ))}
+            </div>
+          </div>
+
+          <Separator />
+
+          {/* Product Images */}
+          <div className="space-y-3">
+            <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+              Product Images
+            </h3>
+            <p className="text-xs text-muted-foreground">
+              Upload a main product image and additional gallery images. The first image will be used as the main product image.
+            </p>
+
+            {/* Image gallery management */}
+            <div className="space-y-3">
+              {/* Main/Featured image */}
+              <ImageUpload
+                label="Main Product Image"
+                value={form.images?.[0]?.url || ""}
+                onChange={(url) => {
+                  const newImages = [...(form.images || [])];
+                  if (url) {
+                    if (newImages.length > 0) {
+                      newImages[0] = { url, is_primary: true };
+                    } else {
+                      newImages.push({ url, is_primary: true });
+                    }
+                  } else {
+                    newImages.shift();
+                  }
+                  setForm({ ...form, images: newImages });
+                }}
+                folder={`products/${form.sku || "general"}`}
+                aspectRatio="aspect-[3/4]"
+                hint="Recommended: 600×800px (portrait)"
+              />
+
+              {/* Additional gallery images */}
+              {[1, 2, 3].map((idx) => (
+                <ImageUpload
+                  key={idx}
+                  label={`Gallery Image ${idx}`}
+                  value={form.images?.[idx]?.url || ""}
+                  onChange={(url) => {
+                    const newImages = [...(form.images || [])];
+                    if (url) {
+                      newImages[idx] = { url, is_primary: false };
+                    } else {
+                      newImages.splice(idx, 1);
+                    }
+                    setForm({ ...form, images: newImages });
+                  }}
+                  folder={`products/${form.sku || "general"}`}
+                  aspectRatio="aspect-[3/4]"
+                />
               ))}
             </div>
           </div>

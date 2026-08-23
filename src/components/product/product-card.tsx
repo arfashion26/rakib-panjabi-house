@@ -70,10 +70,14 @@ export function ProductCard({
     toast.success(hasInWishlist ? "Removed from wishlist" : "Added to wishlist");
   };
 
-  const bgGradient =
-    images && images.length > 0
+  const hasImageUrl =
+    images && images.length > 0 && images[0].startsWith("http");
+
+  const bgGradient = !hasImageUrl
+    ? images && images.length > 0
       ? `linear-gradient(135deg, ${images[0]}30, ${images[images.length - 1]}90)`
-      : "linear-gradient(135deg, #f5f5f0, #e5e5e0)";
+      : "linear-gradient(135deg, #f5f5f0, #e5e5e0)"
+    : "";
 
   return (
     <div
@@ -88,13 +92,23 @@ export function ProductCard({
         className="relative block aspect-[3/4] overflow-hidden rounded-lg bg-muted"
         aria-label={product.name}
       >
-        <div
-          className="absolute inset-0 transition-transform duration-700 ease-out group-hover:scale-105"
-          style={{ background: bgGradient }}
-        />
-        <div className="absolute inset-0 flex items-center justify-center">
-          <span className="font-serif text-5xl font-light text-white/30">RPH</span>
-        </div>
+        {hasImageUrl ? (
+          <img
+            src={images[0]}
+            alt={product.name}
+            className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+          />
+        ) : (
+          <>
+            <div
+              className="absolute inset-0 transition-transform duration-700 ease-out group-hover:scale-105"
+              style={{ background: bgGradient }}
+            />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <span className="font-serif text-5xl font-light text-white/30">RPH</span>
+            </div>
+          </>
+        )}
 
         {/* Badges */}
         <div className="absolute left-3 top-3 flex flex-col gap-2">

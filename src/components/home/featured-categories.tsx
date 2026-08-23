@@ -1,18 +1,26 @@
-"use client";
-
-import * as React from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Container, SectionHeading, ButtonLink } from "@/components/layout/container";
-import { categories } from "@/lib/brand";
+import { getCategories } from "@/lib/services/products";
 
-/**
- * Featured Categories Section
- *
- * Displays a grid of featured category cards with elegant hover effects
- */
-export function FeaturedCategories() {
-  const featured = categories.filter((c) => c.featured).slice(0, 4);
+const FALLBACK_GRADIENTS = [
+  "linear-gradient(135deg, #1a1a1f, #36454f)",
+  "linear-gradient(135deg, #b8860b, #8b6f47)",
+  "linear-gradient(135deg, #0f5132, #556b2f)",
+  "linear-gradient(135deg, #800020, #1a1a1f)",
+];
+
+export async function FeaturedCategories() {
+  let featured: { id: string; name: string; slug: string; description: string | null; image: string | null }[] = [];
+
+  try {
+    const cats = await getCategories();
+    featured = cats.filter((c) => c.is_featured).slice(0, 4);
+  } catch {
+    // Fallback to empty if DB not available
+  }
+
+  if (featured.length === 0) return null;
 
   return (
     <section className="py-12 md:py-16 lg:py-20">
@@ -34,24 +42,22 @@ export function FeaturedCategories() {
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
           {featured.map((cat, idx) => (
             <Link
-              key={cat.slug}
-              href={cat.href}
+              key={cat.id}
+              href={`/shop/${cat.slug}`}
               className="group relative aspect-[3/4] overflow-hidden rounded-lg bg-muted"
             >
-              {/* Background gradient placeholder (image will be added later) */}
-              <div
-                className="absolute inset-0 transition-transform duration-700 ease-out group-hover:scale-105"
-                style={{
-                  background:
-                    idx === 0
-                      ? "linear-gradient(135deg, oklch(0.30 0.02 264), oklch(0.18 0.01 264))"
-                      : idx === 1
-                      ? "linear-gradient(135deg, oklch(0.72 0.13 75), oklch(0.50 0.10 60))"
-                      : idx === 2
-                      ? "linear-gradient(135deg, oklch(0.85 0.02 80), oklch(0.65 0.05 80))"
-                      : "linear-gradient(135deg, oklch(0.40 0.03 145), oklch(0.25 0.02 145))",
-                }}
-              />
+              {cat.image ? (
+                <img
+                  src={cat.image}
+                  alt={cat.name}
+                  className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                />
+              ) : (
+                <div
+                  className="absolute inset-0 transition-transform duration-700 ease-out group-hover:scale-105"
+                  style={{ background: FALLBACK_GRADIENTS[idx % FALLBACK_GRADIENTS.length] }}
+                />
+              )}
 
               {/* Dark overlay for text contrast */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />

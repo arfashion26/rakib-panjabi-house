@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
+import { ImageUpload } from "@/components/admin/image-upload";
 import {
   Dialog,
   DialogContent,
@@ -264,6 +265,15 @@ export default function AdminCategoriesPage() {
                   onChange={(e) => setEditing({ ...editing, description: e.target.value })}
                 />
               </div>
+              {/* Category Image Upload */}
+              <ImageUpload
+                label="Category Image"
+                value={editing.image || ""}
+                onChange={(url) => setEditing({ ...editing, image: url })}
+                folder={`categories/${editing.slug || "general"}`}
+                aspectRatio="aspect-[3/4]"
+                hint="Recommended: 450×600px (portrait). Shown on homepage featured categories."
+              />
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-2">
                   <Label htmlFor="cat-order">Display Order</Label>
