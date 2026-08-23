@@ -30,6 +30,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     pathname === "/register" ||
     pathname.startsWith("/register") ||
     pathname === "/forgot-password" ||
+    pathname === "/thank-you" ||
     pathname.startsWith("/api");
 
   if (isStandaloneRoute) {

@@ -14,7 +14,6 @@ import {
   User,
   Phone,
   CheckCircle2,
-  Sparkles,
 } from "lucide-react";
 import { useCart } from "@/lib/store";
 import { placeOrder } from "@/lib/services/orders";
@@ -24,7 +23,6 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Container } from "@/components/layout/container";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { formatPrice } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -88,12 +86,7 @@ export default function CheckoutPage() {
   const router = useRouter();
   const { items, getSubtotal, clearCart } = useCart();
   const [processing, setProcessing] = React.useState(false);
-  const [showConfirmation, setShowConfirmation] = React.useState(false);
-  const [confirmationData, setConfirmationData] = React.useState({
-    orderNumber: "",
-    phone: "",
-    isNewUser: false,
-  });
+  const [orderPlaced, setOrderPlaced] = React.useState(false);
 
   // Form state — simplified: name, address, phone, area, payment
   const [form, setForm] = React.useState({
@@ -113,12 +106,12 @@ export default function CheckoutPage() {
   // Available payment methods (filtered by admin-enabled)
   const availablePayments = PAYMENT_METHODS.filter((p) => p.enabled);
 
-  // Redirect to cart if empty
+  // Redirect to cart if empty AND no order was placed
   React.useEffect(() => {
-    if (items.length === 0) {
+    if (items.length === 0 && !orderPlaced) {
       router.push("/cart");
     }
-  }, [items.length, router]);
+  }, [items.length, orderPlaced, router]);
 
   function updateField<K extends keyof typeof form>(key: K, value: (typeof form)[K]) {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -173,14 +166,12 @@ export default function CheckoutPage() {
 
       if (result.success) {
         clearCart();
-        // Show confirmation popup (no redirect — stay on page)
-        setConfirmationData({
-          orderNumber: result.orderNumber || "",
-          phone: form.phone,
-          isNewUser: result.isNewUser || false,
-        });
-        setShowConfirmation(true);
-        setProcessing(false);
+        // Store order info for the thank you page
+        sessionStorage.setItem("lastOrderNumber", result.orderNumber || "");
+        sessionStorage.setItem("lastOrderPhone", form.phone);
+        sessionStorage.setItem("lastOrderNewUser", String(result.isNewUser || false));
+        // Redirect to thank you page
+        router.push("/thank-you");
       } else {
         toast.error(result.error || "Failed to place order. Please try again.");
       }
@@ -190,7 +181,7 @@ export default function CheckoutPage() {
     }
   }
 
-  if (items.length === 0) {
+  if (items.length === 0 && !orderPlaced) {
     return null;
   }
 
@@ -524,99 +515,6 @@ export default function CheckoutPage() {
           </Button>
         </aside>
       </div>
-
-      {/* Order Confirmation Popup */}
-      <Dialog open={showConfirmation} onOpenChange={setShowConfirmation}>
-        <DialogContent className="max-w-md overflow-hidden p-0" >
-          {/* Gradient header */}
-          <div className="relative bg-gradient-to-br from-accent/20 via-accent/5 to-transparent px-6 py-8 text-center">
-            <Sparkles className="absolute left-1/4 top-3 h-4 w-4 text-accent/40" />
-            <Sparkles className="absolute right-1/4 top-5 h-3 w-3 text-accent/30" />
-            <div className="mx-auto mb-3 flex h-20 w-20 items-center justify-center rounded-full bg-accent/10">
-              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-accent">
-                <CheckCircle2 className="h-9 w-9 text-accent-foreground" />
-              </div>
-            </div>
-            <h2 className="font-serif text-2xl font-bold tracking-tight">
-              Order Confirmed!
-            </h2>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Thank you! Your order has been placed successfully.
-            </p>
-          </div>
-
-          {/* Order details */}
-          <div className="px-6 py-4">
-            {confirmationData.orderNumber && (
-              <div className="mb-4 rounded-xl border border-accent/30 bg-accent/5 px-4 py-3 text-center">
-                <p className="text-xs uppercase tracking-wider text-muted-foreground">
-                  Order Number
-                </p>
-                <p className="mt-1 font-serif text-xl font-bold text-accent">
-                  {confirmationData.orderNumber}
-                </p>
-              </div>
-            )}
-
-            {/* New user notice */}
-            {confirmationData.isNewUser && (
-              <div className="mb-4 rounded-lg border border-accent/20 bg-accent/5 p-3">
-                <div className="flex items-center gap-2">
-                  <User className="h-4 w-4 text-accent" />
-                  <p className="text-sm font-medium text-accent">Account Created!</p>
-                </div>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  We&apos;ve created an account for you. Login with your phone number to track your order.
-                </p>
-                <div className="mt-2 flex items-center gap-2 rounded bg-background px-3 py-1.5">
-                  <Phone className="h-4 w-4 text-accent" />
-                  <span className="text-sm font-medium">{confirmationData.phone}</span>
-                </div>
-              </div>
-            )}
-
-            {/* Next steps */}
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-sm">
-                <CheckCircle2 className="h-4 w-4 text-green-500" />
-                <span>We&apos;ll call you to confirm the order</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm">
-                <Truck className="h-4 w-4 text-accent" />
-                <span>Delivery in 3-5 business days</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm">
-                <Phone className="h-4 w-4 text-accent" />
-                <span>Pay cash when you receive your order</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Actions */}
-          <div className="flex gap-2 border-t border-border px-6 py-4">
-            <Button
-              variant="outline"
-              className="flex-1"
-              onClick={() => {
-                setShowConfirmation(false);
-                router.push("/shop");
-              }}
-            >
-              Continue Shopping
-            </Button>
-            <Button
-              className="flex-1"
-              onClick={() => {
-                setShowConfirmation(false);
-                router.push("/login");
-              }}
-            >
-              Track My Order
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
     </Container>
   );
 }
