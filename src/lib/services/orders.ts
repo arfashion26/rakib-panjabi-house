@@ -39,53 +39,45 @@ export async function findOrCreateUserByPhone(
   try {
     const admin = createAdminClient();
 
-    // Step 1: Check if a user with this phone already exists in profiles
+    // Normalize phone: 01716... → 8801716...
+    const cleanPhone = phone.replace(/[^0-9]/g, "");
+    let normalizedPhone = cleanPhone;
+    if (cleanPhone.startsWith("01")) {
+      normalizedPhone = "88" + cleanPhone;
+    }
+
+    // Step 1: Check if user exists by phone in profiles table
     const { data: existingProfile } = await admin
       .from("profiles")
-      .select("id, email")
-      .eq("phone", phone)
+      .select("id, email, phone")
+      .or(`phone.eq.${phone},phone.eq.+${normalizedPhone},phone.eq.${cleanPhone}`)
       .maybeSingle();
 
     if (existingProfile) {
       return { userId: existingProfile.id, isNewUser: false };
     }
 
-    // Step 2: Check by email if provided
-    if (email) {
-      const { data: existingByEmail } = await admin
-        .from("profiles")
-        .select("id, phone")
-        .eq("email", email)
-        .maybeSingle();
-
-      if (existingByEmail) {
-        // Update their phone number
-        await admin
-          .from("profiles")
-          .update({ phone })
-          .eq("id", existingByEmail.id);
-        return { userId: existingByEmail.id, isNewUser: false };
-      }
-    }
-
-    // Step 3: Create a new user account
-    // Email format: 8801716243949@alrakib.com
-    // Password: phone number + "Rph" suffix (meets password requirements, easy to remember)
-    const cleanPhone = phone.replace(/[^0-9]/g, "");
-    // Ensure phone starts with 880 for consistent format
-    let normalizedPhone = cleanPhone;
-    if (cleanPhone.startsWith("01")) {
-      normalizedPhone = "88" + cleanPhone; // 01716... → 8801716...
-    }
+    // Step 2: Check by email
     const userEmail = email || `${normalizedPhone}@alrakib.com`;
-    const userPassword = `Rph${normalizedPhone}!`; // Phone + prefix for security
+    const { data: existingByEmail } = await admin
+      .from("profiles")
+      .select("id, phone")
+      .eq("email", userEmail)
+      .maybeSingle();
 
-    // Create auth user via Admin API
+    if (existingByEmail) {
+      // Update phone if missing
+      await admin.from("profiles").update({ phone, name }).eq("id", existingByEmail.id);
+      return { userId: existingByEmail.id, isNewUser: false };
+    }
+
+    // Step 3: Create new user
+    const userPassword = `Rph${normalizedPhone}!`;
+
     const { data: newUser, error: createError } = await admin.auth.admin.createUser({
       email: userEmail,
       password: userPassword,
       email_confirm: true,
-      // Don't set phone_confirm — requires SMS provider
       user_metadata: {
         full_name: name,
         name: name,
@@ -95,36 +87,46 @@ export async function findOrCreateUserByPhone(
     });
 
     if (createError || !newUser.user) {
-      console.error("Failed to create user:", createError?.message);
-      // User might already exist — try to find by email
-      const { data: existingByAuthEmail } = await admin.auth.admin.listUsers();
-      const found = existingByAuthEmail?.users?.find(
+      console.error("createUser error:", createError?.message);
+
+      // If user already exists in auth.users but not in profiles,
+      // try to find them and create the profile
+      const { data: allUsers } = await admin.auth.admin.listUsers();
+      const found = allUsers?.users?.find(
         (u) => u.email?.toLowerCase() === userEmail.toLowerCase()
       );
+
       if (found) {
-        // Update their profile with phone
-        await admin.from("profiles").update({ phone, name }).eq("id", found.id);
+        // Create/update profile
+        await admin.from("profiles").upsert({
+          id: found.id,
+          email: userEmail,
+          name,
+          phone,
+          role: "CUSTOMER",
+          status: "ACTIVE",
+        }, { onConflict: "id" });
         return { userId: found.id, isNewUser: false };
       }
-      // If we still can't find/create user, don't fail the order
-      // Create order with null user_id (need to make column nullable)
+
+      // Last resort: return null, order will use guest user
       return { userId: null, isNewUser: false };
     }
 
-    // Update the profile with phone (the trigger creates the profile,
-    // but we need to ensure phone is set)
-    await admin
-      .from("profiles")
-      .update({
-        phone: phone,
-        name: name,
-      })
-      .eq("id", newUser.user.id);
+    // Step 4: Update profile with phone and name
+    await admin.from("profiles").upsert({
+      id: newUser.user.id,
+      email: userEmail,
+      name,
+      phone,
+      role: "CUSTOMER",
+      status: "ACTIVE",
+    }, { onConflict: "id" });
 
     return {
       userId: newUser.user.id,
       isNewUser: true,
-      tempPassword: normalizedPhone, // Return the phone number as the "password"
+      tempPassword: normalizedPhone,
     };
   } catch (error) {
     console.error("Error in findOrCreateUserByPhone:", error);
@@ -209,10 +211,19 @@ export async function placeOrder(data: {
     // Step 1: Find or create user
     const userResult = await findOrCreateUserByPhone(data.name, data.phone);
 
+    console.log("Order: user creation result:", {
+      userId: userResult.userId,
+      isNewUser: userResult.isNewUser,
+      phone: data.phone,
+    });
+
     // If user creation failed, use the guest user ID as fallback
-    // This ensures orders are always created even if auth fails
     const GUEST_USER_ID = "ae195301-694b-4893-a5f5-dae705ac1508";
     const userId = userResult.userId || GUEST_USER_ID;
+
+    // Determine if this is a "new user" for the success page
+    // Even if using guest fallback, if user was newly created, flag it
+    const isNewUser = userResult.isNewUser;
 
     // Step 2: Create the order
     const admin = createAdminClient();
@@ -313,7 +324,7 @@ export async function placeOrder(data: {
     return {
       success: true,
       orderNumber: order.order_number,
-      isNewUser: userResult.isNewUser,
+      isNewUser,
       tempPassword: userResult.tempPassword,
     };
   } catch (error: any) {
