@@ -27,12 +27,11 @@ import { formatPrice } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
-// No shipping charge — only COD charge based on area
+// COD charge based on delivery area
 const COD_CHARGES = {
   inside_dhaka: 70,
   outside_dhaka: 120,
 };
-// No free shipping threshold — shipping is always free
 
 // Payment methods (in production, these would come from admin settings)
 // Admin can enable/disable these in /admin/settings → Payment Methods
@@ -99,9 +98,8 @@ export default function CheckoutPage() {
   });
 
   const subtotal = getSubtotal();
-  const shippingCost = 0; // No shipping charge — always free
   const codCharge = form.payment === "cod" ? COD_CHARGES[form.area] : 0;
-  const total = subtotal + shippingCost + codCharge;
+  const total = subtotal + codCharge;
 
   // Available payment methods (filtered by admin-enabled)
   const availablePayments = PAYMENT_METHODS.filter((p) => p.enabled);
@@ -157,7 +155,7 @@ export default function CheckoutPage() {
           selectedColor: item.selectedColor,
         })),
         subtotal,
-        shippingCost,
+        shippingCost: 0,
         codCharge,
         total,
       });
@@ -449,10 +447,6 @@ export default function CheckoutPage() {
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Subtotal</span>
                 <span className="font-medium">{formatPrice(subtotal)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Shipping</span>
-                <span className="font-medium text-accent">FREE</span>
               </div>
               {codCharge > 0 && (
                 <div className="flex justify-between">
