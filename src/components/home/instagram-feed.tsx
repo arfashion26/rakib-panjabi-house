@@ -24,7 +24,7 @@ const GRADIENTS = [
 ];
 
 export function InstagramFeed({ content }: { content?: InstagramContent }) {
-  const { t, locale } = useLanguage();
+  const { t } = useLanguage();
   const images = content
     ? [content.image1, content.image2, content.image3, content.image4, content.image5, content.image6]
     : ["", "", "", "", "", ""];
@@ -52,7 +52,7 @@ export function InstagramFeed({ content }: { content?: InstagramContent }) {
               {img ? (
                 <img
                   src={img}
-                  alt={`Instagram post ${idx + 1}`}
+                  alt={`${t("instagram.title")} ${idx + 1}`}
                   className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
                 />
               ) : (
@@ -77,7 +77,7 @@ export function InstagramFeed({ content }: { content?: InstagramContent }) {
             className="inline-flex items-center gap-2 text-sm font-medium text-accent hover:underline"
           >
             <Instagram className="h-4 w-4" />
-            Follow us on Instagram
+            {t("instagram.followUs")}
           </a>
         </div>
       </Container>

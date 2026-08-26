@@ -1,11 +1,11 @@
-import { Container } from "@/components/layout/container";
+"use client";
 
-export const metadata = {
-  title: "Size Guide",
-  description: "Find your perfect fit with our comprehensive size guide for panjabis, shirts, pants, and more.",
-};
+import { Container } from "@/components/layout/container";
+import { useLanguage } from "@/i18n/language-context";
 
 export default function SizeGuidePage() {
+  const { t } = useLanguage();
+
   const sizeCharts = [
     {
       category: "Panjabi / Kurta",
@@ -59,14 +59,13 @@ export default function SizeGuidePage() {
     <Container className="py-12 md:py-16">
       <div className="mx-auto max-w-4xl">
         <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-accent">
-          Find Your Perfect Fit
+          {t("policies.sizeGuideTitle")}
         </p>
         <h1 className="font-serif text-4xl font-medium tracking-tight md:text-5xl">
-          Size Guide
+          {t("policies.sizeGuideTitle")}
         </h1>
         <p className="mt-4 text-base text-muted-foreground">
-          Use this guide to find your perfect fit. All measurements are in inches. If
-          you&apos;re between sizes, we recommend sizing up for a more comfortable fit.
+          {t("policies.sizeGuideIntro")}
         </p>
 
         {/* How to measure */}
@@ -165,6 +164,10 @@ export default function SizeGuidePage() {
             </li>
           </ul>
         </div>
+
+        <p className="mt-12 border-t border-border/60 pt-6 text-sm text-muted-foreground">
+          {t("policies.contactForQuestions")}
+        </p>
       </div>
     </Container>
   );

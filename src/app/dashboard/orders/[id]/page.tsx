@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { formatPrice } from "@/lib/types";
+import { useLanguage } from "@/i18n/language-context";
 
 interface OrderItem {
   id: string;
@@ -57,6 +58,7 @@ const statusColors: Record<string, string> = {
 export default function OrderDetailPage() {
   const params = useParams();
   const orderId = params.id as string;
+  const { t } = useLanguage();
 
   const [order, setOrder] = React.useState<Order | null>(null);
   const [loading, setLoading] = React.useState(true);
@@ -82,7 +84,7 @@ export default function OrderDetailPage() {
     return (
       <div className="py-16 text-center">
         <Loader2 className="mx-auto mb-3 h-8 w-8 animate-spin text-muted-foreground" />
-        <p className="text-sm text-muted-foreground">Loading order details...</p>
+        <p className="text-sm text-muted-foreground">{t("dashboard.loadingOrderDetails")}</p>
       </div>
     );
   }
@@ -90,9 +92,9 @@ export default function OrderDetailPage() {
   if (!order) {
     return (
       <div className="py-12 text-center">
-        <p className="text-sm font-medium">Order not found</p>
+        <p className="text-sm font-medium">{t("orderDetail.orderNotFound")}</p>
         <Link href="/dashboard/orders" className="mt-4 inline-block text-sm text-accent hover:underline">
-          ← Back to Orders
+          ← {t("orderDetail.backToOrders")}
         </Link>
       </div>
     );
@@ -107,16 +109,16 @@ export default function OrderDetailPage() {
     <div>
       <Link href="/dashboard/orders" className="mb-6 inline-flex items-center text-sm text-muted-foreground hover:text-accent">
         <ArrowLeft className="mr-1 h-4 w-4" />
-        Back to Orders
+        {t("orderDetail.backToOrders")}
       </Link>
 
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="font-serif text-2xl font-medium tracking-tight md:text-3xl">
-            Order Details
+            {t("orderDetail.title")}
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Order #{order.order_number} · Placed on{" "}
+            {t("orderDetail.orderNumber")} #{order.order_number} · {t("orderDetail.placedOn")}{" "}
             {new Date(order.placed_at).toLocaleDateString("en-US", {
               month: "short",
               day: "numeric",
@@ -138,7 +140,7 @@ export default function OrderDetailPage() {
         {/* Left: items */}
         <div className="space-y-6">
           <div className="rounded-lg border border-border/60 bg-background p-6">
-            <h2 className="mb-4 font-serif text-lg font-medium">Items in Order</h2>
+            <h2 className="mb-4 font-serif text-lg font-medium">{t("orderDetail.itemsInOrder")}</h2>
             {order.items && order.items.length > 0 ? (
               <div className="space-y-4">
                 {order.items.map((item) => (
@@ -170,20 +172,20 @@ export default function OrderDetailPage() {
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-muted-foreground">No items in this order</p>
+              <p className="text-sm text-muted-foreground">{t("dashboard.noItemsInOrder")}</p>
             )}
           </div>
 
           {/* Tracking */}
           <div className="rounded-lg border border-border/60 bg-background p-6">
-            <h2 className="mb-4 font-serif text-lg font-medium">Order Timeline</h2>
+            <h2 className="mb-4 font-serif text-lg font-medium">{t("orderDetail.orderTimeline")}</h2>
             <div className="space-y-4">
               {[
-                { status: "Order Placed", desc: "Your order has been placed", done: true },
-                { status: "Confirmed", desc: "Order confirmed by seller", done: ["CONFIRMED", "PROCESSING", "SHIPPED", "DELIVERED"].includes(order.status) },
-                { status: "Processing", desc: "Preparing your items", done: ["PROCESSING", "SHIPPED", "DELIVERED"].includes(order.status) },
-                { status: "Shipped", desc: "Out for delivery", done: ["SHIPPED", "DELIVERED"].includes(order.status) },
-                { status: "Delivered", desc: "Order delivered", done: order.status === "DELIVERED" },
+                { status: t("orderDetail.orderPlaced"), desc: t("orderDetail.orderPlacedDesc"), done: true },
+                { status: t("orderDetail.confirmed"), desc: t("orderDetail.confirmedDesc"), done: ["CONFIRMED", "PROCESSING", "SHIPPED", "DELIVERED"].includes(order.status) },
+                { status: t("orderDetail.processing"), desc: t("orderDetail.processingDesc"), done: ["PROCESSING", "SHIPPED", "DELIVERED"].includes(order.status) },
+                { status: t("orderDetail.shipped"), desc: t("orderDetail.shippedDesc"), done: ["SHIPPED", "DELIVERED"].includes(order.status) },
+                { status: t("orderDetail.delivered"), desc: t("orderDetail.deliveredDesc"), done: order.status === "DELIVERED" },
               ].map((step, idx) => (
                 <div key={idx} className="flex gap-3">
                   <div className="flex flex-col items-center">
@@ -205,23 +207,23 @@ export default function OrderDetailPage() {
         {/* Right: summary + address */}
         <div className="space-y-6">
           <div className="rounded-lg border border-border/60 bg-background p-6">
-            <h2 className="mb-4 font-serif text-lg font-medium">Order Summary</h2>
+            <h2 className="mb-4 font-serif text-lg font-medium">{t("orderDetail.orderSummary")}</h2>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Subtotal</span>
+                <span className="text-muted-foreground">{t("dashboard.subtotal")}</span>
                 <span className="font-medium">{formatPrice(order.subtotal)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Shipping</span>
+                <span className="text-muted-foreground">{t("dashboard.shipping")}</span>
                 <span className="font-medium">{formatPrice(order.shipping_total)}</span>
               </div>
               <Separator className="my-2" />
               <div className="flex justify-between">
-                <span className="font-medium">Total</span>
+                <span className="font-medium">{t("cartPage.total")}</span>
                 <span className="font-serif text-lg font-medium">{formatPrice(order.grand_total)}</span>
               </div>
               <div className="mt-3 rounded-md bg-muted/50 p-2 text-center">
-                <p className="text-xs text-muted-foreground">Payment Method</p>
+                <p className="text-xs text-muted-foreground">{t("orderDetail.paymentMethod")}</p>
                 <p className="text-sm font-medium">{order.payment_method || "—"}</p>
               </div>
             </div>
@@ -232,14 +234,14 @@ export default function OrderDetailPage() {
             <div className="rounded-lg border border-border/60 bg-background p-6">
               <h2 className="mb-4 flex items-center gap-2 font-serif text-lg font-medium">
                 <MapPin className="h-5 w-5" />
-                Shipping Address
+                {t("orderDetail.shippingAddress")}
               </h2>
               <div className="text-sm">
                 <p className="font-medium">{shippingAddress.name || order.customer_name}</p>
                 <p className="text-muted-foreground">{shippingAddress.phone || order.customer_phone}</p>
                 <p className="mt-2 text-muted-foreground">{shippingAddress.address}</p>
                 <p className="text-muted-foreground">
-                  {shippingAddress.area === "inside_dhaka" ? "Inside Dhaka" : "Outside Dhaka"}
+                  {shippingAddress.area === "inside_dhaka" ? t("dashboard.insideDhaka") : t("dashboard.outsideDhaka")}
                 </p>
               </div>
             </div>
@@ -247,7 +249,7 @@ export default function OrderDetailPage() {
 
           <Button variant="outline" className="w-full">
             <Package className="mr-2 h-4 w-4" />
-            Download Invoice
+            {t("orderDetail.downloadInvoice")}
           </Button>
         </div>
       </div>

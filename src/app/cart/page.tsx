@@ -43,7 +43,7 @@ export default function CartPage() {
 
   function applyCoupon() {
     if (!couponCode.trim()) {
-      toast.error("Please enter a coupon code");
+      toast.error(t("common.enterCoupon"));
       return;
     }
     // Demo coupon codes
@@ -56,16 +56,16 @@ export default function CartPage() {
     if (codes[code]) {
       const discountAmount = Math.round(subtotal * codes[code]);
       setAppliedCoupon({ code, discount: discountAmount });
-      toast.success(`Coupon applied! You saved ${formatPrice(discountAmount)}`);
+      toast.success(t("common.couponApplied").replace("{amount}", formatPrice(discountAmount)));
     } else {
-      toast.error("Invalid coupon code");
+      toast.error(t("common.invalidCoupon"));
     }
   }
 
   function removeCoupon() {
     setAppliedCoupon(null);
     setCouponCode("");
-    toast.success("Coupon removed");
+    toast.success(t("common.couponRemoved"));
   }
 
   if (items.length === 0) {
@@ -78,13 +78,12 @@ export default function CartPage() {
           <div>
             <h1 className="font-serif text-2xl font-medium">{t("cartPage.empty")}</h1>
             <p className="mt-2 text-sm text-muted-foreground">
-              Looks like you haven&apos;t added anything to your cart yet. Start
-              shopping to discover our premium collection.
+              {t("cartPage.emptyDesc")}
             </p>
           </div>
           <Button asChild size="lg">
             <Link href="/shop">
-              Continue Shopping
+              {t("cartPage.continueShopping")}
               <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
           </Button>
@@ -97,13 +96,13 @@ export default function CartPage() {
     <Container className="py-8">
       {/* Breadcrumb */}
       <nav className="mb-6 text-xs text-muted-foreground">
-        <Link href="/" className="hover:text-accent">Home</Link>
+        <Link href="/" className="hover:text-accent">{t("common.home")}</Link>
         <span className="mx-1">/</span>
-        <span className="text-foreground">Cart</span>
+        <span className="text-foreground">{t("common.cart")}</span>
       </nav>
 
       <h1 className="mb-8 font-serif text-3xl font-medium tracking-tight md:text-4xl">
-        Shopping Cart ({items.length})
+        {t("cartPage.title")} ({items.length})
       </h1>
 
       <div className="grid gap-8 lg:grid-cols-[1fr_400px]">
@@ -152,13 +151,13 @@ export default function CartPage() {
                         {item.name}
                       </Link>
                       <p className="mt-1 text-xs text-muted-foreground">
-                        SKU: {item.sku}
+                        {t("products.sku")}: {item.sku}
                       </p>
                       {(item.selectedSize || item.selectedColor) && (
                         <p className="mt-1 text-xs text-muted-foreground">
-                          {item.selectedSize && `Size: ${item.selectedSize}`}
+                          {item.selectedSize && `${t("productDetail.size")}: ${item.selectedSize}`}
                           {item.selectedSize && item.selectedColor && " · "}
-                          {item.selectedColor && `Color: ${item.selectedColor}`}
+                          {item.selectedColor && `${t("productDetail.color")}: ${item.selectedColor}`}
                         </p>
                       )}
                     </div>
@@ -168,7 +167,7 @@ export default function CartPage() {
                       className="h-8 w-8 shrink-0 text-muted-foreground hover:text-red-500"
                       onClick={() => {
                         removeItem(item.productId, item.selectedSize, item.selectedColor);
-                        toast.success("Item removed from cart");
+                        toast.success(t("common.itemRemoved"));
                       }}
                       aria-label="Remove item"
                     >
@@ -234,18 +233,18 @@ export default function CartPage() {
             <Button variant="ghost" asChild>
               <Link href="/shop">
                 <ArrowLeft className="mr-2 h-4 w-4" />
-                Continue Shopping
+                {t("cartPage.continueShopping")}
               </Link>
             </Button>
             <Button
               variant="ghost"
               onClick={() => {
                 clearCart();
-                toast.success("Cart cleared");
+                toast.success(t("common.cartCleared"));
               }}
               className="text-muted-foreground hover:text-red-500"
             >
-              Clear Cart
+              {t("cartPage.clearCart")}
             </Button>
           </div>
         </div>
@@ -254,7 +253,7 @@ export default function CartPage() {
         <aside className="lg:sticky lg:top-32 lg:h-fit">
           <div className="rounded-lg border border-border/60 bg-card p-6">
             <h2 className="mb-4 font-serif text-xl font-medium">
-              Order Summary
+              {t("cartPage.orderSummary")}
             </h2>
 
             {/* Free shipping progress */}
@@ -262,11 +261,11 @@ export default function CartPage() {
               <div className="mb-4 rounded-lg bg-accent/10 p-3">
                 <p className="flex items-center gap-2 text-xs text-accent">
                   <Truck className="h-4 w-4" />
-                  Add{" "}
+                  {t("cartPage.freeShippingProgress").split("{amount}")[0]}
                   <strong>
                     {formatPrice(FREE_SHIPPING_THRESHOLD - subtotal)}
-                  </strong>{" "}
-                  more for FREE shipping
+                  </strong>
+                  {t("cartPage.freeShippingProgress").split("{amount}")[1]}
                 </p>
                 <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-accent/20">
                   <div
@@ -283,7 +282,7 @@ export default function CartPage() {
             <div className="mb-4">
               <label className="mb-2 flex items-center gap-1.5 text-sm font-medium">
                 <Tag className="h-3.5 w-3.5" />
-                Promo Code
+                {t("cartPage.promoCode")}
               </label>
               {appliedCoupon ? (
                 <div className="flex items-center justify-between rounded-md border border-accent/30 bg-accent/10 px-3 py-2">
@@ -292,7 +291,7 @@ export default function CartPage() {
                       {appliedCoupon.code}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      You save {formatPrice(appliedCoupon.discount)}
+                      {t("cartPage.youSave").replace("{amount}", formatPrice(appliedCoupon.discount))}
                     </p>
                   </div>
                   <Button
@@ -307,18 +306,18 @@ export default function CartPage() {
               ) : (
                 <div className="flex gap-2">
                   <Input
-                    placeholder="Enter code (try WELCOME10)"
+                    placeholder={t("cartPage.couponPlaceholder")}
                     value={couponCode}
                     onChange={(e) => setCouponCode(e.target.value)}
                     className="h-10"
                   />
                   <Button variant="outline" onClick={applyCoupon}>
-                    Apply
+                    {t("cartPage.applyCode")}
                   </Button>
                 </div>
               )}
               <p className="mt-1.5 text-[10px] text-muted-foreground">
-                Try: WELCOME10, RAKIB20, FESTIVE15
+                {t("cartPage.couponHint")}
               </p>
             </div>
 
@@ -332,20 +331,20 @@ export default function CartPage() {
               </div>
               {discount > 0 && (
                 <div className="flex justify-between text-accent">
-                  <span>Discount</span>
+                  <span>{t("cartPage.discountLabel")}</span>
                   <span>-{formatPrice(discount)}</span>
                 </div>
               )}
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Shipping</span>
+                <span className="text-muted-foreground">{t("cartPage.shippingLabel")}</span>
                 {shipping === 0 ? (
-                  <span className="font-medium text-accent">FREE</span>
+                  <span className="font-medium text-accent">{t("cart.free")}</span>
                 ) : (
                   <span className="font-medium">{formatPrice(shipping)}</span>
                 )}
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Tax</span>
+                <span className="text-muted-foreground">{t("cartPage.taxLabel")}</span>
                 <span className="font-medium">{formatPrice(0)}</span>
               </div>
             </div>
@@ -364,14 +363,14 @@ export default function CartPage() {
               className="mt-6 w-full bg-primary text-primary-foreground hover:bg-primary/90"
               onClick={() => router.push("/checkout")}
             >
-              Proceed to Checkout
+              {t("cartPage.proceedCheckout")}
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
 
             {/* Payment methods */}
             <div className="mt-4 text-center">
               <p className="mb-2 text-[10px] uppercase tracking-wider text-muted-foreground">
-                Secure Payment Options
+                {t("cartPage.paymentMethods")}
               </p>
               <div className="flex flex-wrap items-center justify-center gap-1.5">
                 {["bKash", "Nagad", "Rocket", "Visa", "Mastercard", "COD"].map(

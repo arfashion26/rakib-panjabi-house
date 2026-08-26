@@ -24,7 +24,7 @@ export function CartDrawer() {
           <SheetTitle className="flex items-center justify-between text-left">
             <span className="flex items-center gap-2">
               <ShoppingBag className="h-5 w-5" />
-              Your Cart ({items.length})
+              {t("cart.yourCart")} ({items.length})
             </span>
           </SheetTitle>
         </SheetHeader>
@@ -35,14 +35,14 @@ export function CartDrawer() {
               <ShoppingBag className="h-10 w-10 text-muted-foreground" />
             </div>
             <div>
-              <h3 className="font-medium text-foreground">Your cart is empty</h3>
+              <h3 className="font-medium text-foreground">{t("cart.empty")}</h3>
               <p className="mt-1 text-sm text-muted-foreground">
-                Add some products to get started
+                {t("shop.browseAll")}
               </p>
             </div>
             <Button asChild onClick={closeCart}>
               <Link href="/shop">
-                Start Shopping
+                {t("cart.continueShopping")}
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>
@@ -52,16 +52,16 @@ export function CartDrawer() {
             <div className="mt-4 rounded-lg bg-muted/50 p-3">
               {subtotal >= FREE_SHIPPING_THRESHOLD ? (
                 <p className="text-center text-xs font-medium text-accent">
-                  ✓ You qualify for FREE shipping!
+                  {t("cart.qualifiedFreeShipping")}
                 </p>
               ) : (
                 <>
                   <p className="mb-2 text-center text-xs text-muted-foreground">
-                    Add{" "}
+                    {t("cart.freeShippingMsg").split("{amount}")[0]}
                     <span className="font-semibold text-foreground">
                       {formatPrice(FREE_SHIPPING_THRESHOLD - subtotal)}
-                    </span>{" "}
-                    more for FREE shipping
+                    </span>
+                    {t("cart.freeShippingMsg").split("{amount}")[1]}
                   </p>
                   <div className="h-1.5 overflow-hidden rounded-full bg-muted">
                     <div
@@ -106,9 +106,9 @@ export function CartDrawer() {
 
                       {(item.selectedSize || item.selectedColor) && (
                         <p className="mt-1 text-xs text-muted-foreground">
-                          {item.selectedSize && `Size: ${item.selectedSize}`}
+                          {item.selectedSize && `${t("productDetail.size")}: ${item.selectedSize}`}
                           {item.selectedSize && item.selectedColor && " · "}
-                          {item.selectedColor && `Color: ${item.selectedColor}`}
+                          {item.selectedColor && `${t("productDetail.color")}: ${item.selectedColor}`}
                         </p>
                       )}
 
@@ -144,7 +144,7 @@ export function CartDrawer() {
                             size="icon"
                             className="h-7 w-7 text-muted-foreground hover:text-red-500"
                             onClick={() => removeItem(item.productId, item.selectedSize, item.selectedColor)}
-                            aria-label="Remove from cart"
+                            aria-label={t("cart.remove")}
                           >
                             <Trash2 className="h-3.5 w-3.5" />
                           </Button>
@@ -161,7 +161,7 @@ export function CartDrawer() {
                 <span className="text-sm text-muted-foreground">{t("cartPage.subtotal")}</span>
                 <span className="font-serif text-lg font-medium">{formatPrice(subtotal)}</span>
               </div>
-              <p className="text-xs text-muted-foreground">Shipping & taxes calculated at checkout</p>
+              <p className="text-xs text-muted-foreground">{t("cartPage.shippingNote")}</p>
               <Separator />
               <div className="flex gap-2">
                 <Button variant="outline" className="flex-1" onClick={closeCart} asChild>
@@ -169,7 +169,7 @@ export function CartDrawer() {
                 </Button>
                 <Button className="flex-1" asChild onClick={closeCart}>
                   <Link href="/checkout">
-                    Checkout
+                    {t("cartPage.checkout")}
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
                 </Button>

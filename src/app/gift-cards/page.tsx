@@ -1,13 +1,17 @@
+"use client";
+
+import * as React from "react";
 import { Container, ButtonLink } from "@/components/layout/container";
 import { Gift, Sparkles, CheckCircle2 } from "lucide-react";
-
-export const metadata = {
-  title: "Gift Cards",
-  description: "Give the perfect gift with Rakib Panjabi House gift cards. Available in multiple values, delivered instantly.",
-};
+import { useLanguage } from "@/i18n/language-context";
 
 export default function GiftCardsPage() {
+  const { t } = useLanguage();
   const amounts = [500, 1000, 2000, 5000, 10000];
+  const [selectedAmount, setSelectedAmount] = React.useState<number | null>(1000);
+  const [recipientName, setRecipientName] = React.useState("");
+  const [recipientEmail, setRecipientEmail] = React.useState("");
+  const [message, setMessage] = React.useState("");
 
   return (
     <>
@@ -23,14 +27,13 @@ export default function GiftCardsPage() {
               <Gift className="h-8 w-8 text-accent" />
             </div>
             <p className="mb-4 text-xs font-semibold uppercase tracking-[0.3em] text-accent">
-              The Perfect Gift
+              {t("giftCards.title")}
             </p>
             <h1 className="font-serif text-4xl font-medium leading-tight tracking-tight md:text-5xl lg:text-6xl">
-              Rakib Panjabi House Gift Cards
+              {t("giftCards.title")}
             </h1>
             <p className="mt-6 text-base leading-relaxed text-primary-foreground/80 md:text-lg">
-              Give the gift of premium fashion. Perfect for birthdays, weddings, Eid,
-              anniversaries, or just to say you care.
+              {t("giftCards.subtitle")}
             </p>
           </div>
         </Container>
@@ -40,9 +43,9 @@ export default function GiftCardsPage() {
         <div className="mx-auto max-w-3xl">
           {/* Amounts */}
           <div className="text-center">
-            <h2 className="font-serif text-3xl font-medium">Choose an Amount</h2>
+            <h2 className="font-serif text-3xl font-medium">{t("giftCards.amounts")}</h2>
             <p className="mt-2 text-sm text-muted-foreground">
-              Gift cards are delivered via email and never expire.
+              {t("giftCards.termsNote")}
             </p>
           </div>
 
@@ -50,7 +53,11 @@ export default function GiftCardsPage() {
             {amounts.map((amount) => (
               <button
                 key={amount}
-                className="group relative aspect-[4/3] overflow-hidden rounded-lg border-2 border-border bg-card p-4 text-center transition-all hover:border-accent"
+                type="button"
+                onClick={() => setSelectedAmount(amount)}
+                className={`group relative aspect-[4/3] overflow-hidden rounded-lg border-2 bg-card p-4 text-center transition-all hover:border-accent ${
+                  selectedAmount === amount ? "border-accent" : "border-border"
+                }`}
               >
                 <div className="flex h-full flex-col items-center justify-center">
                   <Gift className="mb-2 h-6 w-6 text-accent" />
@@ -63,11 +70,57 @@ export default function GiftCardsPage() {
           {/* Custom amount */}
           <div className="mt-4 text-center">
             <p className="text-sm text-muted-foreground">
-              Want a custom amount?{" "}
-              <button className="text-accent hover:underline">
-                Contact us
+              {t("giftCards.custom")}{" "}
+              <button type="button" className="text-accent hover:underline">
+                {t("common.contact")}
               </button>
             </p>
+          </div>
+
+          {/* Recipient form */}
+          <div className="mt-12 rounded-lg border border-border/60 bg-card p-6">
+            <h2 className="font-serif text-2xl font-medium">{t("giftCards.recipient")}</h2>
+            <div className="mt-4 grid gap-4 sm:grid-cols-2">
+              <div>
+                <label className="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  {t("giftCards.recipientName")}
+                </label>
+                <input
+                  type="text"
+                  value={recipientName}
+                  onChange={(e) => setRecipientName(e.target.value)}
+                  className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  {t("giftCards.recipientEmail")}
+                </label>
+                <input
+                  type="email"
+                  value={recipientEmail}
+                  onChange={(e) => setRecipientEmail(e.target.value)}
+                  className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+                />
+              </div>
+            </div>
+            <div className="mt-4">
+              <label className="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                {t("giftCards.message")}
+              </label>
+              <textarea
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                rows={3}
+                className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+              />
+            </div>
+            <button
+              type="button"
+              className="mt-4 inline-flex items-center justify-center rounded-md bg-accent px-6 py-2.5 text-sm font-medium text-accent-foreground hover:bg-accent/90"
+            >
+              {t("giftCards.buyNow")}
+            </button>
           </div>
 
           {/* Features */}
@@ -125,7 +178,7 @@ export default function GiftCardsPage() {
           {/* CTA */}
           <div className="mt-12 text-center">
             <ButtonLink href="/shop" className="mx-auto">
-              Continue Shopping
+              {t("common.continue")}
             </ButtonLink>
           </div>
         </div>

@@ -62,14 +62,14 @@ export function ProductCard({
       selectedSize: null,
       selectedColor: null,
     });
-    toast.success(`${product.name} added to cart`);
+    toast.success(t("productDetail.addedToCart").replace("{name}", product.name));
   };
 
   const handleWishlist = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     toggleWishlist(product.id);
-    toast.success(hasInWishlist ? "Removed from wishlist" : "Added to wishlist");
+    toast.success(hasInWishlist ? t("productDetail.removedFromWishlist") : t("productDetail.addedToWishlist"));
   };
 
   const hasImageUrl =
@@ -116,18 +116,18 @@ export function ProductCard({
         <div className="absolute left-3 top-3 flex flex-col gap-2">
           {product.is_new_arrival && (
             <span className="rounded-full bg-primary px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-primary-foreground">
-              New
+              {t("productDetail.newBadge")}
             </span>
           )}
           {product.is_best_seller && (
             <span className="rounded-full bg-accent px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-accent-foreground">
-              Bestseller
+              {t("productDetail.bestsellerBadge")}
             </span>
           )}
           {product.is_flash_sale && (
             <span className="flex items-center gap-1 rounded-full bg-red-600 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-white">
               <Zap className="h-2.5 w-2.5" />
-              Flash
+              {t("flashSale.eyebrow")}
             </span>
           )}
           {discount > 0 && (
@@ -144,7 +144,7 @@ export function ProductCard({
             variant="secondary"
             className="h-9 w-9 rounded-full bg-background/90 shadow-sm hover:bg-background"
             onClick={handleWishlist}
-            aria-label="Add to wishlist"
+            aria-label={t("productCard.addToWishlist")}
           >
             <Heart className={cn("h-4 w-4", hasInWishlist && "fill-red-500 text-red-500")} />
           </Button>
@@ -152,7 +152,7 @@ export function ProductCard({
             size="icon"
             variant="secondary"
             className="h-9 w-9 rounded-full bg-background/90 shadow-sm hover:bg-background"
-            aria-label="Quick view"
+            aria-label={t("productCard.quickView")}
             asChild
           >
             <Link href={`/product/${product.slug}`}>
@@ -169,7 +169,7 @@ export function ProductCard({
             onClick={handleAddToCart}
           >
             <ShoppingBag className="mr-2 h-4 w-4" />
-            Add to Cart
+            {t("productCard.addToCart")}
           </Button>
         </div>
       </Link>

@@ -6,6 +6,7 @@ import { Heart } from "lucide-react";
 import { useWishlist } from "@/lib/store";
 import { getProducts } from "@/lib/services/products";
 import { ProductCard } from "@/components/product/product-card";
+import { useLanguage } from "@/i18n/language-context";
 
 interface Product {
   id: string;
@@ -28,6 +29,7 @@ interface Product {
 
 export default function DashboardWishlist() {
   const productIds = useWishlist((s) => s.productIds);
+  const { t } = useLanguage();
   const [wishlistProducts, setWishlistProducts] = React.useState<Product[]>([]);
   const [loading, setLoading] = React.useState(true);
 
@@ -53,27 +55,27 @@ export default function DashboardWishlist() {
   }, [productIds]);
 
   if (loading) {
-    return <div className="py-12 text-center text-sm text-muted-foreground">Loading your wishlist...</div>;
+    return <div className="py-12 text-center text-sm text-muted-foreground">{t("common.loadingWishlist")}</div>;
   }
 
   return (
     <div>
       <div className="mb-8">
-        <h1 className="font-serif text-2xl font-medium tracking-tight md:text-3xl">My Wishlist</h1>
+        <h1 className="font-serif text-2xl font-medium tracking-tight md:text-3xl">{t("dashboard.myWishlist")}</h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          {wishlistProducts.length} {wishlistProducts.length === 1 ? "item" : "items"} saved
+          {wishlistProducts.length} {t("dashboard.itemsSaved")}
         </p>
       </div>
 
       {wishlistProducts.length === 0 ? (
         <div className="rounded-lg border border-dashed border-border bg-background p-12 text-center">
           <Heart className="mx-auto mb-3 h-12 w-12 text-muted-foreground/40" />
-          <p className="text-sm font-medium">Your wishlist is empty</p>
+          <p className="text-sm font-medium">{t("dashboard.emptyWishlist")}</p>
           <p className="mt-1 text-xs text-muted-foreground">
-            Save items you love by clicking the heart icon.
+            {t("dashboard.emptyWishlistDesc")}
           </p>
           <Link href="/shop" className="mt-4 inline-block rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground">
-            Browse Products
+            {t("dashboard.browseProducts")}
           </Link>
         </div>
       ) : (

@@ -14,8 +14,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
+import { useLanguage } from "@/i18n/language-context";
 
 export default function SettingsPage() {
+  const { t } = useLanguage();
   const [profile, setProfile] = React.useState({
     firstName: "",
     lastName: "",
@@ -24,17 +26,17 @@ export default function SettingsPage() {
   });
 
   function saveProfile() {
-    toast.success("Profile updated successfully");
+    toast.success(t("dashboard.profileUpdatedSuccess"));
   }
 
   return (
     <div>
       <div className="mb-8">
         <h1 className="font-serif text-2xl font-medium tracking-tight md:text-3xl">
-          Account Settings
+          {t("dashboard.settings")}
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Manage your profile, preferences, and security
+          {t("dashboard.manageSettingsDesc")}
         </p>
       </div>
 
@@ -43,11 +45,11 @@ export default function SettingsPage() {
         <div className="rounded-lg border border-border/60 bg-background p-6">
           <div className="mb-4 flex items-center gap-2">
             <User className="h-5 w-5 text-accent" />
-            <h2 className="font-serif text-lg font-medium">Profile Information</h2>
+            <h2 className="font-serif text-lg font-medium">{t("dashboard.profileInfo")}</h2>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="firstName">First Name</Label>
+              <Label htmlFor="firstName">{t("dashboard.firstName")}</Label>
               <Input
                 id="firstName"
                 value={profile.firstName}
@@ -57,7 +59,7 @@ export default function SettingsPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="lastName">Last Name</Label>
+              <Label htmlFor="lastName">{t("dashboard.lastName")}</Label>
               <Input
                 id="lastName"
                 value={profile.lastName}
@@ -98,7 +100,7 @@ export default function SettingsPage() {
             </div>
           </div>
           <Button className="mt-4" onClick={saveProfile}>
-            Save Changes
+            {t("dashboard.saveChanges")}
           </Button>
         </div>
 
@@ -106,11 +108,11 @@ export default function SettingsPage() {
         <div className="rounded-lg border border-border/60 bg-background p-6">
           <div className="mb-4 flex items-center gap-2">
             <Globe className="h-5 w-5 text-accent" />
-            <h2 className="font-serif text-lg font-medium">Preferences</h2>
+            <h2 className="font-serif text-lg font-medium">{t("dashboard.preferences")}</h2>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="lang">Language</Label>
+              <Label htmlFor="lang">{t("dashboard.language")}</Label>
               <Select defaultValue="en">
                 <SelectTrigger id="lang">
                   <SelectValue />
@@ -122,7 +124,7 @@ export default function SettingsPage() {
               </Select>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="currency">Currency</Label>
+              <Label htmlFor="currency">{t("dashboard.currency")}</Label>
               <Select defaultValue="BDT">
                 <SelectTrigger id="currency">
                   <SelectValue />
@@ -142,16 +144,16 @@ export default function SettingsPage() {
           <div className="mb-4 flex items-center gap-2">
             <Bell className="h-5 w-5 text-accent" />
             <h2 className="font-serif text-lg font-medium">
-              Notification Preferences
+              {t("dashboard.notifications")}
             </h2>
           </div>
           <div className="space-y-3">
             {[
-              { label: "Order updates", desc: "Order status, shipping, delivery", checked: true },
-              { label: "Promotions & offers", desc: "Sales, discount codes, new arrivals", checked: true },
-              { label: "Wishlist alerts", desc: "When wishlist items go on sale or back in stock", checked: false },
-              { label: "Newsletter", desc: "Monthly style inspiration and tips", checked: true },
-              { label: "SMS notifications", desc: "Order updates via SMS (BD only)", checked: false },
+              { label: t("dashboard.orderUpdates"), desc: t("dashboard.orderUpdatesDesc"), checked: true },
+              { label: t("dashboard.promotions"), desc: t("dashboard.promotionsDesc"), checked: true },
+              { label: t("dashboard.wishlistAlerts"), desc: t("dashboard.wishlistAlertsDesc"), checked: false },
+              { label: t("dashboard.newsletter"), desc: t("dashboard.newsletterDesc"), checked: true },
+              { label: t("dashboard.smsNotifications"), desc: t("dashboard.smsNotificationsDesc"), checked: false },
             ].map((pref, i) => (
               <label
                 key={i}
@@ -175,36 +177,36 @@ export default function SettingsPage() {
         <div className="rounded-lg border border-border/60 bg-background p-6">
           <div className="mb-4 flex items-center gap-2">
             <Shield className="h-5 w-5 text-accent" />
-            <h2 className="font-serif text-lg font-medium">Security</h2>
+            <h2 className="font-serif text-lg font-medium">{t("dashboard.security")}</h2>
           </div>
           <div className="space-y-4">
             <div>
-              <Label htmlFor="current">Current Password</Label>
+              <Label htmlFor="current">{t("dashboard.currentPassword")}</Label>
               <Input id="current" type="password" placeholder="••••••••" />
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
-                <Label htmlFor="new">New Password</Label>
+                <Label htmlFor="new">{t("dashboard.newPassword")}</Label>
                 <Input id="new" type="password" placeholder="••••••••" />
               </div>
               <div>
-                <Label htmlFor="confirm">Confirm New Password</Label>
+                <Label htmlFor="confirm">{t("dashboard.confirmPassword")}</Label>
                 <Input id="confirm" type="password" placeholder="••••••••" />
               </div>
             </div>
-            <Button variant="outline">Update Password</Button>
+            <Button variant="outline">{t("dashboard.updatePassword")}</Button>
           </div>
 
           <Separator className="my-6" />
 
           {/* Danger zone */}
           <div>
-            <h3 className="text-sm font-medium text-red-500">Danger Zone</h3>
+            <h3 className="text-sm font-medium text-red-500">{t("dashboard.dangerZone")}</h3>
             <p className="mt-1 text-xs text-muted-foreground">
-              Once you delete your account, there is no going back. Please be certain.
+              {t("dashboard.dangerZoneDesc")}
             </p>
             <Button variant="outline" className="mt-3 border-red-500/50 text-red-500 hover:bg-red-500/10">
-              Delete Account
+              {t("dashboard.deleteAccount")}
             </Button>
           </div>
         </div>

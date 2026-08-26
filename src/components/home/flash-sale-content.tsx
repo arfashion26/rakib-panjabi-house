@@ -80,17 +80,17 @@ export function FlashSaleContent({ products }: { products: Product[] }) {
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">{t("flashSale.eyebrow")}</p>
               <h2 className="font-serif text-3xl font-medium tracking-tight md:text-4xl">
-                Flash Sale — Up to 40% Off
+                {t("flashSale.title")}
               </h2>
             </div>
           </div>
 
           <div className="flex items-center gap-3">
-            <TimeBlock value={time.hours} label="Hours" />
+            <TimeBlock value={time.hours} label={t("flashSale.hours")} />
             <span className="font-serif text-2xl text-accent">:</span>
-            <TimeBlock value={time.minutes} label="Mins" />
+            <TimeBlock value={time.minutes} label={t("flashSale.mins")} />
             <span className="font-serif text-2xl text-accent">:</span>
-            <TimeBlock value={time.seconds} label="Secs" />
+            <TimeBlock value={time.seconds} label={t("flashSale.secs")} />
           </div>
         </div>
 
@@ -110,7 +110,7 @@ export function FlashSaleContent({ products }: { products: Product[] }) {
 
         <div className="mt-10 text-center md:mt-12">
           <ButtonLink href="/sale" className="bg-accent text-accent-foreground hover:bg-accent/90">
-            Shop All Sale Items
+            {t("flashSale.shopAll")}
           </ButtonLink>
         </div>
       </div>

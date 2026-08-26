@@ -21,14 +21,15 @@ import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { signOut } from "@/lib/auth-actions";
+import { useLanguage } from "@/i18n/language-context";
 
 const navItems = [
-  { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
-  { href: "/dashboard/orders", label: "My Orders", icon: Package },
-  { href: "/dashboard/wishlist", label: "Wishlist", icon: Heart },
-  { href: "/dashboard/addresses", label: "Addresses", icon: MapPin },
-  { href: "/dashboard/notifications", label: "Notifications", icon: Bell },
-  { href: "/dashboard/settings", label: "Settings", icon: Settings },
+  { href: "/dashboard", labelKey: "dashboard.overview", icon: LayoutDashboard },
+  { href: "/dashboard/orders", labelKey: "dashboard.myOrders", icon: Package },
+  { href: "/dashboard/wishlist", labelKey: "dashboard.myWishlist", icon: Heart },
+  { href: "/dashboard/addresses", labelKey: "dashboard.myAddresses", icon: MapPin },
+  { href: "/dashboard/notifications", labelKey: "dashboard.notificationsTitle", icon: Bell },
+  { href: "/dashboard/settings", labelKey: "dashboard.settings", icon: Settings },
 ];
 
 export default function DashboardLayout({
@@ -37,6 +38,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const { t } = useLanguage();
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
   async function handleSignOut() {
@@ -59,8 +61,8 @@ export default function DashboardLayout({
             <User className="h-5 w-5" />
           </div>
           <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-medium">Welcome back</p>
-            <p className="truncate text-xs text-muted-foreground">Guest User</p>
+            <p className="truncate text-sm font-medium">{t("dashboard.welcomeBack")}</p>
+            <p className="truncate text-xs text-muted-foreground">{t("dashboard.guestUser")}</p>
           </div>
         </div>
       </div>
@@ -85,7 +87,7 @@ export default function DashboardLayout({
               )}
             >
               <item.icon className="h-4 w-4" />
-              {item.label}
+              {t(item.labelKey)}
               {isActive && <ChevronRight className="ml-auto h-4 w-4" />}
             </Link>
           );
@@ -100,7 +102,7 @@ export default function DashboardLayout({
           onClick={handleSignOut}
         >
           <LogOut className="mr-3 h-4 w-4" />
-          Sign Out
+          {t("dashboard.signOut")}
         </Button>
       </div>
     </div>
@@ -112,7 +114,7 @@ export default function DashboardLayout({
       <div className="sticky top-0 z-30 flex items-center justify-between border-b border-border bg-background px-4 py-3 lg:hidden">
         <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
           <SheetTrigger asChild>
-            <Button variant="ghost" size="icon" aria-label="Open menu">
+            <Button variant="ghost" size="icon" aria-label={t("dashboard.openMenu")}>
               <Menu className="h-5 w-5" />
             </Button>
           </SheetTrigger>

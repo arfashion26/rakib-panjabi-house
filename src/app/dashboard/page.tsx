@@ -74,35 +74,35 @@ export default function DashboardOverview() {
     return (
       <div className="py-16 text-center">
         <Loader2 className="mx-auto mb-3 h-8 w-8 animate-spin text-muted-foreground" />
-        <p className="text-sm text-muted-foreground">Loading dashboard...</p>
+        <p className="text-sm text-muted-foreground">{t("common.loading")}</p>
       </div>
     );
   }
 
   const statCards = [
     {
-      label: "Total Orders",
+      label: t("dashboard.totalOrders"),
       value: String(stats.totalOrders),
       icon: Package,
       color: "bg-blue-500/10 text-blue-500",
       link: "/dashboard/orders",
     },
     {
-      label: "Wishlist Items",
+      label: t("dashboard.wishlistItems"),
       value: String(stats.wishlistItems),
       icon: Heart,
       color: "bg-red-500/10 text-red-500",
       link: "/dashboard/wishlist",
     },
     {
-      label: "Saved Addresses",
+      label: t("dashboard.savedAddresses"),
       value: String(stats.addresses),
       icon: MapPin,
       color: "bg-green-500/10 text-green-500",
       link: "/dashboard/addresses",
     },
     {
-      label: "Total Spent",
+      label: t("dashboard.totalSpent"),
       value: formatPrice(stats.totalSpent),
       icon: CreditCard,
       color: "bg-accent/10 text-accent",
@@ -114,10 +114,11 @@ export default function DashboardOverview() {
     <div>
       <div className="mb-8">
         <h1 className="font-serif text-2xl font-medium tracking-tight md:text-3xl">
-          Dashboard Overview
+          {t("dashboard.overview")}
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Welcome back{profile?.name ? `, ${profile.name}` : ""}! Here&apos;s your account summary.
+          {t("dashboard.welcomeBack")}
+          {profile?.name ? `, ${profile.name}` : ""}! {t("dashboard.summary")}
         </p>
       </div>
 
@@ -129,7 +130,7 @@ export default function DashboardOverview() {
               <User className="h-6 w-6" />
             </div>
             <div className="flex-1">
-              <p className="font-medium">{profile.name || "Customer"}</p>
+              <p className="font-medium">{profile.name || t("dashboard.customer")}</p>
               <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
                 {profile.phone && (
                   <span className="flex items-center gap-1">
@@ -171,7 +172,7 @@ export default function DashboardOverview() {
         <div className="mb-4 flex items-center justify-between">
           <h2 className="font-serif text-xl font-medium">{t("dashboard.recentOrders")}</h2>
           <Link href="/dashboard/orders" className="text-sm text-accent hover:underline">
-            View all
+            {t("dashboard.viewAll")}
           </Link>
         </div>
 
@@ -180,7 +181,7 @@ export default function DashboardOverview() {
             <Package className="mx-auto mb-3 h-12 w-12 text-muted-foreground/40" />
             <p className="text-sm font-medium">{t("dashboard.noOrders")}</p>
             <p className="mt-1 text-xs text-muted-foreground">
-              When you place your first order, it will appear here.
+              {t("dashboard.noOrdersDesc")}
             </p>
             <Button asChild className="mt-4" size="sm">
               <Link href="/shop">{t("dashboard.startShopping")}</Link>
@@ -207,7 +208,17 @@ export default function DashboardOverview() {
                   </div>
                   <div className="text-right">
                     <p className="font-medium">{formatPrice(order.grand_total)}</p>
-                    <p className="text-xs text-muted-foreground">{order.status}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {order.status === "DELIVERED"
+                        ? t("orderDetail.delivered")
+                        : order.status === "SHIPPED"
+                        ? t("orderDetail.shipped")
+                        : order.status === "PROCESSING"
+                        ? t("orderDetail.processing")
+                        : order.status === "CONFIRMED"
+                        ? t("orderDetail.confirmed")
+                        : order.status}
+                    </p>
                   </div>
                 </div>
               </Link>

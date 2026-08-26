@@ -101,19 +101,19 @@ export function ShopContent({
   }
 
   const activeFilters: { label: string; param: string }[] = [];
-  if (search) activeFilters.push({ label: `Search: "${search}"`, param: "q" });
+  if (search) activeFilters.push({ label: `${t("shop.searchLabel")}: "${search}"`, param: "q" });
   if (categoryParam) {
     const cat = categories.find((c) => c.slug === categoryParam);
-    activeFilters.push({ label: `Category: ${cat?.name || categoryParam}`, param: "category" });
+    activeFilters.push({ label: `${t("shop.categoryLabel")}: ${cat?.name || categoryParam}`, param: "category" });
   }
-  if (minPrice) activeFilters.push({ label: `Min: ৳${minPrice}`, param: "minPrice" });
-  if (maxPrice) activeFilters.push({ label: `Max: ৳${maxPrice}`, param: "maxPrice" });
+  if (minPrice) activeFilters.push({ label: `${t("shop.minPlaceholder")}: ৳${minPrice}`, param: "minPrice" });
+  if (maxPrice) activeFilters.push({ label: `${t("shop.maxPlaceholder")}: ৳${maxPrice}`, param: "maxPrice" });
 
   const FilterContent = (
     <div className="space-y-6">
       <div>
         <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-foreground">
-          Categories
+          {t("products.categories")}
         </h3>
         <div className="space-y-1.5">
           <button
@@ -123,7 +123,7 @@ export function ShopContent({
               !categoryParam ? "bg-accent/10 font-medium text-accent" : "text-muted-foreground hover:bg-accent/5 hover:text-foreground"
             )}
           >
-            All Categories
+            {t("products.allCategories")}
           </button>
           {categories.map((cat) => (
             <button
@@ -142,12 +142,12 @@ export function ShopContent({
 
       <div>
         <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-foreground">
-          Price Range
+          {t("products.priceRange")}
         </h3>
         <div className="flex items-center gap-2">
-          <Input type="number" placeholder="Min" defaultValue={minPrice || ""} onBlur={(e) => updateParam("minPrice", e.target.value)} className="h-9" />
+          <Input type="number" placeholder={t("shop.minPlaceholder")} defaultValue={minPrice || ""} onBlur={(e) => updateParam("minPrice", e.target.value)} className="h-9" />
           <span className="text-muted-foreground">—</span>
-          <Input type="number" placeholder="Max" defaultValue={maxPrice || ""} onBlur={(e) => updateParam("maxPrice", e.target.value)} className="h-9" />
+          <Input type="number" placeholder={t("shop.maxPlaceholder")} defaultValue={maxPrice || ""} onBlur={(e) => updateParam("maxPrice", e.target.value)} className="h-9" />
         </div>
       </div>
 
@@ -173,7 +173,7 @@ export function ShopContent({
 
       {activeFilters.length > 0 && (
         <Button variant="outline" className="w-full" onClick={clearFilters}>
-          Clear All Filters
+          {t("products.clearFilters")}
         </Button>
       )}
     </div>
@@ -183,15 +183,15 @@ export function ShopContent({
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <div className="mb-8">
         <nav className="mb-2 text-xs text-muted-foreground">
-          <span>Home</span>
+          <span>{t("common.home")}</span>
           <span className="mx-1">/</span>
-          <span className="text-foreground">Shop</span>
+          <span className="text-foreground">{t("common.shop")}</span>
         </nav>
         <h1 className="font-serif text-3xl font-medium tracking-tight md:text-4xl">
-          {search ? `Search: "${search}"` : "All Products"}
+          {search ? `${t("shop.searchLabel")}: "${search}"` : t("shop.allProducts")}
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          {total} {total === 1 ? "product" : "products"} found
+          {total} {total === 1 ? t("products.product") : t("products.products")}
         </p>
       </div>
 
@@ -206,7 +206,7 @@ export function ShopContent({
               <SheetTrigger asChild>
                 <Button variant="outline" size="sm" className="lg:hidden">
                   <SlidersHorizontal className="mr-2 h-4 w-4" />
-                  Filters
+                  {t("products.filters")}
                 </Button>
               </SheetTrigger>
               <SheetContent side="left" className="w-[300px] overflow-y-auto">
@@ -230,14 +230,14 @@ export function ShopContent({
 
             <Select defaultValue={sortParam} onValueChange={(v) => updateParam("sort", v)}>
               <SelectTrigger size="sm" className="w-[160px]">
-                <SelectValue placeholder="Sort by" />
+                <SelectValue placeholder={t("products.sortBy")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="newest">Newest First</SelectItem>
-                <SelectItem value="popular">Most Popular</SelectItem>
-                <SelectItem value="rating">Highest Rated</SelectItem>
-                <SelectItem value="price_asc">Price: Low to High</SelectItem>
-                <SelectItem value="price_desc">Price: High to Low</SelectItem>
+                <SelectItem value="newest">{t("products.sortNewest")}</SelectItem>
+                <SelectItem value="popular">{t("products.sortPopular")}</SelectItem>
+                <SelectItem value="rating">{t("products.sortRating")}</SelectItem>
+                <SelectItem value="price_asc">{t("products.sortPriceAsc")}</SelectItem>
+                <SelectItem value="price_desc">{t("products.sortPriceDesc")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -250,18 +250,18 @@ export function ShopContent({
               <h3 className="mt-4 text-lg font-medium">{t("shop.noProducts")}</h3>
               <p className="mt-1 text-sm text-muted-foreground">
                 {search || categoryParam || minPrice || maxPrice
-                  ? "Try adjusting your filters or search terms"
-                  : "Products will appear here once they are added by the admin"}
+                  ? t("shop.noProductsDesc")
+                  : t("shop.noProductsYet")}
               </p>
               {(search || categoryParam || minPrice || maxPrice) && (
                 <Button onClick={clearFilters} className="mt-4" variant="outline">
-                  Clear Filters
+                  {t("shop.clearFilters")}
                 </Button>
               )}
               {!search && !categoryParam && !minPrice && !maxPrice && (
                 <Button asChild className="mt-4">
                   <Link href="/admin/products">
-                    Add Products in Admin
+                    {t("shop.addProducts")}
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
                 </Button>

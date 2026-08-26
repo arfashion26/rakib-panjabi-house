@@ -16,8 +16,10 @@ import {
 import { Container, ButtonLink } from "@/components/layout/container";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/logo";
+import { useLanguage } from "@/i18n/language-context";
 
 export default function OrderSuccessPage() {
+  const { t } = useLanguage();
   const [orderNumber, setOrderNumber] = React.useState("");
   const [isNewUser, setIsNewUser] = React.useState(false);
   const [phoneNumber, setPhoneNumber] = React.useState("");
@@ -66,17 +68,17 @@ export default function OrderSuccessPage() {
             {/* Content */}
             <div className="px-6 py-6 text-center md:px-8">
               <h1 className="font-serif text-3xl font-medium tracking-tight md:text-4xl">
-                Order Confirmed!
+                {t("thankYou.orderConfirmed")}
               </h1>
               <p className="mt-3 text-base text-muted-foreground">
-                Thank you for your order. We&apos;ve received it and will process it right away.
+                {t("thankYou.description")}
               </p>
 
               {/* Order number */}
               {orderNumber && (
                 <div className="mt-6 inline-flex flex-col items-center rounded-xl border border-accent/30 bg-accent/5 px-8 py-4">
                   <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
-                    Your Order Number
+                    {t("thankYou.orderNumber")}
                   </p>
                   <p className="mt-1 font-serif text-2xl font-bold text-accent">
                     {orderNumber}
@@ -90,18 +92,17 @@ export default function OrderSuccessPage() {
                   <div className="mb-2 flex items-center gap-2">
                     <User className="h-5 w-5 text-accent" />
                     <h2 className="font-serif text-lg font-medium text-accent">
-                      Your Account is Ready!
+                      {t("thankYou.accountReady")}
                     </h2>
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    We&apos;ve automatically created an account for you. You can track your
-                    order anytime — just login with your phone number!
+                    {t("thankYou.accountReadyDesc")}
                   </p>
 
                   <div className="mt-3 flex items-center gap-3 rounded-lg bg-background p-3">
                     <Phone className="h-5 w-5 text-accent" />
                     <div>
-                      <p className="text-xs text-muted-foreground">Login with your phone:</p>
+                      <p className="text-xs text-muted-foreground">{t("thankYou.loginWithPhone")}</p>
                       <p className="text-sm font-medium">{phoneNumber}</p>
                     </div>
                   </div>
@@ -114,7 +115,7 @@ export default function OrderSuccessPage() {
                   <div className="rounded-xl border border-border/60 bg-background p-4 text-center">
                     <Truck className="mx-auto mb-2 h-6 w-6 text-accent" />
                     <p className="text-xs uppercase tracking-wider text-muted-foreground">
-                      Estimated Delivery
+                      {t("checkout.deliveryArea")}
                     </p>
                     <p className="mt-1 text-sm font-medium">
                       {new Date(Date.now() + 4 * 24 * 60 * 60 * 1000).toLocaleDateString(
@@ -126,9 +127,9 @@ export default function OrderSuccessPage() {
                   <div className="rounded-xl border border-border/60 bg-background p-4 text-center">
                     <Package className="mx-auto mb-2 h-6 w-6 text-accent" />
                     <p className="text-xs uppercase tracking-wider text-muted-foreground">
-                      Order Status
+                      {t("orderTracking.status")}
                     </p>
-                    <p className="mt-1 text-sm font-medium text-orange-600">Pending</p>
+                    <p className="mt-1 text-sm font-medium text-orange-600">{t("orderDetail.processing")}</p>
                   </div>
                 </div>
               )}
@@ -136,34 +137,34 @@ export default function OrderSuccessPage() {
               {/* Next steps */}
               <div className="mt-8">
                 <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-                  What Happens Next?
+                  {t("thankYou.whatHappensNext")}
                 </h3>
                 <div className="grid gap-3 text-left sm:grid-cols-3">
                   <div className="rounded-lg border border-border/60 bg-background p-4">
                     <div className="mb-2 flex h-8 w-8 items-center justify-center rounded-full bg-accent/10 text-accent">
                       <Mail className="h-4 w-4" />
                     </div>
-                    <h4 className="text-xs font-semibold">1. Confirmation</h4>
+                    <h4 className="text-xs font-semibold">1. {t("thankYou.step1Title")}</h4>
                     <p className="mt-1 text-xs text-muted-foreground">
-                      We&apos;ll confirm your order shortly
+                      {t("thankYou.step1Desc")}
                     </p>
                   </div>
                   <div className="rounded-lg border border-border/60 bg-background p-4">
                     <div className="mb-2 flex h-8 w-8 items-center justify-center rounded-full bg-accent/10 text-accent">
                       <Package className="h-4 w-4" />
                     </div>
-                    <h4 className="text-xs font-semibold">2. Processing</h4>
+                    <h4 className="text-xs font-semibold">2. {t("thankYou.step2Title")}</h4>
                     <p className="mt-1 text-xs text-muted-foreground">
-                      We prepare your items for shipping
+                      {t("thankYou.step2Desc")}
                     </p>
                   </div>
                   <div className="rounded-lg border border-border/60 bg-background p-4">
                     <div className="mb-2 flex h-8 w-8 items-center justify-center rounded-full bg-accent/10 text-accent">
                       <Truck className="h-4 w-4" />
                     </div>
-                    <h4 className="text-xs font-semibold">3. Delivery</h4>
+                    <h4 className="text-xs font-semibold">3. {t("thankYou.step3Title")}</h4>
                     <p className="mt-1 text-xs text-muted-foreground">
-                      Arrives in 3-5 business days
+                      {t("thankYou.step3Desc")}
                     </p>
                   </div>
                 </div>
@@ -174,24 +175,24 @@ export default function OrderSuccessPage() {
                 <Button asChild size="lg" className="w-full sm:w-auto">
                   <Link href="/login">
                     <Phone className="mr-2 h-4 w-4" />
-                    Login to Track Order
+                    {t("thankYou.loginToTrack")}
                   </Link>
                 </Button>
                 <Button asChild variant="outline" size="lg" className="w-full sm:w-auto">
                   <Link href="/shop">
                     <ShoppingBag className="mr-2 h-4 w-4" />
-                    Continue Shopping
+                    {t("thankYou.continueShopping")}
                   </Link>
                 </Button>
               </div>
 
               {/* Support */}
               <p className="mt-6 text-xs text-muted-foreground">
-                Need help?{" "}
+                {t("thankYou.needHelp")}{" "}
                 <Link href="/contact" className="text-accent hover:underline">
-                  Contact us
+                  {t("thankYou.contactUs")}
                 </Link>{" "}
-                or call{" "}
+                {t("thankYou.orCall")}{" "}
                 <a href="tel:+8801716243949" className="text-accent hover:underline">
                   +880 1716-243949
                 </a>

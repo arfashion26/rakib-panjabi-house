@@ -62,7 +62,7 @@ export default function ComparePage() {
   if (loading) {
     return (
       <Container className="py-16">
-        <div className="text-center">Loading comparison...</div>
+        <div className="text-center">{t("common.loadingCompare")}</div>
       </Container>
     );
   }
@@ -77,12 +77,12 @@ export default function ComparePage() {
           <div>
             <h1 className="font-serif text-2xl font-medium">{t("compare.empty")}</h1>
             <p className="mt-2 text-sm text-muted-foreground">
-              Add products to compare their features side by side. You can compare up to 4 products at once.
+              {t("compare.emptyDesc")}
             </p>
           </div>
           <Button asChild size="lg">
             <Link href="/shop">
-              Browse Products
+              {t("compare.browseProducts")}
               <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
           </Button>
@@ -92,35 +92,35 @@ export default function ComparePage() {
   }
 
   const specs = [
-    { key: "price", label: "Price" },
-    { key: "discount_price", label: "Discount Price" },
-    { key: "fabric", label: "Fabric" },
-    { key: "fit", label: "Fit" },
-    { key: "care", label: "Care" },
-    { key: "origin", label: "Origin" },
-    { key: "weight_kg", label: "Weight (kg)" },
-    { key: "sizes", label: "Available Sizes" },
-    { key: "colors", label: "Available Colors" },
+    { key: "price", label: t("compare.specPrice") },
+    { key: "discount_price", label: t("compare.specDiscount") },
+    { key: "fabric", label: t("compare.specFabric") },
+    { key: "fit", label: t("compare.specFit") },
+    { key: "care", label: t("compare.specCare") },
+    { key: "origin", label: t("compare.specOrigin") },
+    { key: "weight_kg", label: t("compare.specWeight") },
+    { key: "sizes", label: t("compare.specSizes") },
+    { key: "colors", label: t("compare.specColors") },
   ];
 
   return (
     <Container className="py-8">
       <nav className="mb-6 text-xs text-muted-foreground">
-        <Link href="/" className="hover:text-accent">Home</Link>
+        <Link href="/" className="hover:text-accent">{t("common.home")}</Link>
         <span className="mx-1">/</span>
-        <span className="text-foreground">Compare</span>
+        <span className="text-foreground">{t("compare.title")}</span>
       </nav>
 
       <div className="mb-8 flex items-center justify-between">
         <div>
           <h1 className="font-serif text-3xl font-medium tracking-tight md:text-4xl">{t("compare.title")}</h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            Comparing {products.length} of 4 products
+            {t("compare.comparing").replace("{count}", String(products.length))}
           </p>
         </div>
         <Button variant="ghost" onClick={clearCompare} className="text-muted-foreground hover:text-red-500">
           <X className="mr-2 h-4 w-4" />
-          Clear All
+          {t("compare.clearAll")}
         </Button>
       </div>
 
@@ -128,7 +128,7 @@ export default function ComparePage() {
         <table className="w-full min-w-[640px] border-collapse">
           <thead>
             <tr>
-              <th className="w-40 border-b border-border p-4 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Product</th>
+              <th className="w-40 border-b border-border p-4 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("compare.product")}</th>
               {products.map((product) => (
                 <th key={product.id} className="border-b border-border p-4 text-center align-top">
                   <div className="relative">
@@ -173,7 +173,7 @@ export default function ComparePage() {
               </tr>
             ))}
             <tr>
-              <td className="bg-muted/30 p-4 text-sm font-medium">Actions</td>
+              <td className="bg-muted/30 p-4 text-sm font-medium">{t("compare.actions")}</td>
               {products.map((product) => (
                 <td key={product.id} className="p-4 text-center">
                   <Button
@@ -190,11 +190,11 @@ export default function ComparePage() {
                         selectedSize: null,
                         selectedColor: null,
                       });
-                      toast.success("Added to cart");
+                      toast.success(t("common.addedToCart"));
                     }}
                   >
                     <ShoppingBag className="mr-1 h-3.5 w-3.5" />
-                    Add to Cart
+                    {t("compare.addToCart")}
                   </Button>
                 </td>
               ))}

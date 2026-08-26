@@ -13,12 +13,12 @@ interface Content {
 }
 
 export function BrandStoryContent({ content }: { content: Content }) {
-  const { t, locale } = useLanguage();
+  const { t } = useLanguage();
   const values = [
-    { title: "Premium Quality", description: "Every piece is crafted with superior fabrics and meticulous attention to detail, ensuring exceptional longevity and comfort." },
-    { title: "Crafted with Care", description: "Our artisans bring decades of experience, combining traditional techniques with modern design sensibilities." },
-    { title: "Timeless Designs", description: "Each design balances classic elegance with contemporary style, creating pieces that transcend seasonal trends." },
-    { title: "Customer First", description: "From personalized styling advice to seamless returns, we put our customers at the heart of everything we do." },
+    { title: t("brandStory.value1Title"), description: t("brandStory.value1Desc") },
+    { title: t("brandStory.value2Title"), description: t("brandStory.value2Desc") },
+    { title: t("brandStory.value3Title"), description: t("brandStory.value3Desc") },
+    { title: t("brandStory.value4Title"), description: t("brandStory.value4Desc") },
   ];
 
   return (
@@ -30,7 +30,7 @@ export function BrandStoryContent({ content }: { content: Content }) {
               {content.image ? (
                 <img
                   src={content.image}
-                  alt="Brand Story"
+                  alt={t("brandStory.title")}
                   className="h-full w-full object-cover"
                 />
               ) : (
@@ -46,21 +46,21 @@ export function BrandStoryContent({ content }: { content: Content }) {
             <div className="absolute inset-8 rounded-lg border border-accent/10" />
             <div className="absolute -bottom-6 -right-6 rounded-lg bg-background p-5 shadow-xl">
               <div className="font-serif text-3xl font-medium text-accent">10+</div>
-              <div className="mt-1 text-xs uppercase tracking-wider text-muted-foreground">Years of<br />Excellence</div>
+              <div className="mt-1 text-xs uppercase tracking-wider text-muted-foreground" dangerouslySetInnerHTML={{ __html: t("brandStory.yearsLabel").replace(" ", "<br />") }} />
             </div>
           </div>
 
           <div>
             <SectionHeading
-              eyebrow={locale === "bn" ? t("brandStory.eyebrow") : content.eyebrow}
-              title={locale === "bn" ? t("brandStory.title") : content.title}
+              eyebrow={t("brandStory.eyebrow")}
+              title={t("brandStory.title")}
               align="left"
               className="mb-6"
             />
             <div className="space-y-4">
-              <p className="text-base leading-relaxed text-muted-foreground">{content.description}</p>
-              <p className="text-base leading-relaxed text-muted-foreground">{content.description2}</p>
-              <p className="text-base leading-relaxed text-muted-foreground">{content.description3}</p>
+              <p className="text-base leading-relaxed text-muted-foreground">{t("brandStory.desc1")}</p>
+              <p className="text-base leading-relaxed text-muted-foreground">{t("brandStory.desc2")}</p>
+              <p className="text-base leading-relaxed text-muted-foreground">{t("brandStory.desc3")}</p>
             </div>
             <div className="mt-8 grid gap-4 sm:grid-cols-2">
               {values.map((value) => (

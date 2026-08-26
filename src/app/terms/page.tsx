@@ -1,11 +1,11 @@
-import { Container } from "@/components/layout/container";
+"use client";
 
-export const metadata = {
-  title: "Terms & Conditions",
-  description: "Read the terms and conditions governing your use of Rakib Panjabi House website and services.",
-};
+import { Container } from "@/components/layout/container";
+import { useLanguage } from "@/i18n/language-context";
 
 export default function TermsPage() {
+  const { t } = useLanguage();
+
   const sections = [
     {
       title: "Acceptance of Terms",
@@ -86,13 +86,13 @@ export default function TermsPage() {
     <Container className="py-12 md:py-16">
       <div className="mx-auto max-w-3xl">
         <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-accent">
-          Last Updated: August 2026
+          {t("policies.lastUpdated")}
         </p>
         <h1 className="font-serif text-4xl font-medium tracking-tight md:text-5xl">
-          Terms &amp; Conditions
+          {t("policies.termsTitle")}
         </h1>
         <p className="mt-4 text-base text-muted-foreground">
-          Please read these terms carefully before using our website and services.
+          {t("policies.termsIntro")}
         </p>
 
         <div className="mt-12 space-y-10">
@@ -111,6 +111,10 @@ export default function TermsPage() {
             </div>
           ))}
         </div>
+
+        <p className="mt-12 border-t border-border/60 pt-6 text-sm text-muted-foreground">
+          {t("policies.contactForQuestions")}
+        </p>
       </div>
     </Container>
   );

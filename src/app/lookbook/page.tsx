@@ -1,13 +1,13 @@
+"use client";
+
 import Link from "next/link";
 import { Container, ButtonLink } from "@/components/layout/container";
 import { Camera, ArrowRight } from "lucide-react";
-
-export const metadata = {
-  title: "Lookbook",
-  description: "Get inspired by our latest lookbook featuring curated outfits and styling ideas for every occasion.",
-};
+import { useLanguage } from "@/i18n/language-context";
 
 export default function LookbookPage() {
+  const { t } = useLanguage();
+
   const looks = [
     {
       id: 1,
@@ -70,14 +70,13 @@ export default function LookbookPage() {
         <Container className="relative">
           <div className="mx-auto max-w-3xl text-center">
             <p className="mb-4 text-xs font-semibold uppercase tracking-[0.3em] text-accent">
-              Lookbook 2026
+              {t("lookbook.title")}
             </p>
             <h1 className="font-serif text-4xl font-medium leading-tight tracking-tight md:text-5xl lg:text-6xl">
-              Curated Looks for Every Occasion
+              {t("lookbook.title")}
             </h1>
             <p className="mt-6 text-base leading-relaxed text-primary-foreground/80 md:text-lg">
-              Discover styling inspiration from our latest collection. Each look is
-              thoughtfully curated to help you express your unique style.
+              {t("lookbook.subtitle")}
             </p>
           </div>
         </Container>
@@ -109,7 +108,7 @@ export default function LookbookPage() {
                   </h2>
                   <p className="mt-2 text-sm text-white/80">{look.desc}</p>
                   <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-accent">
-                    Shop the Look
+                    {t("lookbook.shopLook")}
                     <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                   </span>
                 </div>
@@ -124,15 +123,14 @@ export default function LookbookPage() {
             <Camera className="h-8 w-8 text-accent" />
           </div>
           <h2 className="font-serif text-3xl font-medium">
-            Share Your Style
+            {t("lookbook.viewProduct")}
           </h2>
           <p className="mx-auto mt-3 max-w-md text-base text-muted-foreground">
-            Tag us on Instagram with #RakibPanjabiHouse for a chance to be featured
-            in our next lookbook.
+            {t("lookbook.subtitle")}
           </p>
           <div className="mt-6 flex justify-center gap-3">
             <ButtonLink href="/shop">
-              Shop the Collection
+              {t("common.shop")}
               <ArrowRight className="ml-2 h-4 w-4" />
             </ButtonLink>
           </div>

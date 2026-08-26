@@ -7,6 +7,7 @@ import { Container, SectionHeading } from "@/components/layout/container";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/i18n/language-context";
 
 const posts = [
   {
@@ -16,7 +17,7 @@ const posts = [
     excerpt: "A comprehensive guide to selecting the right fabric, fit, and style for any occasion — from casual gatherings to formal ceremonies.",
     category: "Style Guide",
     date: "Aug 15, 2026",
-    readTime: "5 min read",
+    readMinutes: 5,
     gradient: "linear-gradient(135deg, #0f5132, #1a1a1f)",
     featured: true,
   },
@@ -27,7 +28,7 @@ const posts = [
     excerpt: "Discover versatile styling options that make your sherwani work for multiple wedding functions and celebrations.",
     category: "Fashion Tips",
     date: "Aug 8, 2026",
-    readTime: "4 min read",
+    readMinutes: 4,
     gradient: "linear-gradient(135deg, #b8860b, #800020)",
     featured: false,
   },
@@ -38,7 +39,7 @@ const posts = [
     excerpt: "Essential tips for maintaining the quality and longevity of your favorite panjabis, sherwanis, and kurtas.",
     category: "Care Guide",
     date: "Aug 1, 2026",
-    readTime: "6 min read",
+    readMinutes: 6,
     gradient: "linear-gradient(135deg, #1a237e, #0d1117)",
     featured: false,
   },
@@ -49,7 +50,7 @@ const posts = [
     excerpt: "Stay ahead of the curve with our predictions for the top winter fashion trends of 2026.",
     category: "Trends",
     date: "Jul 25, 2026",
-    readTime: "7 min read",
+    readMinutes: 7,
     gradient: "linear-gradient(135deg, #556b2f, #1a1a1f)",
     featured: false,
   },
@@ -60,7 +61,7 @@ const posts = [
     excerpt: "Trace the fascinating journey of the panjabi from its traditional roots to its modern-day status as a fashion staple.",
     category: "Culture",
     date: "Jul 18, 2026",
-    readTime: "8 min read",
+    readMinutes: 8,
     gradient: "linear-gradient(135deg, #800020, #1a1a1f)",
     featured: false,
   },
@@ -71,15 +72,23 @@ const posts = [
     excerpt: "Complete your traditional outfit with the right accessories — from mojaris to watches and everything in between.",
     category: "Fashion Tips",
     date: "Jul 10, 2026",
-    readTime: "5 min read",
+    readMinutes: 5,
     gradient: "linear-gradient(135deg, #8b6f47, #1a1a1f)",
     featured: false,
   },
 ];
 
-const categories = ["All", "Style Guide", "Fashion Tips", "Care Guide", "Trends", "Culture"];
+const categoryKeys = [
+  { label: "allPosts", value: "All" },
+  { label: "styleGuide", value: "Style Guide" },
+  { label: "fashionTips", value: "Fashion Tips" },
+  { label: "careGuide", value: "Care Guide" },
+  { label: "trends", value: "Trends" },
+  { label: "culture", value: "Culture" },
+];
 
 export default function BlogPage() {
+  const { t } = useLanguage();
   const [activeCategory, setActiveCategory] = React.useState("All");
   const [search, setSearch] = React.useState("");
 
@@ -97,14 +106,13 @@ export default function BlogPage() {
         <Container>
           <div className="mx-auto max-w-3xl text-center">
             <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-accent">
-              The Rakib Journal
+              {t("blog.title")}
             </p>
             <h1 className="font-serif text-4xl font-medium tracking-tight md:text-5xl lg:text-6xl">
-              Style Stories & Insights
+              {t("blog.title")}
             </h1>
             <p className="mt-4 text-base leading-relaxed text-muted-foreground md:text-lg">
-              Discover fashion tips, style guides, cultural stories, and the latest
-              trends from the world of premium menswear.
+              {t("blog.subtitle")}
             </p>
           </div>
         </Container>
@@ -139,7 +147,7 @@ export default function BlogPage() {
                 <span>·</span>
                 <span className="flex items-center gap-1">
                   <Clock className="h-3 w-3" />
-                  {featuredPost.readTime}
+                  {featuredPost.readMinutes} {t("blog.minRead")}
                 </span>
               </div>
               <h2 className="font-serif text-2xl font-medium leading-tight md:text-3xl">
@@ -149,7 +157,7 @@ export default function BlogPage() {
                 {featuredPost.excerpt}
               </p>
               <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-accent">
-                Read More
+                {t("blog.readMore")}
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </span>
             </div>
@@ -158,26 +166,29 @@ export default function BlogPage() {
 
         {/* Filters */}
         <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex flex-wrap gap-2">
-            {categories.map((cat) => (
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="mr-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              {t("blog.categories")}
+            </span>
+            {categoryKeys.map((cat) => (
               <button
-                key={cat}
-                onClick={() => setActiveCategory(cat)}
+                key={cat.value}
+                onClick={() => setActiveCategory(cat.value)}
                 className={cn(
                   "rounded-full px-4 py-1.5 text-xs font-medium uppercase tracking-wider transition-colors",
-                  activeCategory === cat
+                  activeCategory === cat.value
                     ? "bg-primary text-primary-foreground"
                     : "bg-muted text-muted-foreground hover:bg-muted/70"
                 )}
               >
-                {cat}
+                {cat.value === "All" ? t("blog.allPosts") : cat.value}
               </button>
             ))}
           </div>
           <div className="relative max-w-xs">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
-              placeholder="Search articles..."
+              placeholder={t("blog.searchPlaceholder")}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="pl-10"
@@ -209,7 +220,7 @@ export default function BlogPage() {
                   {post.date}
                   <span>·</span>
                   <Clock className="h-3 w-3" />
-                  {post.readTime}
+                  {post.readMinutes} {t("blog.minRead")}
                 </div>
                 <h3 className="font-serif text-xl font-medium leading-snug">
                   <Link href={`/blog/${post.slug}`} className="hover:text-accent">
@@ -223,7 +234,7 @@ export default function BlogPage() {
                   href={`/blog/${post.slug}`}
                   className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-accent hover:underline"
                 >
-                  Read More
+                  {t("blog.readMore")}
                   <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
                 </Link>
               </div>
@@ -233,8 +244,8 @@ export default function BlogPage() {
 
         {filteredPosts.length === 0 && (
           <div className="py-16 text-center">
-            <p className="text-sm font-medium">No articles found</p>
-            <p className="mt-1 text-xs text-muted-foreground">Try a different search or category</p>
+            <p className="text-sm font-medium">{t("blog.noPosts")}</p>
+            <p className="mt-1 text-xs text-muted-foreground">{t("blog.noPostsDesc")}</p>
           </div>
         )}
       </Container>

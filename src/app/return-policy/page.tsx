@@ -1,12 +1,12 @@
+"use client";
+
 import { Container } from "@/components/layout/container";
 import { CheckCircle2, XCircle, RefreshCw, Truck, CreditCard } from "lucide-react";
-
-export const metadata = {
-  title: "Return & Refund Policy",
-  description: "Learn about our 7-day return policy and refund process at Rakib Panjabi House.",
-};
+import { useLanguage } from "@/i18n/language-context";
 
 export default function ReturnPolicyPage() {
+  const { t } = useLanguage();
+
   const returnable = [
     "Items must be unworn, unwashed, and unused",
     "Original tags and packaging must be intact",
@@ -25,14 +25,13 @@ export default function ReturnPolicyPage() {
     <Container className="py-12 md:py-16">
       <div className="mx-auto max-w-3xl">
         <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-accent">
-          Last Updated: August 2026
+          {t("policies.lastUpdated")}
         </p>
         <h1 className="font-serif text-4xl font-medium tracking-tight md:text-5xl">
-          Return &amp; Refund Policy
+          {t("policies.returnTitle")}
         </h1>
         <p className="mt-4 text-base text-muted-foreground">
-          Your satisfaction is our priority. If you&apos;re not completely happy with your
-          purchase, we&apos;re here to help with returns and refunds.
+          {t("policies.returnIntro")}
         </p>
 
         {/* Quick summary */}
@@ -183,7 +182,7 @@ export default function ReturnPolicyPage() {
           <div className="rounded-lg bg-primary p-6 text-center text-primary-foreground">
             <h2 className="font-serif text-xl font-medium">Need Help?</h2>
             <p className="mt-2 text-sm text-primary-foreground/80">
-              Our support team is ready to assist with any return or refund questions.
+              {t("policies.contactForQuestions")}
             </p>
             <p className="mt-3 text-sm font-medium">
               Email: info@alrakib.com · Phone: +880 1716-243949

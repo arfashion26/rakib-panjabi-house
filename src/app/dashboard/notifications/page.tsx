@@ -1,7 +1,9 @@
 "use client";
 
+import * as React from "react";
 import { Bell, Check, Package, Heart, Tag } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/i18n/language-context";
 
 const notifications = [
   {
@@ -43,20 +45,21 @@ const notifications = [
 ];
 
 export default function NotificationsPage() {
+  const { t } = useLanguage();
   return (
     <div>
       <div className="mb-8 flex items-center justify-between">
         <div>
           <h1 className="font-serif text-2xl font-medium tracking-tight md:text-3xl">
-            Notifications
+            {t("dashboard.notificationsTitle")}
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            Stay updated on your orders and offers
+            {t("dashboard.notificationsDesc")}
           </p>
         </div>
         <Button variant="outline" size="sm">
           <Check className="mr-2 h-4 w-4" />
-          Mark all as read
+          {t("dashboard.markAllRead")}
         </Button>
       </div>
 
@@ -83,7 +86,7 @@ export default function NotificationsPage() {
             </div>
             {!n.read && (
               <Button variant="ghost" size="sm">
-                Mark read
+                {t("dashboard.markRead")}
               </Button>
             )}
           </div>
@@ -93,9 +96,9 @@ export default function NotificationsPage() {
       {notifications.length === 0 && (
         <div className="rounded-lg border border-dashed border-border bg-background p-12 text-center">
           <Bell className="mx-auto mb-3 h-12 w-12 text-muted-foreground/40" />
-          <p className="text-sm font-medium">No notifications yet</p>
+          <p className="text-sm font-medium">{t("dashboard.noNotifications")}</p>
           <p className="mt-1 text-xs text-muted-foreground">
-            You&apos;ll see updates about your orders and exclusive offers here.
+            {t("dashboard.noNotificationsDesc")}
           </p>
         </div>
       )}

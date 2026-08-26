@@ -56,7 +56,7 @@ export default function OrdersPage() {
     return (
       <div className="py-16 text-center">
         <Loader2 className="mx-auto mb-3 h-8 w-8 animate-spin text-muted-foreground" />
-        <p className="text-sm text-muted-foreground">Loading your orders...</p>
+        <p className="text-sm text-muted-foreground">{t("dashboard.loadingOrders")}</p>
       </div>
     );
   }
@@ -65,10 +65,10 @@ export default function OrdersPage() {
     <div>
       <div className="mb-8">
         <h1 className="font-serif text-2xl font-medium tracking-tight md:text-3xl">
-          My Orders
+          {t("dashboard.myOrders")}
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          {orders.length} {orders.length === 1 ? "order" : "orders"} placed
+          {orders.length} {t("dashboard.ordersDesc")}
         </p>
       </div>
 
@@ -76,7 +76,7 @@ export default function OrdersPage() {
         <div className="relative max-w-md">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
-            placeholder="Search by order number..."
+            placeholder={t("dashboard.searchOrders")}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="pl-10"
@@ -89,13 +89,13 @@ export default function OrdersPage() {
           <Package className="mx-auto mb-3 h-12 w-12 text-muted-foreground/40" />
           <p className="text-sm font-medium">{t("dashboard.noOrders")}</p>
           <p className="mt-1 text-xs text-muted-foreground">
-            You haven&apos;t placed any orders yet. Start shopping!
+            {t("dashboard.noOrdersYet")}
           </p>
           <Link
             href="/shop"
             className="mt-4 inline-block rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
           >
-            Start Shopping
+            {t("dashboard.startShopping")}
           </Link>
         </div>
       ) : (
@@ -116,7 +116,7 @@ export default function OrdersPage() {
                       {order.order_number}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      Placed on{" "}
+                      {t("orderDetail.placedOn")}{" "}
                       {new Date(order.placed_at).toLocaleDateString("en-US", {
                         month: "short",
                         day: "numeric",
@@ -128,7 +128,15 @@ export default function OrdersPage() {
 
                 <div className="flex items-center gap-4">
                   <Badge variant="secondary" className={statusColors[order.status] || ""}>
-                    {order.status.charAt(0) + order.status.slice(1).toLowerCase()}
+                    {order.status === "DELIVERED"
+                      ? t("orderDetail.delivered")
+                      : order.status === "SHIPPED"
+                      ? t("orderDetail.shipped")
+                      : order.status === "PROCESSING"
+                      ? t("orderDetail.processing")
+                      : order.status === "CONFIRMED"
+                      ? t("orderDetail.confirmed")
+                      : order.status.charAt(0) + order.status.slice(1).toLowerCase()}
                   </Badge>
                   <div className="text-right">
                     <p className="font-medium">{formatPrice(order.grand_total)}</p>

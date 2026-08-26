@@ -10,21 +10,22 @@ interface Content {
   subtitle: string;
 }
 
-const reviews = [
-  { name: "Tanvir Ahmed", location: "Dhaka", rating: 5, text: "The quality of the Panjabi exceeded my expectations. The fabric is premium, the stitching is impeccable, and the fit is perfect. I have already ordered three more pieces!", product: "Premium Cotton Panjabi", initials: "TA" },
-  { name: "Rakibul Hasan", location: "Chittagong", rating: 5, text: "I ordered a Sherwani for my wedding and it was absolutely stunning. The attention to detail, the embroidery, the fabric — everything was top-notch. Highly recommended!", product: "Royal Silk Sherwani", initials: "RH" },
-  { name: "Imran Khan", location: "Sylhet", rating: 5, text: "Excellent customer service and fast delivery. The blazer I ordered fits perfectly and the quality is comparable to international brands at a fraction of the price.", product: "Tailored Wool Blazer", initials: "IK" },
-];
-
 export function CustomerReviewsContent({ content }: { content: Content }) {
-  const { t, locale } = useLanguage();
+  const { t } = useLanguage();
+
+  const reviews = [
+    { name: t("reviews.review1Name"), location: t("reviews.review1Location"), rating: 5, text: t("reviews.review1Text"), product: t("reviews.review1Product"), initials: "TA" },
+    { name: t("reviews.review2Name"), location: t("reviews.review2Location"), rating: 5, text: t("reviews.review2Text"), product: t("reviews.review2Product"), initials: "RH" },
+    { name: t("reviews.review3Name"), location: t("reviews.review3Location"), rating: 5, text: t("reviews.review3Text"), product: t("reviews.review3Product"), initials: "IK" },
+  ];
+
   return (
     <section className="bg-muted/30 py-12 md:py-16 lg:py-20">
       <Container>
         <SectionHeading
-          eyebrow={locale === "bn" ? t("reviews.eyebrow") : content.eyebrow}
-          title={locale === "bn" ? t("reviews.title") : content.title}
-          subtitle={locale === "bn" ? t("reviews.subtitle") : content.subtitle}
+          eyebrow={t("reviews.eyebrow")}
+          title={t("reviews.title")}
+          subtitle={t("reviews.subtitle")}
         />
         <div className="grid gap-6 md:grid-cols-3">
           {reviews.map((review, idx) => (
@@ -44,18 +45,18 @@ export function CustomerReviewsContent({ content }: { content: Content }) {
                 </div>
                 <div>
                   <div className="text-sm font-semibold text-foreground">{review.name}</div>
-                  <div className="text-xs text-muted-foreground">{review.location} · Verified Purchase</div>
+                  <div className="text-xs text-muted-foreground">{review.location} · {t("reviews.verifiedPurchase")}</div>
                 </div>
               </div>
             </div>
           ))}
         </div>
         <div className="mt-12 flex flex-wrap items-center justify-center gap-8 border-t border-border/60 pt-8 md:gap-16">
-          <div className="text-center"><div className="font-serif text-3xl font-medium text-accent md:text-4xl">10,000+</div><div className="mt-1 text-xs uppercase tracking-wider text-muted-foreground">Happy Customers</div></div>
+          <div className="text-center"><div className="font-serif text-3xl font-medium text-accent md:text-4xl">{t("reviews.stat1Value")}</div><div className="mt-1 text-xs uppercase tracking-wider text-muted-foreground">{t("reviews.stat1Label")}</div></div>
           <div className="h-12 w-px bg-border/60 hidden md:block" />
-          <div className="text-center"><div className="font-serif text-3xl font-medium text-accent md:text-4xl">4.9/5</div><div className="mt-1 text-xs uppercase tracking-wider text-muted-foreground">Average Rating</div></div>
+          <div className="text-center"><div className="font-serif text-3xl font-medium text-accent md:text-4xl">{t("reviews.stat2Value")}</div><div className="mt-1 text-xs uppercase tracking-wider text-muted-foreground">{t("reviews.stat2Label")}</div></div>
           <div className="h-12 w-px bg-border/60 hidden md:block" />
-          <div className="text-center"><div className="font-serif text-3xl font-medium text-accent md:text-4xl">98%</div><div className="mt-1 text-xs uppercase tracking-wider text-muted-foreground">Would Recommend</div></div>
+          <div className="text-center"><div className="font-serif text-3xl font-medium text-accent md:text-4xl">{t("reviews.stat3Value")}</div><div className="mt-1 text-xs uppercase tracking-wider text-muted-foreground">{t("reviews.stat3Label")}</div></div>
         </div>
       </Container>
     </section>

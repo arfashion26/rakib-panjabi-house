@@ -124,11 +124,11 @@ export function ProductDetailContent({
 
   function handleAddToCart() {
     if (product.sizes.length > 1 && !selectedSize) {
-      toast.error("Please select a size");
+      toast.error(t("productDetail.selectSize"));
       return;
     }
     if (product.colors.length > 1 && !selectedColor) {
-      toast.error("Please select a color");
+      toast.error(t("productDetail.selectColor"));
       return;
     }
     addItem(
@@ -145,12 +145,12 @@ export function ProductDetailContent({
       },
       quantity
     );
-    toast.success(`${product.name} added to cart`);
+    toast.success(t("productDetail.addedToCart").replace("{name}", product.name));
   }
 
   function handleWishlist() {
     toggleWishlist(product.id);
-    toast.success(hasInWishlist ? "Removed from wishlist" : "Added to wishlist");
+    toast.success(hasInWishlist ? t("productDetail.removedFromWishlist") : t("productDetail.addedToWishlist"));
   }
 
   function handleShare() {
@@ -158,7 +158,7 @@ export function ProductDetailContent({
       navigator.share({ title: product.name, url: window.location.href }).catch(() => {});
     } else {
       navigator.clipboard.writeText(window.location.href);
-      toast.success("Link copied to clipboard");
+      toast.success(t("productDetail.shareLinkCopied"));
     }
   }
 
@@ -172,9 +172,9 @@ export function ProductDetailContent({
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <nav className="mb-6 flex items-center gap-1 text-xs text-muted-foreground">
-        <Link href="/" className="hover:text-accent">Home</Link>
+        <Link href="/" className="hover:text-accent">{t("common.home")}</Link>
         <ChevronRight className="h-3 w-3" />
-        <Link href="/shop" className="hover:text-accent">Shop</Link>
+        <Link href="/shop" className="hover:text-accent">{t("common.shop")}</Link>
         <ChevronRight className="h-3 w-3" />
         <span className="text-foreground line-clamp-1">{product.name}</span>
       </nav>
@@ -222,14 +222,14 @@ export function ProductDetailContent({
             )}
 
             <div className="absolute left-4 top-4 flex flex-col gap-2">
-              {product.is_new_arrival && <Badge>New</Badge>}
-              {product.is_best_seller && <Badge className="bg-accent text-accent-foreground">Bestseller</Badge>}
+              {product.is_new_arrival && <Badge>{t("productDetail.newBadge")}</Badge>}
+              {product.is_best_seller && <Badge className="bg-accent text-accent-foreground">{t("productDetail.bestsellerBadge")}</Badge>}
               {discount > 0 && <Badge className="bg-red-500">-{discount}%</Badge>}
             </div>
 
             <div className="absolute bottom-4 right-4 flex items-center gap-1 rounded-full bg-background/80 px-3 py-1.5 text-xs text-muted-foreground backdrop-blur">
               <ZoomIn className="h-3.5 w-3.5" />
-              {isZoomed ? "Click to zoom out" : "Click to zoom"}
+              {isZoomed ? t("productDetail.clickZoomOut") : t("productDetail.clickZoom")}
             </div>
           </div>
         </div>
@@ -237,13 +237,13 @@ export function ProductDetailContent({
         {/* Product info */}
         <div>
           {product.is_featured && (
-            <span className="mb-2 text-xs font-medium uppercase tracking-wider text-accent">Featured Product</span>
+            <span className="mb-2 text-xs font-medium uppercase tracking-wider text-accent">{t("productDetail.featuredProduct")}</span>
           )}
           <h1 className="font-serif text-2xl font-medium leading-tight tracking-tight md:text-3xl lg:text-4xl">
             {product.name}
           </h1>
           <p className="mt-2 text-xs uppercase tracking-wider text-muted-foreground">
-            SKU: {product.sku}
+            {t("products.sku")}: {product.sku}
           </p>
 
           <div className="mt-4 flex items-center gap-3">
@@ -253,7 +253,7 @@ export function ProductDetailContent({
             )}
             {discount > 0 && (
               <span className="rounded-full bg-red-500/10 px-3 py-1 text-xs font-semibold text-red-600">
-                Save {formatPrice(product.price - finalPrice)}
+                {t("productDetail.saveAmount")} {formatPrice(product.price - finalPrice)}
               </span>
             )}
           </div>
@@ -268,7 +268,7 @@ export function ProductDetailContent({
           {product.colors.length > 0 && (
             <div className="mb-6">
               <label className="mb-2 block text-sm font-medium">
-                Color: <span className="text-muted-foreground">{selectedColor ?? "Select"}</span>
+                {t("productDetail.color")}: <span className="text-muted-foreground">{selectedColor ?? t("productDetail.selectPlaceholder")}</span>
               </label>
               <div className="flex gap-2">
                 {product.colors.map((color) => (
@@ -293,10 +293,10 @@ export function ProductDetailContent({
             <div className="mb-6">
               <div className="mb-2 flex items-center justify-between">
                 <label className="text-sm font-medium">
-                  Size: <span className="text-muted-foreground">{selectedSize ?? "Select"}</span>
+                  {t("productDetail.size")}: <span className="text-muted-foreground">{selectedSize ?? t("productDetail.selectPlaceholder")}</span>
                 </label>
                 <Link href="/size-guide" className="text-xs text-accent hover:underline">
-                  Size Guide
+                  {t("productDetail.sizeGuide")}
                 </Link>
               </div>
               <div className="flex flex-wrap gap-2">
@@ -314,7 +314,7 @@ export function ProductDetailContent({
                   >
                     {size.size}
                     {size.stock === 0 && (
-                      <span className="absolute -bottom-4 left-0 right-0 text-center text-[9px] text-red-500">Out of stock</span>
+                      <span className="absolute -bottom-4 left-0 right-0 text-center text-[9px] text-red-500">{t("productDetail.outOfStockLabel")}</span>
                     )}
                   </button>
                 ))}
@@ -324,7 +324,7 @@ export function ProductDetailContent({
 
           {/* Quantity */}
           <div className="mb-6">
-            <label className="mb-2 block text-sm font-medium">Quantity</label>
+            <label className="mb-2 block text-sm font-medium">{t("productDetail.quantity")}</label>
             <div className="flex items-center gap-2">
               <Button variant="outline" size="icon" onClick={() => setQuantity(Math.max(1, quantity - 1))} disabled={quantity <= 1}>
                 <Minus className="h-4 w-4" />
@@ -340,7 +340,7 @@ export function ProductDetailContent({
           <div className="flex gap-2">
             <Button size="lg" className="flex-1" onClick={handleAddToCart} disabled={!isInStock}>
               <ShoppingBag className="mr-2 h-5 w-5" />
-              {isInStock ? "Add to Cart" : "Out of Stock"}
+              {isInStock ? t("productDetail.addToCart") : t("productDetail.outOfStock")}
             </Button>
             <Button size="lg" variant="outline" onClick={handleWishlist} className={cn(hasInWishlist && "border-red-500 text-red-500")}>
               <Heart className={cn("h-5 w-5", hasInWishlist && "fill-red-500")} />
@@ -354,30 +354,30 @@ export function ProductDetailContent({
             onClick={() => { handleAddToCart(); window.location.href = "/checkout"; }}
             disabled={!isInStock}
           >
-            Buy Now
+            {t("productDetail.buyNow")}
           </Button>
 
           {/* Trust badges */}
           <div className="mt-6 grid grid-cols-3 gap-3 border-t border-border pt-6 text-center">
             <div className="flex flex-col items-center gap-1.5">
               <Truck className="h-5 w-5 text-accent" />
-              <span className="text-xs text-muted-foreground">Free Shipping<br />Over ৳2000</span>
+              <span className="text-xs text-muted-foreground">{t("productDetail.freeShippingBadge")}<br />{t("productDetail.freeShippingBadgeDesc")}</span>
             </div>
             <div className="flex flex-col items-center gap-1.5">
               <RefreshCw className="h-5 w-5 text-accent" />
-              <span className="text-xs text-muted-foreground">7-Day<br />Easy Returns</span>
+              <span className="text-xs text-muted-foreground">{t("productDetail.returnsBadge")}<br />{t("productDetail.returnsBadgeDesc")}</span>
             </div>
             <div className="flex flex-col items-center gap-1.5">
               <ShieldCheck className="h-5 w-5 text-accent" />
-              <span className="text-xs text-muted-foreground">100% Secure<br />Payment</span>
+              <span className="text-xs text-muted-foreground">{t("productDetail.securePaymentBadge")}<br />{t("productDetail.securePaymentBadgeDesc")}</span>
             </div>
           </div>
 
           {/* Product meta */}
           <div className="mt-6 space-y-2 border-t border-border pt-4 text-xs">
-            {product.fabric && <div className="flex gap-2"><span className="font-medium text-muted-foreground">Fabric:</span><span>{product.fabric}</span></div>}
-            {product.fit && <div className="flex gap-2"><span className="font-medium text-muted-foreground">Fit:</span><span>{product.fit}</span></div>}
-            {product.origin && <div className="flex gap-2"><span className="font-medium text-muted-foreground">Origin:</span><span>{product.origin}</span></div>}
+            {product.fabric && <div className="flex gap-2"><span className="font-medium text-muted-foreground">{t("productDetail.fabric")}:</span><span>{product.fabric}</span></div>}
+            {product.fit && <div className="flex gap-2"><span className="font-medium text-muted-foreground">{t("productDetail.fit")}:</span><span>{product.fit}</span></div>}
+            {product.origin && <div className="flex gap-2"><span className="font-medium text-muted-foreground">{t("productDetail.origin")}:</span><span>{product.origin}</span></div>}
           </div>
         </div>
       </div>
@@ -388,7 +388,7 @@ export function ProductDetailContent({
           <TabsList className="w-full justify-start gap-6 border-b border-border">
             <TabsTrigger value="description">{t("productDetail.description")}</TabsTrigger>
             <TabsTrigger value="specifications">{t("productDetail.specifications")}</TabsTrigger>
-            <TabsTrigger value="reviews">Reviews ({reviews.length})</TabsTrigger>
+            <TabsTrigger value="reviews">{t("productDetail.reviews")} ({reviews.length})</TabsTrigger>
             <TabsTrigger value="shipping">{t("productDetail.shippingReturns")}</TabsTrigger>
           </TabsList>
 
@@ -396,7 +396,7 @@ export function ProductDetailContent({
             <p className="text-base leading-relaxed text-muted-foreground">{product.description}</p>
             {product.care && (
               <div className="mt-4">
-                <h4 className="text-sm font-semibold uppercase tracking-wider text-foreground">Care Instructions</h4>
+                <h4 className="text-sm font-semibold uppercase tracking-wider text-foreground">{t("productDetail.careInstructions")}</h4>
                 <p className="mt-1 text-sm text-muted-foreground">{product.care}</p>
               </div>
             )}
@@ -406,11 +406,11 @@ export function ProductDetailContent({
             <div className="overflow-hidden rounded-lg border border-border">
               <table className="w-full text-sm">
                 <tbody>
-                  {product.fabric && <tr className="border-b border-border"><td className="bg-muted/50 px-4 py-3 font-medium">Fabric</td><td className="px-4 py-3">{product.fabric}</td></tr>}
-                  {product.fit && <tr className="border-b border-border"><td className="bg-muted/50 px-4 py-3 font-medium">Fit</td><td className="px-4 py-3">{product.fit}</td></tr>}
-                  {product.care && <tr className="border-b border-border"><td className="bg-muted/50 px-4 py-3 font-medium">Care</td><td className="px-4 py-3">{product.care}</td></tr>}
-                  {product.origin && <tr className="border-b border-border"><td className="bg-muted/50 px-4 py-3 font-medium">Origin</td><td className="px-4 py-3">{product.origin}</td></tr>}
-                  <tr><td className="bg-muted/50 px-4 py-3 font-medium">SKU</td><td className="px-4 py-3">{product.sku}</td></tr>
+                  {product.fabric && <tr className="border-b border-border"><td className="bg-muted/50 px-4 py-3 font-medium">{t("productDetail.fabric")}</td><td className="px-4 py-3">{product.fabric}</td></tr>}
+                  {product.fit && <tr className="border-b border-border"><td className="bg-muted/50 px-4 py-3 font-medium">{t("productDetail.fit")}</td><td className="px-4 py-3">{product.fit}</td></tr>}
+                  {product.care && <tr className="border-b border-border"><td className="bg-muted/50 px-4 py-3 font-medium">{t("productDetail.care")}</td><td className="px-4 py-3">{product.care}</td></tr>}
+                  {product.origin && <tr className="border-b border-border"><td className="bg-muted/50 px-4 py-3 font-medium">{t("productDetail.origin")}</td><td className="px-4 py-3">{product.origin}</td></tr>}
+                  <tr><td className="bg-muted/50 px-4 py-3 font-medium">{t("products.sku")}</td><td className="px-4 py-3">{product.sku}</td></tr>
                 </tbody>
               </table>
             </div>
@@ -419,8 +419,8 @@ export function ProductDetailContent({
           <TabsContent value="reviews" className="mt-6">
             {reviews.length === 0 ? (
               <div className="py-12 text-center">
-                <p className="text-sm font-medium">No reviews yet</p>
-                <p className="mt-1 text-xs text-muted-foreground">Be the first to review this product</p>
+                <p className="text-sm font-medium">{t("productDetail.noReviews")}</p>
+                <p className="mt-1 text-xs text-muted-foreground">{t("productDetail.beFirst")}</p>
               </div>
             ) : (
               <div className="space-y-4">
@@ -432,7 +432,7 @@ export function ProductDetailContent({
                           {review.user?.name?.[0] || "U"}
                         </div>
                         <div>
-                          <div className="text-sm font-medium">{review.user?.name || "Anonymous"}</div>
+                          <div className="text-sm font-medium">{review.user?.name || t("productDetail.anonymous")}</div>
                           <div className="flex items-center gap-1">
                             {Array.from({ length: 5 }).map((_, idx) => (
                               <Star key={idx} className={cn("h-3 w-3", idx < review.rating ? "fill-accent text-accent" : "text-muted-foreground")} />
@@ -453,16 +453,16 @@ export function ProductDetailContent({
           <TabsContent value="shipping" className="mt-6">
             <div className="space-y-4 text-sm text-muted-foreground">
               <div>
-                <h4 className="mb-1 font-medium text-foreground">Shipping</h4>
-                <p>Delivery: 1 day inside Dhaka, 1-3 days outside Dhaka. Cash on Delivery available across Bangladesh.</p>
+                <h4 className="mb-1 font-medium text-foreground">{t("productDetail.shippingInfo")}</h4>
+                <p>{t("productDetail.shippingDesc")}</p>
               </div>
               <div>
-                <h4 className="mb-1 font-medium text-foreground">Returns & Exchanges</h4>
-                <p>Easy 7-day return policy. Items must be unworn, unwashed, and with original tags.</p>
+                <h4 className="mb-1 font-medium text-foreground">{t("productDetail.returnsInfo")}</h4>
+                <p>{t("productDetail.returnsDesc")}</p>
               </div>
               <div>
-                <h4 className="mb-1 font-medium text-foreground">Payment Options</h4>
-                <p>We accept bKash, Nagad, Rocket, Visa/Mastercard, and Cash on Delivery (COD) across Bangladesh.</p>
+                <h4 className="mb-1 font-medium text-foreground">{t("productDetail.paymentOptions")}</h4>
+                <p>{t("productDetail.paymentDesc")}</p>
               </div>
             </div>
           </TabsContent>
@@ -473,7 +473,7 @@ export function ProductDetailContent({
       {relatedProducts.length > 0 && (
         <div className="mt-16">
           <h2 className="mb-6 font-serif text-2xl font-medium tracking-tight md:text-3xl">
-            You May Also Like
+            {t("productDetail.relatedProducts")}
           </h2>
           <div className="grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-4 lg:gap-x-6">
             {relatedProducts.map((rel) => (

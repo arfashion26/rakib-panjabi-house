@@ -1,33 +1,24 @@
+"use client";
+
 import { Container, SectionHeading } from "@/components/layout/container";
 import { Award, Heart, Sparkles, Users, Target, Eye } from "lucide-react";
-
-export const metadata = {
-  title: "About Us",
-  description: "Discover the story behind Rakib Panjabi House — a premium fashion brand committed to quality, craftsmanship, and timeless elegance.",
-};
+import { useLanguage } from "@/i18n/language-context";
 
 export default function AboutPage() {
+  const { t } = useLanguage();
+
   const values = [
-    {
-      icon: Award,
-      title: "Premium Quality",
-      description: "Every piece is crafted with superior fabrics and meticulous attention to detail, ensuring exceptional longevity and comfort.",
-    },
-    {
-      icon: Heart,
-      title: "Crafted with Care",
-      description: "Our artisans bring decades of experience, combining traditional techniques with modern design sensibilities.",
-    },
-    {
-      icon: Sparkles,
-      title: "Timeless Designs",
-      description: "Each design balances classic elegance with contemporary style, creating pieces that transcend seasonal trends.",
-    },
-    {
-      icon: Users,
-      title: "Customer First",
-      description: "From personalized styling advice to seamless returns, we put our customers at the heart of everything we do.",
-    },
+    { icon: Award, title: t("about.premiumQuality"), description: t("about.premiumQualityDesc") },
+    { icon: Heart, title: t("about.craftedCare"), description: t("about.craftedCareDesc") },
+    { icon: Sparkles, title: t("about.timelessDesigns"), description: t("about.timelessDesignsDesc") },
+    { icon: Users, title: t("about.customerFirst"), description: t("about.customerFirstDesc") },
+  ];
+
+  const stats = [
+    { value: t("about.stat1Value"), label: t("about.stat1Label") },
+    { value: t("about.stat2Value"), label: t("about.stat2Label") },
+    { value: t("about.stat3Value"), label: t("about.stat3Label") },
+    { value: t("about.stat4Value"), label: t("about.stat4Label") },
   ];
 
   return (
@@ -41,14 +32,13 @@ export default function AboutPage() {
         <Container className="relative">
           <div className="mx-auto max-w-3xl text-center">
             <p className="mb-4 text-xs font-semibold uppercase tracking-[0.3em] text-accent">
-              Our Story
+              {t("about.eyebrow")}
             </p>
             <h1 className="font-serif text-4xl font-medium leading-tight tracking-tight md:text-5xl lg:text-6xl">
-              A Legacy of Craftsmanship
+              {t("about.title")}
             </h1>
             <p className="mt-6 text-base leading-relaxed text-primary-foreground/80 md:text-lg">
-              Rakib Panjabi House was founded with a singular vision — to bring premium
-              quality ethnic and contemporary fashion to the modern Bangladeshi gentleman.
+              {t("about.heroDesc")}
             </p>
           </div>
         </Container>
@@ -58,24 +48,16 @@ export default function AboutPage() {
       <Container className="py-16 md:py-24">
         <div className="mx-auto max-w-3xl space-y-6">
           <h2 className="font-serif text-3xl font-medium tracking-tight">
-            From Humble Beginnings
+            {t("about.storyTitle")}
           </h2>
           <p className="text-base leading-relaxed text-muted-foreground">
-            What started as a small workshop in the heart of Dhaka has grown into a trusted
-            destination for discerning customers who appreciate the finer details. Our journey
-            began with a simple belief: that traditional Bangladeshi craftsmanship deserves to
-            be celebrated, preserved, and shared with the world.
+            {t("about.storyDesc1")}
           </p>
           <p className="text-base leading-relaxed text-muted-foreground">
-            Each piece in our collection is a testament to our commitment to quality, from
-            the carefully sourced fabrics to the final stitches applied by our skilled artisans.
-            We work directly with weavers, dyers, and embroiderers across Bangladesh, ensuring
-            fair wages and preserving age-old techniques that might otherwise be lost.
+            {t("about.storyDesc2")}
           </p>
           <p className="text-base leading-relaxed text-muted-foreground">
-            Today, Rakib Panjabi House serves thousands of customers across Bangladesh and
-            beyond. But our mission remains the same: to create clothing that makes you feel
-            confident, comfortable, and connected to your cultural heritage.
+            {t("about.storyDesc3")}
           </p>
         </div>
       </Container>
@@ -88,24 +70,18 @@ export default function AboutPage() {
               <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-accent/10 text-accent">
                 <Target className="h-6 w-6" />
               </div>
-              <h3 className="font-serif text-2xl font-medium">Our Mission</h3>
+              <h3 className="font-serif text-2xl font-medium">{t("about.missionTitle")}</h3>
               <p className="mt-3 text-base leading-relaxed text-muted-foreground">
-                To deliver premium quality ethnic and contemporary menswear that celebrates
-                Bangladeshi craftsmanship while meeting the needs of the modern customer. We
-                strive to make every purchase a delightful experience — from browsing to
-                unboxing.
+                {t("about.missionDesc")}
               </p>
             </div>
             <div className="rounded-lg border border-border/60 bg-background p-8">
               <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-accent/10 text-accent">
                 <Eye className="h-6 w-6" />
               </div>
-              <h3 className="font-serif text-2xl font-medium">Our Vision</h3>
+              <h3 className="font-serif text-2xl font-medium">{t("about.visionTitle")}</h3>
               <p className="mt-3 text-base leading-relaxed text-muted-foreground">
-                To become Bangladesh&apos;s most loved premium fashion brand, recognized
-                internationally for quality, design, and ethical business practices. We
-                envision a future where traditional craftsmanship thrives alongside modern
-                fashion sensibilities.
+                {t("about.visionDesc")}
               </p>
             </div>
           </div>
@@ -115,9 +91,9 @@ export default function AboutPage() {
       {/* Values */}
       <Container className="py-16 md:py-24">
         <SectionHeading
-          eyebrow="What We Stand For"
-          title="Our Core Values"
-          subtitle="The principles that guide every decision we make, from design to delivery."
+          eyebrow={t("about.valuesEyebrow")}
+          title={t("about.coreValues")}
+          subtitle={t("about.valuesSubtitle")}
         />
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {values.map((value) => (
@@ -141,12 +117,7 @@ export default function AboutPage() {
       <section className="bg-primary py-16 text-primary-foreground md:py-20">
         <Container>
           <div className="grid grid-cols-2 gap-8 text-center md:grid-cols-4">
-            {[
-              { value: "10K+", label: "Happy Customers" },
-              { value: "500+", label: "Premium Products" },
-              { value: "4.9★", label: "Customer Rating" },
-              { value: "50+", label: "Skilled Artisans" },
-            ].map((stat) => (
+            {stats.map((stat) => (
               <div key={stat.label}>
                 <div className="font-serif text-4xl font-medium text-accent md:text-5xl">
                   {stat.value}

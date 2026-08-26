@@ -27,7 +27,7 @@ interface Product {
 }
 
 export function NewArrivalsContent({ products }: { products: Product[] }) {
-  const { t, locale } = useLanguage();
+  const { t } = useLanguage();
   if (products.length === 0) return null;
 
   return (
@@ -35,14 +35,14 @@ export function NewArrivalsContent({ products }: { products: Product[] }) {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mb-10 md:mb-12 flex flex-col items-end justify-between gap-4 md:flex-row">
           <div className="max-w-xl">
-            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-accent">{locale === "bn" ? t("newArrivals.eyebrow") : "Just Arrived"}</p>
-            <h2 className="font-serif text-3xl font-medium tracking-tight md:text-4xl">{locale === "bn" ? t("newArrivals.title") : "New Arrivals"}</h2>
+            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-accent">{t("newArrivals.eyebrow")}</p>
+            <h2 className="font-serif text-3xl font-medium tracking-tight md:text-4xl">{t("newArrivals.title")}</h2>
             <p className="mt-4 text-base text-muted-foreground md:text-lg">
-              Discover the latest additions to our collection, featuring fresh designs and seasonal must-haves.
+              {t("newArrivals.description")}
             </p>
           </div>
           <ButtonLink href="/new-arrivals" variant="ghost" className="shrink-0">
-            View All
+            {t("newArrivals.viewAll")}
             <ArrowRight className="ml-2 h-4 w-4" />
           </ButtonLink>
         </div>

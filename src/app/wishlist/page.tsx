@@ -62,7 +62,7 @@ export default function WishlistPage() {
   if (loading) {
     return (
       <Container className="py-16">
-        <div className="text-center">Loading your wishlist...</div>
+        <div className="text-center">{t("common.loadingWishlist")}</div>
       </Container>
     );
   }
@@ -77,12 +77,12 @@ export default function WishlistPage() {
           <div>
             <h1 className="font-serif text-2xl font-medium">{t("wishlist.empty")}</h1>
             <p className="mt-2 text-sm text-muted-foreground">
-              Save your favorite items here for easy access later. Click the heart icon on any product to add it to your wishlist.
+              {t("wishlist.emptyDesc")}
             </p>
           </div>
           <Button asChild size="lg">
             <Link href="/shop">
-              Explore Products
+              {t("wishlist.exploreProducts")}
               <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
           </Button>
@@ -94,28 +94,30 @@ export default function WishlistPage() {
   return (
     <Container className="py-8">
       <nav className="mb-6 text-xs text-muted-foreground">
-        <Link href="/" className="hover:text-accent">Home</Link>
+        <Link href="/" className="hover:text-accent">{t("common.home")}</Link>
         <span className="mx-1">/</span>
-        <span className="text-foreground">Wishlist</span>
+        <span className="text-foreground">{t("common.wishlist")}</span>
       </nav>
 
       <div className="mb-8 flex items-center justify-between">
         <div>
           <h1 className="font-serif text-3xl font-medium tracking-tight md:text-4xl">{t("wishlist.title")}</h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            {products.length} {products.length === 1 ? "item" : "items"} in your wishlist
+            {products.length === 1
+              ? t("wishlist.itemInList").replace("{count}", String(products.length))
+              : t("wishlist.itemsInList").replace("{count}", String(products.length))}
           </p>
         </div>
         <Button
           variant="ghost"
           onClick={() => {
             clearWishlist();
-            toast.success("Wishlist cleared");
+            toast.success(t("common.wishlistCleared"));
           }}
           className="text-muted-foreground hover:text-red-500"
         >
           <Trash2 className="mr-2 h-4 w-4" />
-          Clear All
+          {t("wishlist.clearAll")}
         </Button>
       </div>
 

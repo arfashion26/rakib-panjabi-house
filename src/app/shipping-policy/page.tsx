@@ -1,24 +1,23 @@
+"use client";
+
 import { Container } from "@/components/layout/container";
 import { Truck, MapPin, Clock, Package } from "lucide-react";
-
-export const metadata = {
-  title: "Shipping Policy",
-  description: "Learn about our shipping methods, delivery times, and shipping charges at Rakib Panjabi House.",
-};
+import { useLanguage } from "@/i18n/language-context";
 
 export default function ShippingPolicyPage() {
+  const { t } = useLanguage();
+
   return (
     <Container className="py-12 md:py-16">
       <div className="mx-auto max-w-3xl">
         <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-accent">
-          Last Updated: August 2026
+          {t("policies.lastUpdated")}
         </p>
         <h1 className="font-serif text-4xl font-medium tracking-tight md:text-5xl">
-          Shipping Policy
+          {t("policies.shippingTitle")}
         </h1>
         <p className="mt-4 text-base text-muted-foreground">
-          We ship across Bangladesh with reliable courier partners. Here&apos;s everything
-          you need to know about our shipping options.
+          {t("policies.shippingIntro")}
         </p>
 
         <div className="mt-12 space-y-10">
@@ -184,7 +183,7 @@ export default function ShippingPolicyPage() {
             <MapPin className="mx-auto mb-2 h-8 w-8 text-accent" />
             <h2 className="font-serif text-xl font-medium">Shipping Questions?</h2>
             <p className="mt-2 text-sm text-primary-foreground/80">
-              Contact our support team for any shipping-related inquiries.
+              {t("policies.contactForQuestions")}
             </p>
             <p className="mt-3 text-sm font-medium">
               Email: info@alrakib.com · Phone: +880 1716-243949

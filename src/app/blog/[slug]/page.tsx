@@ -8,13 +8,14 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
+import { useLanguage } from "@/i18n/language-context";
 
 const samplePosts: Record<string, any> = {
   "art-of-choosing-perfect-panjabi": {
     title: "The Art of Choosing the Perfect Panjabi",
     category: "Style Guide",
     date: "Aug 15, 2026",
-    readTime: "5 min read",
+    readMinutes: 5,
     gradient: "linear-gradient(135deg, #0f5132, #1a1a1f)",
     content: [
       "Choosing the right panjabi is both an art and a science. It's about understanding your body type, the occasion, the season, and most importantly, your personal style. In this comprehensive guide, we'll walk you through everything you need to know to make the perfect choice.",
@@ -28,7 +29,7 @@ const samplePosts: Record<string, any> = {
     title: "5 Ways to Style a Sherwani for Wedding Season",
     category: "Fashion Tips",
     date: "Aug 8, 2026",
-    readTime: "4 min read",
+    readMinutes: 4,
     gradient: "linear-gradient(135deg, #b8860b, #800020)",
     content: [
       "Wedding season in Bangladesh is a celebration of color, tradition, and style. Your sherwani is the centerpiece of your wedding look, and how you style it can make all the difference. Here are five distinct ways to style your sherwani for different wedding functions.",
@@ -43,7 +44,7 @@ const samplePosts: Record<string, any> = {
     title: "Caring for Your Premium Ethnic Wear",
     category: "Care Guide",
     date: "Aug 1, 2026",
-    readTime: "6 min read",
+    readMinutes: 6,
     gradient: "linear-gradient(135deg, #1a237e, #0d1117)",
     content: [
       "Premium ethnic wear is an investment — both in terms of money and the memories attached to each piece. Proper care ensures your favorite panjabis, sherwanis, and kurtas remain beautiful for years to come.",
@@ -57,6 +58,7 @@ const samplePosts: Record<string, any> = {
 
 export default function BlogPostPage() {
   const params = useParams();
+  const { t } = useLanguage();
   const slug = params.slug as string;
   const post = samplePosts[slug] || samplePosts["art-of-choosing-perfect-panjabi"];
 
@@ -95,7 +97,7 @@ export default function BlogPostPage() {
               </span>
               <span className="flex items-center gap-1.5">
                 <Clock className="h-4 w-4" />
-                {post.readTime}
+                {post.readMinutes} {t("blog.minRead")}
               </span>
             </div>
           </div>
@@ -110,7 +112,7 @@ export default function BlogPostPage() {
             className="mb-8 inline-flex items-center text-sm text-muted-foreground hover:text-accent"
           >
             <ArrowLeft className="mr-1 h-4 w-4" />
-            Back to Blog
+            {t("blog.backToBlog")}
           </Link>
 
           {/* Actions */}

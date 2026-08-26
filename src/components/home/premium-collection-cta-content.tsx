@@ -15,7 +15,7 @@ interface Content {
 }
 
 export function PremiumCTAContent({ content }: { content: Content }) {
-  const { t, locale } = useLanguage();
+  const { t } = useLanguage();
   return (
     <section className="relative overflow-hidden bg-primary py-16 text-primary-foreground md:py-24">
       <div className="absolute inset-0">
@@ -25,27 +25,27 @@ export function PremiumCTAContent({ content }: { content: Content }) {
       </div>
       <div className="relative mx-auto max-w-3xl px-4 text-center">
         <p className="mb-4 text-xs font-semibold uppercase tracking-[0.3em] text-accent">
-          {locale === "bn" ? t("premiumCTA.eyebrow") : content.eyebrow}
+          {t("premiumCTA.eyebrow")}
         </p>
         <h2 className="font-serif text-3xl font-medium leading-tight tracking-tight md:text-4xl lg:text-5xl">
-          {locale === "bn" ? t("premiumCTA.title") : content.title}
+          {t("premiumCTA.title")}
         </h2>
         <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-primary-foreground/80 md:text-lg">
-          {locale === "bn" ? t("premiumCTA.description") : content.description}
+          {t("premiumCTA.description")}
         </p>
         <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <Link
             href={content.primaryCtaLink}
             className="inline-flex h-12 items-center justify-center rounded-md bg-accent px-8 text-sm font-medium uppercase tracking-wider text-accent-foreground transition-colors hover:bg-accent/90"
           >
-            {content.primaryCtaText}
+            {t("premiumCTA.explore")}
             <ArrowRight className="ml-2 h-4 w-4" />
           </Link>
           <Link
             href={content.secondaryCtaLink}
             className="inline-flex h-12 items-center justify-center rounded-md border border-primary-foreground/30 px-8 text-sm font-medium uppercase tracking-wider text-primary-foreground transition-colors hover:bg-primary-foreground/10"
           >
-            {content.secondaryCtaText}
+            {t("premiumCTA.viewLookbook")}
           </Link>
         </div>
       </div>

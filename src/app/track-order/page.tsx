@@ -36,31 +36,31 @@ export default function TrackOrderPage() {
   const trackingSteps = [
     {
       icon: CheckCircle2,
-      title: "Order Placed",
+      title: t("trackOrder.orderPlaced"),
       date: "Aug 22, 2026 — 10:32 AM",
-      desc: "We've received your order",
+      desc: t("trackOrder.orderPlacedDesc"),
       done: true,
     },
     {
       icon: Package,
-      title: "Processing",
+      title: t("trackOrder.processing"),
       date: "Aug 22, 2026 — 2:15 PM",
-      desc: "Your order is being prepared",
+      desc: t("trackOrder.processingDesc"),
       done: true,
     },
     {
       icon: Truck,
-      title: "Shipped",
+      title: t("trackOrder.shipped"),
       date: "Aug 23, 2026 — 9:00 AM",
-      desc: "Out for delivery via Pathao",
+      desc: t("trackOrder.shippedDesc"),
       done: false,
       current: true,
     },
     {
       icon: HomeIcon,
-      title: "Delivered",
+      title: t("trackOrder.delivered"),
       date: "Expected Aug 25, 2026",
-      desc: "Will be delivered to your address",
+      desc: t("trackOrder.deliveredDesc"),
       done: false,
     },
   ];
@@ -74,10 +74,10 @@ export default function TrackOrderPage() {
             <Package className="h-8 w-8 text-accent" />
           </div>
           <h1 className="font-serif text-3xl font-medium tracking-tight md:text-4xl">
-            Track Your Order
+            {t("trackOrder.title")}
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            Enter your order number to see the latest delivery status
+            {t("trackOrder.subtitle")}
           </p>
         </div>
 
@@ -97,7 +97,7 @@ export default function TrackOrderPage() {
               ) : (
                 <>
                   <Search className="mr-2 h-4 w-4" />
-                  Track
+                  {t("trackOrder.track")}
                 </>
               )}
             </Button>
@@ -110,7 +110,7 @@ export default function TrackOrderPage() {
             <div className="mb-6 flex items-center justify-between border-b border-border pb-4">
               <div>
                 <p className="text-xs uppercase tracking-wider text-muted-foreground">
-                  Order Number
+                  {t("trackOrder.orderNumber")}
                 </p>
                 <p className="font-serif text-lg font-medium text-accent">
                   {orderNumber}
@@ -118,9 +118,9 @@ export default function TrackOrderPage() {
               </div>
               <div className="text-right">
                 <p className="text-xs uppercase tracking-wider text-muted-foreground">
-                  Status
+                  {t("trackOrder.currentStatus")}
                 </p>
-                <p className="font-medium text-accent">In Transit</p>
+                <p className="font-medium text-accent">{t("trackOrder.inTransit")}</p>
               </div>
             </div>
 
@@ -159,7 +159,7 @@ export default function TrackOrderPage() {
                       {step.current && (
                         <span className="flex items-center gap-1 rounded-full bg-accent/10 px-2 py-0.5 text-[10px] font-medium text-accent">
                           <Clock className="h-2.5 w-2.5" />
-                          Current
+                          {t("trackOrder.current")}
                         </span>
                       )}
                     </div>
@@ -173,15 +173,15 @@ export default function TrackOrderPage() {
             {/* Tracking link */}
             <div className="mt-6 rounded-lg bg-muted/50 p-3 text-center text-sm">
               <p className="text-muted-foreground">
-                Carrier: <span className="font-medium text-foreground">Pathao Courier</span>
+                {t("trackOrder.carrier")}: <span className="font-medium text-foreground">Pathao Courier</span>
               </p>
               <p className="text-muted-foreground">
-                Tracking ID: <span className="font-mono text-foreground">PTH-XX123456789</span>
+                {t("trackOrder.trackingId")}: <span className="font-mono text-foreground">PTH-XX123456789</span>
               </p>
             </div>
 
             <Button variant="outline" className="mt-4 w-full" asChild>
-              <Link href="/dashboard">View Full Order Details</Link>
+              <Link href="/dashboard">{t("trackOrder.viewFullDetails")}</Link>
             </Button>
           </div>
         )}
@@ -190,9 +190,9 @@ export default function TrackOrderPage() {
         {!searched && (
           <div className="rounded-lg border border-dashed border-border p-6 text-center">
             <p className="text-sm text-muted-foreground">
-              Don&apos;t have your order number?{" "}
+              {t("trackOrder.noOrderNumber")}{" "}
               <Link href="/contact" className="text-accent hover:underline">
-                Contact support
+                {t("trackOrder.contactSupport")}
               </Link>
             </p>
           </div>

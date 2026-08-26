@@ -38,20 +38,21 @@ export function ProductGridPage({
   products: Product[];
   saleMode?: boolean;
 }) {
-  const { t, locale } = useLanguage();
-  const Icon = saleMode ? Zap : eyebrow === "Just Arrived" ? Sparkles : TrendingUp;
+  const { t } = useLanguage();
+  const isNewArrival = eyebrow === "Just Arrived" || eyebrow === t("newArrivals.eyebrow");
+  const Icon = saleMode ? Zap : isNewArrival ? Sparkles : TrendingUp;
 
   // Use translations based on page type
-  const pageTitle = saleMode ? t("sale.title") : eyebrow === "Just Arrived" ? t("newArrivals.title") : t("bestSellers.title");
-  const pageEyebrow = saleMode ? t("sale.eyebrow") : eyebrow === "Just Arrived" ? t("newArrivals.eyebrow") : t("bestSellers.eyebrow");
-  const pageDesc = saleMode ? t("sale.description") : eyebrow === "Just Arrived" ? t("newArrivals.description") : t("bestSellers.description");
+  const pageTitle = saleMode ? t("sale.title") : isNewArrival ? t("newArrivals.title") : t("bestSellers.title");
+  const pageEyebrow = saleMode ? t("sale.eyebrow") : isNewArrival ? t("newArrivals.eyebrow") : t("bestSellers.eyebrow");
+  const pageDesc = saleMode ? t("sale.description") : isNewArrival ? t("newArrivals.description") : t("bestSellers.description");
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 md:py-12">
       <nav className="mb-6 text-xs text-muted-foreground">
         <Link href="/" className="hover:text-accent">{t("common.home")}</Link>
         <span className="mx-1">/</span>
-        <span className="text-foreground">{title.split(" — ")[0]}</span>
+        <span className="text-foreground">{pageTitle}</span>
       </nav>
 
       <div className="mb-10">
@@ -63,10 +64,10 @@ export function ProductGridPage({
           }`}
         >
           <Icon className="h-3 w-3" />
-          {locale === "bn" ? pageEyebrow : eyebrow}
+          {pageEyebrow}
         </div>
-        <h1 className="font-serif text-4xl font-medium tracking-tight md:text-5xl">{locale === "bn" ? pageTitle : title}</h1>
-        <p className="mt-3 max-w-2xl text-base text-muted-foreground md:text-lg">{locale === "bn" ? pageDesc : description}</p>
+        <h1 className="font-serif text-4xl font-medium tracking-tight md:text-5xl">{pageTitle}</h1>
+        <p className="mt-3 max-w-2xl text-base text-muted-foreground md:text-lg">{pageDesc}</p>
       </div>
 
       {products.length === 0 ? (
@@ -74,10 +75,10 @@ export function ProductGridPage({
           <Icon className="mx-auto mb-3 h-12 w-12 text-muted-foreground/40" />
           <p className="text-sm font-medium">{t("shop.noProducts")}</p>
           <p className="mt-1 text-xs text-muted-foreground">
-            Check back soon — we&apos;re adding new products regularly!
+            {t("category.noProductsDesc")}
           </p>
           <ButtonLink href="/shop" variant="outline" className="mt-4">
-            Browse All Products
+            {t("shop.browseAll")}
           </ButtonLink>
         </div>
       ) : (
@@ -97,7 +98,7 @@ export function ProductGridPage({
 
       <div className="mt-16 text-center">
         <ButtonLink href="/shop" variant="outline">
-          View All Products
+          {t("sale.viewAll")}
           <ArrowRight className="ml-2 h-4 w-4" />
         </ButtonLink>
       </div>

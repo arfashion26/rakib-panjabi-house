@@ -1,11 +1,11 @@
-import { Container } from "@/components/layout/container";
+"use client";
 
-export const metadata = {
-  title: "Privacy Policy",
-  description: "Learn how Rakib Panjabi House collects, uses, and protects your personal information.",
-};
+import { Container } from "@/components/layout/container";
+import { useLanguage } from "@/i18n/language-context";
 
 export default function PrivacyPolicyPage() {
+  const { t } = useLanguage();
+
   const sections = [
     {
       title: "Information We Collect",
@@ -73,14 +73,13 @@ export default function PrivacyPolicyPage() {
     <Container className="py-12 md:py-16">
       <div className="mx-auto max-w-3xl">
         <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-accent">
-          Last Updated: August 2026
+          {t("policies.lastUpdated")}
         </p>
         <h1 className="font-serif text-4xl font-medium tracking-tight md:text-5xl">
-          Privacy Policy
+          {t("policies.privacyTitle")}
         </h1>
         <p className="mt-4 text-base text-muted-foreground">
-          At Rakib Panjabi House, we take your privacy seriously. This policy explains
-          how we collect, use, and protect your personal information.
+          {t("policies.privacyIntro")}
         </p>
 
         <div className="mt-12 space-y-10">
@@ -99,6 +98,10 @@ export default function PrivacyPolicyPage() {
             </div>
           ))}
         </div>
+
+        <p className="mt-12 border-t border-border/60 pt-6 text-sm text-muted-foreground">
+          {t("policies.contactForQuestions")}
+        </p>
       </div>
     </Container>
   );
