@@ -4,6 +4,7 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AppShell } from "@/components/layout/app-shell";
+import { LanguageProvider } from "@/i18n/language-context";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -172,8 +173,10 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <AppShell>{children}</AppShell>
-          <Toaster />
+          <LanguageProvider>
+            <AppShell>{children}</AppShell>
+            <Toaster />
+          </LanguageProvider>
         </ThemeProvider>
       </body>
     </html>

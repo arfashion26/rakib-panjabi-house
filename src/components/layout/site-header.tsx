@@ -23,6 +23,7 @@ import {
 } from "@/lib/brand";
 import { useCart } from "@/lib/store";
 import { CartDrawer } from "@/components/cart/cart-drawer";
+import { useLanguage } from "@/i18n/language-context";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -51,6 +52,7 @@ import {
  * Top announcement bar (above header)
  */
 function AnnouncementBar() {
+  const { locale, setLocale, t } = useLanguage();
   return (
     <div className="bg-accent text-accent-foreground">
       <div className="mx-auto max-w-7xl px-4">
@@ -61,21 +63,29 @@ function AnnouncementBar() {
           </div>
           <div className="flex-1 text-center md:flex-none">
             <span className="font-medium tracking-wide">
-              ✦ Free shipping on orders over ৳2000 — Shop the New Collection Today ✦
+              {t("announcement.text")}
             </span>
           </div>
           <div className="hidden md:flex items-center gap-3">
-            <DropdownMenu>
-              <DropdownMenuTrigger className="flex items-center gap-1 hover:opacity-80">
-                <Globe className="h-3 w-3" />
-                <span>EN</span>
-                <ChevronDown className="h-3 w-3" />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem>English</DropdownMenuItem>
-                <DropdownMenuItem>বাংলা</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            {/* Language Toggle */}
+            <div className="flex items-center gap-1 rounded-full bg-accent-foreground/10 px-1 py-0.5">
+              <button
+                onClick={() => setLocale("en")}
+                className={`rounded-full px-2 py-0.5 text-xs font-medium transition-colors ${
+                  locale === "en" ? "bg-accent-foreground text-accent" : "text-accent-foreground/70 hover:text-accent-foreground"
+                }`}
+              >
+                EN
+              </button>
+              <button
+                onClick={() => setLocale("bn")}
+                className={`rounded-full px-2 py-0.5 text-xs font-medium transition-colors ${
+                  locale === "bn" ? "bg-accent-foreground text-accent" : "text-accent-foreground/70 hover:text-accent-foreground"
+                }`}
+              >
+                বাংলা
+              </button>
+            </div>
             <span className="text-accent-foreground/60">|</span>
             <span>৳ BDT</span>
           </div>
@@ -313,6 +323,7 @@ function MobileHeader() {
   const pathname = usePathname();
   const totalItems = useCart((s) => s.getTotalItems());
   const openCart = useCart((s) => s.openCart);
+  const { locale, setLocale } = useLanguage();
 
   return (
     <div className="md:hidden bg-primary text-primary-foreground">
@@ -321,6 +332,28 @@ function MobileHeader() {
         <Link href="/" aria-label="Home">
           <Logo size="sm" variant="light" />
         </Link>
+      </div>
+
+      {/* Language toggle for mobile */}
+      <div className="flex justify-center pb-2">
+        <div className="flex items-center gap-1 rounded-full bg-primary-foreground/10 px-1 py-0.5">
+          <button
+            onClick={() => setLocale("en")}
+            className={`rounded-full px-3 py-0.5 text-xs font-medium transition-colors ${
+              locale === "en" ? "bg-accent text-accent-foreground" : "text-primary-foreground/70"
+            }`}
+          >
+            EN
+          </button>
+          <button
+            onClick={() => setLocale("bn")}
+            className={`rounded-full px-3 py-0.5 text-xs font-medium transition-colors ${
+              locale === "bn" ? "bg-accent text-accent-foreground" : "text-primary-foreground/70"
+            }`}
+          >
+            বাংলা
+          </button>
+        </div>
       </div>
 
       {/* Action row — black background */}
