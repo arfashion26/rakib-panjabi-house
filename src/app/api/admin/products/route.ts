@@ -272,9 +272,23 @@ export async function DELETE(request: NextRequest) {
     }
 
     const admin = createAdminClient();
+
+    // First delete all related records (to avoid foreign key constraints)
+    await admin.from("product_images").delete().eq("product_id", productId);
+    await admin.from("product_sizes").delete().eq("product_id", productId);
+    await admin.from("product_colors").delete().eq("product_id", productId);
+    await admin.from("product_specifications").delete().eq("product_id", productId);
+    await admin.from("product_tags").delete().eq("product_id", productId);
+    await admin.from("cart_items").delete().eq("product_id", productId);
+    await admin.from("wishlist_items").delete().eq("product_id", productId);
+    await admin.from("compare_items").delete().eq("product_id", productId);
+    await admin.from("recently_viewed").delete().eq("product_id", productId);
+
+    // Now delete the product
     const { error } = await admin.from("products").delete().eq("id", productId);
 
     if (error) {
+      console.error("Delete product DB error:", error.message);
       return NextResponse.json({ success: false, error: error.message }, { status: 500 });
     }
 

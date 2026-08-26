@@ -180,14 +180,16 @@ export default function AdminProductsPage() {
       const res = await fetch(`/api/admin/products?id=${product.id}`, { method: "DELETE" });
       const data = await res.json();
       if (data.success) {
-        toast.success("Product deleted");
+        toast.success("Product deleted successfully");
         setDeleteConfirm(null);
         loadProducts();
       } else {
-        toast.error(data.error || "Failed to delete");
+        toast.error(data.error || "Failed to delete product");
+        setDeleteConfirm(null);
       }
-    } catch {
-      toast.error("Failed to delete product");
+    } catch (e: any) {
+      toast.error("Network error — failed to delete product");
+      setDeleteConfirm(null);
     }
   }
 
