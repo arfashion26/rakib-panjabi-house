@@ -181,6 +181,20 @@ export async function placeOrder(data: {
   shippingCost: number;
   codCharge: number;
   total: number;
+  // Optional coupon
+  coupon?: {
+    id: string;
+    code: string;
+    discount: number;
+  } | null;
+  // Optional gift card order (when customer purchases a gift card)
+  giftCard?: {
+    amount: number;
+    recipientName: string;
+    recipientEmail: string;
+    senderName: string;
+    message: string;
+  } | null;
 }): Promise<{
   success: boolean;
   orderNumber?: string;
@@ -247,9 +261,9 @@ export async function placeOrder(data: {
         user_id: userId,
         status: "PENDING",
         payment_status: data.payment === "cod" ? "UNPAID" : "PENDING",
-        fulfillment_status: "UNFULFILLED",
+        fulfillment_status: data.giftCard ? "DIGITAL" : "UNFULFILLED",
         subtotal: data.subtotal,
-        discount_total: 0,
+        discount_total: data.coupon?.discount || 0,
         shipping_total: data.shippingCost,
         tax_total: 0,
         grand_total: data.total,
@@ -309,6 +323,58 @@ export async function placeOrder(data: {
       message: `Order placed by ${data.name} via ${data.payment === "cod" ? "Cash on Delivery" : data.payment}`,
       timestamp: new Date().toISOString(),
     });
+
+    // Step 4a: If a coupon was used, record it + increment used_count
+    if (data.coupon && data.coupon.id) {
+      try {
+        await admin.from("order_coupons").insert({
+          order_id: order.id,
+          coupon_id: data.coupon.id,
+          code: data.coupon.code,
+          discount_amount: data.coupon.discount,
+          user_id: userId,
+        });
+        // Increment coupon used_count manually (RPC not always available)
+        const { data: couponRow } = await admin
+          .from("coupons")
+          .select("used_count")
+          .eq("id", data.coupon.id)
+          .maybeSingle();
+        if (couponRow) {
+          await admin
+            .from("coupons")
+            .update({ used_count: (couponRow.used_count || 0) + 1, updated_at: new Date().toISOString() })
+            .eq("id", data.coupon.id);
+        }
+      } catch (couponErr) {
+        console.error("Coupon tracking error:", couponErr);
+        // Don't fail the order
+      }
+    }
+
+    // Step 4b: If this is a gift card purchase, create the gift voucher
+    if (data.giftCard) {
+      try {
+        // Generate a unique gift card code: RPH-GIFT-XXXXXXXX
+        const giftCode = `RPH-GIFT-${Math.random().toString(36).slice(2, 10).toUpperCase()}`;
+        await admin.from("gift_vouchers").insert({
+          code: giftCode,
+          amount: data.giftCard.amount,
+          balance: data.giftCard.amount,
+          currency: "BDT",
+          recipient_email: data.giftCard.recipientEmail,
+          recipient_name: data.giftCard.recipientName,
+          sender_name: data.giftCard.senderName,
+          message: data.giftCard.message,
+          expires_at: null, // Gift cards never expire
+          is_redeemed: false,
+        });
+        console.log(`Gift voucher created: ${giftCode} for ${data.giftCard.recipientEmail}`);
+      } catch (giftErr) {
+        console.error("Gift voucher creation error:", giftErr);
+        // Don't fail the order — the gift card can be issued manually
+      }
+    }
 
     // Step 4b: Auto-save shipping address for the customer
     // Check if they already have this address saved

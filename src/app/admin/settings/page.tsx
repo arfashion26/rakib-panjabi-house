@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
+import { PaymentMethodsConfig } from "@/components/admin/payment-methods-config";
 import { toast } from "sonner";
 
 export default function AdminSettingsPage() {
@@ -92,49 +93,22 @@ export default function AdminSettingsPage() {
               <Input id="freeShip" type="number" defaultValue="2000" />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="flatShip">Flat Rate (Dhaka)</Label>
-              <Input id="flatShip" type="number" defaultValue="80" />
+              <Label htmlFor="flatShip">COD Charge (Inside Dhaka)</Label>
+              <Input id="flatShip" type="number" defaultValue="70" />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="outsideShip">Outside Dhaka</Label>
-              <Input id="outsideShip" type="number" defaultValue="130" />
+              <Label htmlFor="outsideShip">COD Charge (Outside Dhaka)</Label>
+              <Input id="outsideShip" type="number" defaultValue="120" />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="cod">COD Charge</Label>
-              <Input id="cod" type="number" defaultValue="50" />
+              <Label htmlFor="cod">Free Shipping Minimum</Label>
+              <Input id="cod" type="number" defaultValue="2000" />
             </div>
           </div>
         </div>
 
-        {/* Payment */}
-        <div className="rounded-lg border border-border/60 bg-background p-6">
-          <div className="mb-4 flex items-center gap-2">
-            <CreditCard className="h-5 w-5 text-accent" />
-            <h2 className="font-serif text-lg font-medium">Payment Methods</h2>
-          </div>
-          <div className="space-y-3">
-            {[
-              { name: "SSLCommerz", desc: "bKash, Nagad, Rocket, Cards", enabled: true },
-              { name: "Stripe", desc: "International cards (Visa, Mastercard)", enabled: true },
-              { name: "Cash on Delivery", desc: "Pay when you receive", enabled: true },
-            ].map((method, i) => (
-              <label
-                key={i}
-                className="flex items-center justify-between rounded-md border border-border/60 p-3"
-              >
-                <div>
-                  <p className="text-sm font-medium">{method.name}</p>
-                  <p className="text-xs text-muted-foreground">{method.desc}</p>
-                </div>
-                <input
-                  type="checkbox"
-                  defaultChecked={method.enabled}
-                  className="h-5 w-9 cursor-pointer appearance-none rounded-full bg-muted transition-colors checked:bg-accent before:block before:h-4 before:w-4 before:translate-x-0.5 before:translate-y-0.5 before:rounded-full before:bg-white before:transition-transform checked:before:translate-x-4"
-                />
-              </label>
-            ))}
-          </div>
-        </div>
+        {/* Payment Methods — real API-backed config */}
+        <PaymentMethodsConfig />
 
         {/* Social */}
         <div className="rounded-lg border border-border/60 bg-background p-6">
@@ -162,3 +136,4 @@ export default function AdminSettingsPage() {
     </div>
   );
 }
+
