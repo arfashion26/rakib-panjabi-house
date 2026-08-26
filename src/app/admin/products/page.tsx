@@ -158,7 +158,14 @@ export default function AdminProductsPage() {
         body: JSON.stringify({
           ...product,
           brandId: null,
+          categoryId: product.category_id,
           shortDescription: product.short_description,
+          // Convert images from { url, is_primary } to { url, isPrimary, altText }
+          images: (product.images || []).map((img: any) => ({
+            url: img.url,
+            isPrimary: img.is_primary,
+            altText: product.name,
+          })),
         }),
       });
       const data = await res.json();
@@ -904,7 +911,7 @@ function ProductFormDialog({
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button type="submit" form="product-form" disabled={saving}>
+          <Button onClick={() => { handleSubmit({ preventDefault: () => {} } as any); }} disabled={saving}>
             {saving ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
