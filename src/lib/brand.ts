@@ -9,7 +9,7 @@ export const siteConfig = {
   tagline: "Premium Panjabi & Fashion for the Modern Gentleman",
   description:
     "Premium quality Panjabis, shirts, pants, and ethnic wear with timeless elegance and modern designs. Free shipping across Bangladesh.",
-  url: "https://rakib-panjabi-house.vercel.app",
+  url: "https://alrakib.com",
   ogImage: "/og-image.jpg",
   email: "info@alrakib.com",
   phone: "+880 1716-243949",

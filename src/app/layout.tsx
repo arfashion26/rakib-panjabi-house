@@ -17,7 +17,7 @@ const playfair = Playfair_Display({
   display: "swap",
 });
 
-const siteUrl = "https://rakib-panjabi-house.vercel.app";
+const siteUrl = "https://alrakib.com";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),

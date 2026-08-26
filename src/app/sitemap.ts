@@ -1,8 +1,9 @@
 import type { MetadataRoute } from "next";
-import { siteConfig, categories } from "@/lib/brand";
+import { siteConfig } from "@/lib/brand";
+import { createAdminClient } from "@/lib/supabase";
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = siteConfig.url;
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const baseUrl = siteConfig.url; // https://alrakib.com
   const now = new Date();
 
   // Static pages
@@ -21,7 +22,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${baseUrl}/size-guide`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
     { url: `${baseUrl}/track-order`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
     { url: `${baseUrl}/login`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },
-    { url: `${baseUrl}/register`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },
     // Policy pages
     { url: `${baseUrl}/privacy-policy`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },
     { url: `${baseUrl}/terms`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },
@@ -29,52 +29,61 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${baseUrl}/shipping-policy`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },
   ];
 
-  // Category pages
-  const categoryPages: MetadataRoute.Sitemap = categories.map((cat) => ({
-    url: `${baseUrl}/shop/${cat.slug}`,
-    lastModified: now,
-    changeFrequency: "weekly",
-    priority: 0.7,
-  }));
+  // Fetch real categories from database
+  let categoryPages: MetadataRoute.Sitemap = [];
+  let productPages: MetadataRoute.Sitemap = [];
+  let blogPages: MetadataRoute.Sitemap = [];
 
-  // In production, also include product pages from database
-  // For now, include placeholder product slugs
-  const placeholderProductSlugs = [
-    "premium-cotton-panjabi-emerald",
-    "royal-silk-sherwani-ivory-gold",
-    "linen-casual-shirt-sand",
-    "tailored-wool-blazer-charcoal",
-    "premium-oxford-shirt-white",
-    "embroidered-kurta-pajama-maroon",
-    "slim-fit-jeans-dark-indigo",
-    "quilted-winter-jacket-olive",
-    "cotton-polo-shirt-navy",
-    "premium-t-shirt-heather-grey",
-    "formal-trousers-black",
-    "premium-leather-belt-brown",
-  ];
-  const productPages: MetadataRoute.Sitemap = placeholderProductSlugs.map((slug) => ({
-    url: `${baseUrl}/product/${slug}`,
-    lastModified: now,
-    changeFrequency: "weekly",
-    priority: 0.8,
-  }));
+  try {
+    const admin = createAdminClient();
 
-  // Blog post pages
-  const blogPostSlugs = [
-    "art-of-choosing-perfect-panjabi",
-    "styling-sherwani-wedding",
-    "caring-premium-ethnic-wear",
-    "winter-fashion-trends-2026",
-    "history-of-panjabi",
-    "accessorize-ethnic-look",
-  ];
-  const blogPages: MetadataRoute.Sitemap = blogPostSlugs.map((slug) => ({
-    url: `${baseUrl}/blog/${slug}`,
-    lastModified: now,
-    changeFrequency: "monthly",
-    priority: 0.5,
-  }));
+    // Categories
+    const { data: categories } = await admin
+      .from("categories")
+      .select("slug, updated_at")
+      .eq("is_active", true);
+
+    if (categories) {
+      categoryPages = categories.map((cat) => ({
+        url: `${baseUrl}/shop/${cat.slug}`,
+        lastModified: cat.updated_at ? new Date(cat.updated_at) : now,
+        changeFrequency: "weekly" as const,
+        priority: 0.7,
+      }));
+    }
+
+    // Products
+    const { data: products } = await admin
+      .from("products")
+      .select("slug, updated_at")
+      .eq("status", "ACTIVE");
+
+    if (products) {
+      productPages = products.map((p) => ({
+        url: `${baseUrl}/product/${p.slug}`,
+        lastModified: p.updated_at ? new Date(p.updated_at) : now,
+        changeFrequency: "weekly" as const,
+        priority: 0.8,
+      }));
+    }
+
+    // Blog posts
+    const { data: posts } = await admin
+      .from("blog_posts")
+      .select("slug, updated_at")
+      .eq("status", "PUBLISHED");
+
+    if (posts) {
+      blogPages = posts.map((post) => ({
+        url: `${baseUrl}/blog/${post.slug}`,
+        lastModified: post.updated_at ? new Date(post.updated_at) : now,
+        changeFrequency: "monthly" as const,
+        priority: 0.5,
+      }));
+    }
+  } catch {
+    // If DB not available, just return static pages
+  }
 
   return [...staticPages, ...categoryPages, ...productPages, ...blogPages];
 }
