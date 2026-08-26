@@ -19,7 +19,7 @@ const faqs = [
     items: [
       {
         q: "How long does delivery take?",
-        a: "Standard delivery takes 2-5 business days inside Dhaka and 3-7 days outside Dhaka. Express delivery (1-2 days) is available inside Dhaka for an additional charge. Same-day delivery is available for orders placed before 11 AM within Dhaka city limits.",
+        a: "Delivery takes 1 day inside Dhaka and 1-3 days outside Dhaka. Cash on Delivery is available across Bangladesh.",
       },
       {
         q: "How can I track my order?",

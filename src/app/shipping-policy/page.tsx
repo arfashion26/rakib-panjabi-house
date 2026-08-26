@@ -34,7 +34,7 @@ export default function ShippingPolicyPage() {
                   <div className="flex-1">
                     <h3 className="text-sm font-medium">Standard Delivery</h3>
                     <p className="text-xs text-muted-foreground">
-                      3-5 business days (Dhaka) · 3-7 days (Outside Dhaka)
+                      1 day (Dhaka) · 1-3 days (Outside Dhaka)
                     </p>
                   </div>
                   <p className="text-sm font-medium">৳80-130</p>

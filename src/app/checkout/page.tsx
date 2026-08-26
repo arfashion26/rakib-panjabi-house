@@ -277,7 +277,7 @@ export default function CheckoutPage() {
                     <div>
                       <div className="text-sm font-medium">Inside Dhaka</div>
                       <div className="text-xs text-muted-foreground">
-                        COD charge: ৳{COD_CHARGES.inside_dhaka}
+                        COD: ৳{COD_CHARGES.inside_dhaka} · Delivery: 1 day
                       </div>
                     </div>
                   </label>
@@ -293,7 +293,7 @@ export default function CheckoutPage() {
                     <div>
                       <div className="text-sm font-medium">Outside Dhaka</div>
                       <div className="text-xs text-muted-foreground">
-                        COD charge: ৳{COD_CHARGES.outside_dhaka}
+                        COD: ৳{COD_CHARGES.outside_dhaka} · Delivery: 1-3 days
                       </div>
                     </div>
                   </label>

@@ -452,7 +452,7 @@ export function ProductDetailContent({
             <div className="space-y-4 text-sm text-muted-foreground">
               <div>
                 <h4 className="mb-1 font-medium text-foreground">Shipping</h4>
-                <p>Free shipping on all orders over ৳2000 within Bangladesh. Standard delivery takes 2-5 business days inside Dhaka and 3-7 days outside Dhaka.</p>
+                <p>Delivery: 1 day inside Dhaka, 1-3 days outside Dhaka. Cash on Delivery available across Bangladesh.</p>
               </div>
               <div>
                 <h4 className="mb-1 font-medium text-foreground">Returns & Exchanges</h4>

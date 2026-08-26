@@ -137,7 +137,7 @@ export default function ThankYouPage() {
                   </div>
                   <h4 className="text-xs font-semibold">3. Delivery</h4>
                   <p className="mt-1 text-xs text-muted-foreground">
-                    Arrives in 3-5 business days
+                    Inside Dhaka: 1 day · Outside: 1-3 days
                   </p>
                 </div>
               </div>
