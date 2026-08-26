@@ -111,22 +111,6 @@ export default function AdminLoginPage() {
             </Button>
           </form>
 
-          {/* Help text */}
-          <div className="mt-6 rounded-md bg-muted/50 p-4 text-xs text-muted-foreground">
-            <p className="font-medium text-foreground">First time setting up admin?</p>
-            <ol className="mt-2 list-inside list-decimal space-y-1">
-              <li>Register an account on the website first</li>
-              <li>
-                Run the SQL from{" "}
-                <code className="rounded bg-muted px-1 py-0.5 font-mono">
-                  0002_make_admin.sql
-                </code>{" "}
-                to promote your account
-              </li>
-              <li>Then login here with your credentials</li>
-            </ol>
-          </div>
-
           {/* Back to site */}
           <div className="mt-6 text-center">
             <Link
