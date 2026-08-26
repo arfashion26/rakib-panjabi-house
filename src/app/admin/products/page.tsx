@@ -160,6 +160,10 @@ export default function AdminProductsPage() {
           brandId: null,
           categoryId: product.category_id,
           shortDescription: product.short_description,
+          isFeatured: product.is_featured,
+          isBestSeller: product.is_best_seller,
+          isNewArrival: product.is_new_arrival,
+          isFlashSale: product.is_flash_sale,
           // Convert images from { url, is_primary } to { url, isPrimary, altText }
           images: (product.images || []).map((img: any) => ({
             url: img.url,
