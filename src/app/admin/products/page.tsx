@@ -215,7 +215,7 @@ export default function AdminProductsPage() {
       sku: "",
       description: "",
       price: 0,
-      status: "DRAFT",
+      status: "ACTIVE",
       is_featured: false,
       is_best_seller: false,
       is_new_arrival: false,
