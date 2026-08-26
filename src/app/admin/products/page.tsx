@@ -171,8 +171,8 @@ export default function AdminProductsPage() {
       } else {
         toast.error(data.error || "Failed to save product");
       }
-    } catch {
-      toast.error("Failed to save product");
+    } catch (e: any) {
+      toast.error("Network error: " + (e?.message || "Failed to save product"));
     } finally {
       setSaving(false);
     }
@@ -502,7 +502,7 @@ function ProductFormDialog({
           <DialogTitle>{isEditing ? "Edit Product" : "Add New Product"}</DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form id="product-form" onSubmit={handleSubmit} className="space-y-4">
           {/* Basic Info */}
           <div className="space-y-3">
             <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
@@ -904,7 +904,7 @@ function ProductFormDialog({
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button onClick={() => onSave(form)} disabled={saving}>
+          <Button type="submit" form="product-form" disabled={saving}>
             {saving ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
