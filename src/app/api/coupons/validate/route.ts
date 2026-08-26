@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createServerClientHelper, createAdminClient } from "@/lib/supabase";
+import { createAdminClient } from "@/lib/supabase";
 
 /**
  * POST /api/coupons/validate
@@ -8,6 +8,7 @@ import { createServerClientHelper, createAdminClient } from "@/lib/supabase";
  *
  * Validates a coupon code and returns the discount amount if valid.
  * This endpoint is public (anyone can validate a coupon before checkout).
+ * Uses admin client to bypass RLS (coupons table needs to be readable).
  */
 export async function POST(req: NextRequest) {
   try {
@@ -25,7 +26,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const supabase = await createServerClientHelper();
+    // Use admin client to bypass RLS (coupon codes are public-looking-up)
+    const supabase = createAdminClient();
 
     // Fetch the coupon
     const { data: coupon, error } = await supabase

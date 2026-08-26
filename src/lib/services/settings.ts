@@ -1,15 +1,18 @@
 "use server";
 
-import { createServerClientHelper, createAdminClient } from "@/lib/supabase";
+import { createAdminClient } from "@/lib/supabase";
 import { DEFAULT_PAYMENT_CONFIG, type PaymentConfig } from "@/lib/payment-config";
 
 /**
  * Fetch the payment configuration from the `settings` table.
  * Falls back to defaults (COD only) if the DB is unreachable.
+ *
+ * Uses the admin client to bypass RLS — the payment config is a
+ * store-wide setting, not user-specific data.
  */
 export async function getPaymentConfig(): Promise<PaymentConfig> {
   try {
-    const supabase = await createServerClientHelper();
+    const supabase = createAdminClient();
     const { data, error } = await supabase
       .from("settings")
       .select("key,value")

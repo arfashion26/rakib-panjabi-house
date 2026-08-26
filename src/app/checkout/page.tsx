@@ -172,7 +172,12 @@ export default function CheckoutPage() {
       });
       const data = await res.json();
       if (data.success) {
-        setCouponData(data.coupon);
+        // Merge coupon object + discount + freeShipping into one state object
+        setCouponData({
+          ...data.coupon,
+          discount: data.discount,
+          freeShipping: data.freeShipping,
+        });
         toast.success(
           locale === "bn"
             ? `কুপন প্রয়োগ হয়েছে! আপনি ${formatPrice(data.discount)} সাশ্রয় করেছেন`

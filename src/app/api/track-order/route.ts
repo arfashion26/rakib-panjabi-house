@@ -1,11 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createServerClientHelper } from "@/lib/supabase";
+import { createAdminClient } from "@/lib/supabase";
 
 /**
  * GET /api/track-order?order=RPH-260823-67460
  *
  * Public endpoint — anyone with an order number can track the order.
  * Returns the order status, items, tracking history, and tracking number.
+ *
+ * Uses the admin client (service role) to bypass RLS, since order tracking
+ * must be accessible without authentication (the order number itself is the
+ * "secret"). Only public fields are returned.
  */
 export async function GET(req: NextRequest) {
   try {
@@ -17,7 +21,8 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const supabase = await createServerClientHelper();
+    // Use admin client to bypass RLS (order number is the access token)
+    const supabase = createAdminClient();
 
     // Fetch the order
     const { data: order, error: orderError } = await supabase
