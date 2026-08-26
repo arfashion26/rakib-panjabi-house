@@ -6,6 +6,7 @@ import { GitCompare, X, ShoppingBag, ArrowRight } from "lucide-react";
 import { useCompare } from "@/lib/store";
 import { useCart } from "@/lib/store";
 import { getProducts } from "@/lib/services/products";
+import { useLanguage } from "@/i18n/language-context";
 import { Container, ButtonLink } from "@/components/layout/container";
 import { Button } from "@/components/ui/button";
 import { formatPrice, calculateDiscount } from "@/lib/types";
@@ -29,6 +30,7 @@ interface Product {
 }
 
 export default function ComparePage() {
+  const { t } = useLanguage();
   const productIds = useCompare((s) => s.productIds);
   const toggle = useCompare((s) => s.toggle);
   const clearCompare = useCompare((s) => s.clear);
@@ -73,7 +75,7 @@ export default function ComparePage() {
             <GitCompare className="h-12 w-12 text-muted-foreground" />
           </div>
           <div>
-            <h1 className="font-serif text-2xl font-medium">Nothing to Compare</h1>
+            <h1 className="font-serif text-2xl font-medium">{t("compare.empty")}</h1>
             <p className="mt-2 text-sm text-muted-foreground">
               Add products to compare their features side by side. You can compare up to 4 products at once.
             </p>
@@ -111,7 +113,7 @@ export default function ComparePage() {
 
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="font-serif text-3xl font-medium tracking-tight md:text-4xl">Compare Products</h1>
+          <h1 className="font-serif text-3xl font-medium tracking-tight md:text-4xl">{t("compare.title")}</h1>
           <p className="mt-2 text-sm text-muted-foreground">
             Comparing {products.length} of 4 products
           </p>

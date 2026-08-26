@@ -14,6 +14,7 @@ import {
   X,
   Truck,
 } from "lucide-react";
+import { useLanguage } from "@/i18n/language-context";
 import { useCart } from "@/lib/store";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -26,6 +27,7 @@ const FREE_SHIPPING_THRESHOLD = 2000;
 const FLAT_SHIPPING = 80;
 
 export default function CartPage() {
+  const { t } = useLanguage();
   const router = useRouter();
   const { items, updateQuantity, removeItem, clearCart, getSubtotal } = useCart();
   const [couponCode, setCouponCode] = React.useState("");
@@ -74,7 +76,7 @@ export default function CartPage() {
             <ShoppingBag className="h-12 w-12 text-muted-foreground" />
           </div>
           <div>
-            <h1 className="font-serif text-2xl font-medium">Your Cart is Empty</h1>
+            <h1 className="font-serif text-2xl font-medium">{t("cartPage.empty")}</h1>
             <p className="mt-2 text-sm text-muted-foreground">
               Looks like you haven&apos;t added anything to your cart yet. Start
               shopping to discover our premium collection.
@@ -325,7 +327,7 @@ export default function CartPage() {
             {/* Totals */}
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Subtotal</span>
+                <span className="text-muted-foreground">{t("cartPage.subtotal")}</span>
                 <span className="font-medium">{formatPrice(subtotal)}</span>
               </div>
               {discount > 0 && (
@@ -351,7 +353,7 @@ export default function CartPage() {
             <Separator className="my-4" />
 
             <div className="flex items-center justify-between">
-              <span className="font-medium">Total</span>
+              <span className="font-medium">{t("cartPage.total")}</span>
               <span className="font-serif text-2xl font-medium">
                 {formatPrice(total)}
               </span>

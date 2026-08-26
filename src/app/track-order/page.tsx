@@ -11,12 +11,14 @@ import {
   Home as HomeIcon,
   Loader2,
 } from "lucide-react";
+import { useLanguage } from "@/i18n/language-context";
 import { Container } from "@/components/layout/container";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
 export default function TrackOrderPage() {
+  const { t } = useLanguage();
   const [orderNumber, setOrderNumber] = React.useState("");
   const [searched, setSearched] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
@@ -84,7 +86,7 @@ export default function TrackOrderPage() {
           <div className="flex gap-2">
             <Input
               type="text"
-              placeholder="e.g. RPH-260822-12345"
+              placeholder={t("trackOrder.placeholder")}
               value={orderNumber}
               onChange={(e) => setOrderNumber(e.target.value)}
               className="h-11"

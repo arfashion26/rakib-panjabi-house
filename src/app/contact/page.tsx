@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { Mail, Phone, MapPin, Send, Clock } from "lucide-react";
+import { useLanguage } from "@/i18n/language-context";
 import { Container } from "@/components/layout/container";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 
 export default function ContactPage() {
+  const { t } = useLanguage();
   const [submitting, setSubmitting] = React.useState(false);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -56,7 +58,7 @@ export default function ContactPage() {
                     <Mail className="h-5 w-5" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium">Email Us</p>
+                    <p className="text-sm font-medium">{t("contact.emailUs")}</p>
                     <p className="text-sm text-muted-foreground">info@alrakib.com</p>
                     <p className="mt-1 text-xs text-muted-foreground">We reply within 24 hours</p>
                   </div>
@@ -69,7 +71,7 @@ export default function ContactPage() {
                     <Phone className="h-5 w-5" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium">Call Us</p>
+                    <p className="text-sm font-medium">{t("contact.callUs")}</p>
                     <p className="text-sm text-muted-foreground">+880 1716-243949</p>
                     <p className="mt-1 text-xs text-muted-foreground">Sat–Thu, 10AM–8PM</p>
                   </div>
@@ -79,7 +81,7 @@ export default function ContactPage() {
                     <MapPin className="h-5 w-5" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium">Visit Us</p>
+                    <p className="text-sm font-medium">{t("contact.visitUs")}</p>
                     <p className="text-sm text-muted-foreground">Shop no- 78, Mukjoddha Super Market, 3rd Floor, Mirpur-1, Dhaka-1216</p>
                     <p className="mt-1 text-xs text-muted-foreground">Our flagship store</p>
                   </div>
@@ -91,7 +93,7 @@ export default function ContactPage() {
             <div className="rounded-lg border border-border/60 bg-card p-6">
               <div className="mb-4 flex items-center gap-2">
                 <Clock className="h-5 w-5 text-accent" />
-                <h3 className="font-serif text-lg font-medium">Business Hours</h3>
+                <h3 className="font-serif text-lg font-medium">{t("contact.businessHours")}</h3>
               </div>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
@@ -112,7 +114,7 @@ export default function ContactPage() {
 
           {/* Contact form */}
           <div className="rounded-lg border border-border/60 bg-card p-6 md:p-8">
-            <h2 className="mb-6 font-serif text-2xl font-medium">Send a Message</h2>
+            <h2 className="mb-6 font-serif text-2xl font-medium">{t("contact.sendMessage")}</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Instagram } from "lucide-react";
 import { Container, SectionHeading } from "@/components/layout/container";
 
+import { useLanguage } from "@/i18n/language-context";
 interface InstagramContent {
   image1: string;
   image2: string;
@@ -23,6 +24,7 @@ const GRADIENTS = [
 ];
 
 export function InstagramFeed({ content }: { content?: InstagramContent }) {
+  const { t, locale } = useLanguage();
   const images = content
     ? [content.image1, content.image2, content.image3, content.image4, content.image5, content.image6]
     : ["", "", "", "", "", ""];
@@ -31,9 +33,9 @@ export function InstagramFeed({ content }: { content?: InstagramContent }) {
     <section className="py-12 md:py-16 lg:py-20">
       <Container>
         <SectionHeading
-          eyebrow="Follow Us"
-          title="@rakibpanjabihouse"
-          subtitle="Tag us in your photos for a chance to be featured. Get inspired by our community of style enthusiasts."
+          eyebrow={t("instagram.eyebrow")}
+          title={t("instagram.title")}
+          subtitle={t("instagram.subtitle")}
         />
 
         <div className="grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-6 lg:gap-3">

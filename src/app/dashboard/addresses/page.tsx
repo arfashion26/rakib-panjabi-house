@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { Plus, MapPin, Edit, Trash2, Check, Loader2 } from "lucide-react";
+import { useLanguage } from "@/i18n/language-context";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -31,6 +32,7 @@ interface Address {
 }
 
 export default function AddressesPage() {
+  const { t } = useLanguage();
   const [addresses, setAddresses] = React.useState<Address[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [open, setOpen] = React.useState(false);
@@ -173,7 +175,7 @@ export default function AddressesPage() {
       {addresses.length === 0 ? (
         <div className="rounded-lg border border-dashed border-border p-12 text-center">
           <MapPin className="mx-auto mb-3 h-12 w-12 text-muted-foreground/40" />
-          <p className="text-sm font-medium">No addresses saved</p>
+          <p className="text-sm font-medium">{t("dashboard.noAddresses")}</p>
           <p className="mt-1 text-xs text-muted-foreground">
             Add your delivery address to make checkout faster.
           </p>

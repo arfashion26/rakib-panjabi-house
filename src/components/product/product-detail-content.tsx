@@ -15,6 +15,7 @@ import {
   Share2,
   ZoomIn,
 } from "lucide-react";
+import { useLanguage } from "@/i18n/language-context";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -94,6 +95,7 @@ export function ProductDetailContent({
   reviews: any[];
   relatedProducts: RelatedProduct[];
 }) {
+  const { t } = useLanguage();
   const [selectedSize, setSelectedSize] = React.useState<string | null>(null);
   const [selectedColor, setSelectedColor] = React.useState<string | null>(null);
   const [quantity, setQuantity] = React.useState(1);
@@ -384,10 +386,10 @@ export function ProductDetailContent({
       <div className="mt-12">
         <Tabs defaultValue="description">
           <TabsList className="w-full justify-start gap-6 border-b border-border">
-            <TabsTrigger value="description">Description</TabsTrigger>
-            <TabsTrigger value="specifications">Specifications</TabsTrigger>
+            <TabsTrigger value="description">{t("productDetail.description")}</TabsTrigger>
+            <TabsTrigger value="specifications">{t("productDetail.specifications")}</TabsTrigger>
             <TabsTrigger value="reviews">Reviews ({reviews.length})</TabsTrigger>
-            <TabsTrigger value="shipping">Shipping & Returns</TabsTrigger>
+            <TabsTrigger value="shipping">{t("productDetail.shippingReturns")}</TabsTrigger>
           </TabsList>
 
           <TabsContent value="description" className="mt-6">

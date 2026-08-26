@@ -3,6 +3,7 @@
 import { Star, Quote } from "lucide-react";
 import { Container, SectionHeading } from "@/components/layout/container";
 
+import { useLanguage } from "@/i18n/language-context";
 interface Content {
   eyebrow: string;
   title: string;
@@ -16,13 +17,14 @@ const reviews = [
 ];
 
 export function CustomerReviewsContent({ content }: { content: Content }) {
+  const { t, locale } = useLanguage();
   return (
     <section className="bg-muted/30 py-12 md:py-16 lg:py-20">
       <Container>
         <SectionHeading
-          eyebrow={content.eyebrow}
-          title={content.title}
-          subtitle={content.subtitle}
+          eyebrow={locale === "bn" ? t("reviews.eyebrow") : content.eyebrow}
+          title={locale === "bn" ? t("reviews.title") : content.title}
+          subtitle={locale === "bn" ? t("reviews.subtitle") : content.subtitle}
         />
         <div className="grid gap-6 md:grid-cols-3">
           {reviews.map((review, idx) => (

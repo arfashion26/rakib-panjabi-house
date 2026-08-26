@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { SlidersHorizontal, X, ChevronDown, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useLanguage } from "@/i18n/language-context";
 import {
   Select,
   SelectContent,
@@ -81,6 +82,7 @@ export function ShopContent({
   const sortParam = searchParams.sort || "newest";
   const minPrice = searchParams.minPrice;
   const maxPrice = searchParams.maxPrice;
+  const { t } = useLanguage();
 
   function updateParam(key: string, value: string) {
     const params = new URLSearchParams();
@@ -150,7 +152,7 @@ export function ShopContent({
       </div>
 
       <div>
-        <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-foreground">Colors</h3>
+        <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-foreground">{t("products.colors")}</h3>
         <div className="grid grid-cols-5 gap-2">
           {ALL_COLORS.map((color) => (
             <button key={color.name} title={color.name} className="h-8 w-8 rounded-full border-2 border-border transition-all hover:scale-110 hover:border-accent" style={{ backgroundColor: color.value }} />
@@ -159,7 +161,7 @@ export function ShopContent({
       </div>
 
       <div>
-        <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-foreground">Sizes</h3>
+        <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-foreground">{t("products.sizes")}</h3>
         <div className="flex flex-wrap gap-2">
           {ALL_SIZES.map((size) => (
             <button key={size} className="flex h-9 min-w-9 items-center justify-center rounded-md border border-border px-2 text-xs font-medium transition-colors hover:border-accent hover:text-accent">
@@ -209,7 +211,7 @@ export function ShopContent({
               </SheetTrigger>
               <SheetContent side="left" className="w-[300px] overflow-y-auto">
                 <SheetHeader>
-                  <SheetTitle>Filters</SheetTitle>
+                  <SheetTitle>{t("products.filters")}</SheetTitle>
                 </SheetHeader>
                 <div className="mt-6">{FilterContent}</div>
               </SheetContent>
@@ -245,7 +247,7 @@ export function ShopContent({
               <div className="flex h-20 w-20 items-center justify-center rounded-full bg-muted">
                 <SlidersHorizontal className="h-10 w-10 text-muted-foreground" />
               </div>
-              <h3 className="mt-4 text-lg font-medium">No products found</h3>
+              <h3 className="mt-4 text-lg font-medium">{t("shop.noProducts")}</h3>
               <p className="mt-1 text-sm text-muted-foreground">
                 {search || categoryParam || minPrice || maxPrice
                   ? "Try adjusting your filters or search terms"

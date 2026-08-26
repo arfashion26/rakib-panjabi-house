@@ -6,6 +6,7 @@ import { Package, ChevronRight, Search, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { formatPrice } from "@/lib/types";
+import { useLanguage } from "@/i18n/language-context";
 
 interface Order {
   id: string;
@@ -25,6 +26,7 @@ const statusColors: Record<string, string> = {
 };
 
 export default function OrdersPage() {
+  const { t } = useLanguage();
   const [orders, setOrders] = React.useState<Order[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [search, setSearch] = React.useState("");
@@ -85,7 +87,7 @@ export default function OrdersPage() {
       {orders.length === 0 ? (
         <div className="rounded-lg border border-dashed border-border bg-background p-8 text-center">
           <Package className="mx-auto mb-3 h-12 w-12 text-muted-foreground/40" />
-          <p className="text-sm font-medium">No orders yet</p>
+          <p className="text-sm font-medium">{t("dashboard.noOrders")}</p>
           <p className="mt-1 text-xs text-muted-foreground">
             You haven&apos;t placed any orders yet. Start shopping!
           </p>

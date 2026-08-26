@@ -2,6 +2,7 @@
 
 import { Container, SectionHeading } from "@/components/layout/container";
 
+import { useLanguage } from "@/i18n/language-context";
 interface Content {
   eyebrow: string;
   title: string;
@@ -12,6 +13,7 @@ interface Content {
 }
 
 export function BrandStoryContent({ content }: { content: Content }) {
+  const { t, locale } = useLanguage();
   const values = [
     { title: "Premium Quality", description: "Every piece is crafted with superior fabrics and meticulous attention to detail, ensuring exceptional longevity and comfort." },
     { title: "Crafted with Care", description: "Our artisans bring decades of experience, combining traditional techniques with modern design sensibilities." },
@@ -50,8 +52,8 @@ export function BrandStoryContent({ content }: { content: Content }) {
 
           <div>
             <SectionHeading
-              eyebrow={content.eyebrow}
-              title={content.title}
+              eyebrow={locale === "bn" ? t("brandStory.eyebrow") : content.eyebrow}
+              title={locale === "bn" ? t("brandStory.title") : content.title}
               align="left"
               className="mb-6"
             />

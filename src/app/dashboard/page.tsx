@@ -14,10 +14,12 @@ import {
   Phone,
   Loader2,
 } from "lucide-react";
+import { useLanguage } from "@/i18n/language-context";
 import { Button } from "@/components/ui/button";
 import { formatPrice } from "@/lib/types";
 
 export default function DashboardOverview() {
+  const { t } = useLanguage();
   const [profile, setProfile] = React.useState<{
     name: string | null;
     email: string;
@@ -167,7 +169,7 @@ export default function DashboardOverview() {
       {/* Recent orders */}
       <div>
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="font-serif text-xl font-medium">Recent Orders</h2>
+          <h2 className="font-serif text-xl font-medium">{t("dashboard.recentOrders")}</h2>
           <Link href="/dashboard/orders" className="text-sm text-accent hover:underline">
             View all
           </Link>
@@ -176,12 +178,12 @@ export default function DashboardOverview() {
         {recentOrders.length === 0 ? (
           <div className="rounded-lg border border-dashed border-border bg-background p-8 text-center">
             <Package className="mx-auto mb-3 h-12 w-12 text-muted-foreground/40" />
-            <p className="text-sm font-medium">No orders yet</p>
+            <p className="text-sm font-medium">{t("dashboard.noOrders")}</p>
             <p className="mt-1 text-xs text-muted-foreground">
               When you place your first order, it will appear here.
             </p>
             <Button asChild className="mt-4" size="sm">
-              <Link href="/shop">Start Shopping</Link>
+              <Link href="/shop">{t("dashboard.startShopping")}</Link>
             </Button>
           </div>
         ) : (

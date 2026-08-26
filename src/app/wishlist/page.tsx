@@ -6,6 +6,7 @@ import { Heart, ShoppingBag, Trash2, ArrowRight } from "lucide-react";
 import { useWishlist } from "@/lib/store";
 import { getProducts } from "@/lib/services/products";
 import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/i18n/language-context";
 import { ProductCard } from "@/components/product/product-card";
 import { Container, ButtonLink } from "@/components/layout/container";
 import { toast } from "sonner";
@@ -30,6 +31,7 @@ interface Product {
 }
 
 export default function WishlistPage() {
+  const { t } = useLanguage();
   const productIds = useWishlist((s) => s.productIds);
   const clearWishlist = useWishlist((s) => s.clear);
   const [products, setProducts] = React.useState<Product[]>([]);
@@ -73,7 +75,7 @@ export default function WishlistPage() {
             <Heart className="h-12 w-12 text-muted-foreground" />
           </div>
           <div>
-            <h1 className="font-serif text-2xl font-medium">Your Wishlist is Empty</h1>
+            <h1 className="font-serif text-2xl font-medium">{t("wishlist.empty")}</h1>
             <p className="mt-2 text-sm text-muted-foreground">
               Save your favorite items here for easy access later. Click the heart icon on any product to add it to your wishlist.
             </p>
@@ -99,7 +101,7 @@ export default function WishlistPage() {
 
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="font-serif text-3xl font-medium tracking-tight md:text-4xl">My Wishlist</h1>
+          <h1 className="font-serif text-3xl font-medium tracking-tight md:text-4xl">{t("wishlist.title")}</h1>
           <p className="mt-2 text-sm text-muted-foreground">
             {products.length} {products.length === 1 ? "item" : "items"} in your wishlist
           </p>

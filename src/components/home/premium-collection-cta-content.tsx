@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { useLanguage } from "@/i18n/language-context";
 
 interface Content {
   eyebrow: string;
@@ -14,6 +15,7 @@ interface Content {
 }
 
 export function PremiumCTAContent({ content }: { content: Content }) {
+  const { t, locale } = useLanguage();
   return (
     <section className="relative overflow-hidden bg-primary py-16 text-primary-foreground md:py-24">
       <div className="absolute inset-0">
@@ -23,13 +25,13 @@ export function PremiumCTAContent({ content }: { content: Content }) {
       </div>
       <div className="relative mx-auto max-w-3xl px-4 text-center">
         <p className="mb-4 text-xs font-semibold uppercase tracking-[0.3em] text-accent">
-          {content.eyebrow}
+          {locale === "bn" ? t("premiumCTA.eyebrow") : content.eyebrow}
         </p>
         <h2 className="font-serif text-3xl font-medium leading-tight tracking-tight md:text-4xl lg:text-5xl">
-          {content.title}
+          {locale === "bn" ? t("premiumCTA.title") : content.title}
         </h2>
         <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-primary-foreground/80 md:text-lg">
-          {content.description}
+          {locale === "bn" ? t("premiumCTA.description") : content.description}
         </p>
         <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <Link

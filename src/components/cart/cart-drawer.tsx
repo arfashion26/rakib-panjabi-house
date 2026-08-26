@@ -6,10 +6,12 @@ import { ShoppingBag, Plus, Minus, Trash2, ArrowRight } from "lucide-react";
 import { useCart } from "@/lib/store";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { useLanguage } from "@/i18n/language-context";
 import { formatPrice } from "@/lib/types";
 import { Separator } from "@/components/ui/separator";
 
 export function CartDrawer() {
+  const { t } = useLanguage();
   const { items, isOpen, closeCart, updateQuantity, removeItem, getSubtotal } =
     useCart();
   const subtotal = getSubtotal();
@@ -156,14 +158,14 @@ export function CartDrawer() {
 
             <div className="mt-4 space-y-3 border-t border-border pt-4">
               <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">Subtotal</span>
+                <span className="text-sm text-muted-foreground">{t("cartPage.subtotal")}</span>
                 <span className="font-serif text-lg font-medium">{formatPrice(subtotal)}</span>
               </div>
               <p className="text-xs text-muted-foreground">Shipping & taxes calculated at checkout</p>
               <Separator />
               <div className="flex gap-2">
                 <Button variant="outline" className="flex-1" onClick={closeCart} asChild>
-                  <Link href="/cart">View Cart</Link>
+                  <Link href="/cart">{t("cartPage.viewCart")}</Link>
                 </Button>
                 <Button className="flex-1" asChild onClick={closeCart}>
                   <Link href="/checkout">

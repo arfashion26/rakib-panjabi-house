@@ -4,6 +4,7 @@ import * as React from "react";
 import { Flame } from "lucide-react";
 import { ProductCard } from "@/components/product/product-card";
 import { ButtonLink } from "@/components/layout/container";
+import { useLanguage } from "@/i18n/language-context";
 
 interface Product {
   id: string;
@@ -63,6 +64,7 @@ function TimeBlock({ value, label }: { value: number; label: string }) {
 }
 
 export function FlashSaleContent({ products }: { products: Product[] }) {
+  const { t } = useLanguage();
   const time = useCountdown(48);
 
   if (products.length === 0) return null;
@@ -76,7 +78,7 @@ export function FlashSaleContent({ products }: { products: Product[] }) {
               <Flame className="h-6 w-6" />
             </div>
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">Limited Time</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">{t("flashSale.eyebrow")}</p>
               <h2 className="font-serif text-3xl font-medium tracking-tight md:text-4xl">
                 Flash Sale — Up to 40% Off
               </h2>

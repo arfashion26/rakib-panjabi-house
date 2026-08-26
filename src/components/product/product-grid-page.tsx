@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Sparkles, TrendingUp, Zap, ArrowRight } from "lucide-react";
 import { ProductCard } from "@/components/product/product-card";
 import { ButtonLink } from "@/components/layout/container";
+import { useLanguage } from "@/i18n/language-context";
 
 interface Product {
   id: string;
@@ -37,12 +38,18 @@ export function ProductGridPage({
   products: Product[];
   saleMode?: boolean;
 }) {
+  const { t, locale } = useLanguage();
   const Icon = saleMode ? Zap : eyebrow === "Just Arrived" ? Sparkles : TrendingUp;
+
+  // Use translations based on page type
+  const pageTitle = saleMode ? t("sale.title") : eyebrow === "Just Arrived" ? t("newArrivals.title") : t("bestSellers.title");
+  const pageEyebrow = saleMode ? t("sale.eyebrow") : eyebrow === "Just Arrived" ? t("newArrivals.eyebrow") : t("bestSellers.eyebrow");
+  const pageDesc = saleMode ? t("sale.description") : eyebrow === "Just Arrived" ? t("newArrivals.description") : t("bestSellers.description");
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 md:py-12">
       <nav className="mb-6 text-xs text-muted-foreground">
-        <Link href="/" className="hover:text-accent">Home</Link>
+        <Link href="/" className="hover:text-accent">{t("common.home")}</Link>
         <span className="mx-1">/</span>
         <span className="text-foreground">{title.split(" — ")[0]}</span>
       </nav>
@@ -56,16 +63,16 @@ export function ProductGridPage({
           }`}
         >
           <Icon className="h-3 w-3" />
-          {eyebrow}
+          {locale === "bn" ? pageEyebrow : eyebrow}
         </div>
-        <h1 className="font-serif text-4xl font-medium tracking-tight md:text-5xl">{title}</h1>
-        <p className="mt-3 max-w-2xl text-base text-muted-foreground md:text-lg">{description}</p>
+        <h1 className="font-serif text-4xl font-medium tracking-tight md:text-5xl">{locale === "bn" ? pageTitle : title}</h1>
+        <p className="mt-3 max-w-2xl text-base text-muted-foreground md:text-lg">{locale === "bn" ? pageDesc : description}</p>
       </div>
 
       {products.length === 0 ? (
         <div className="rounded-lg border border-dashed border-border p-12 text-center">
           <Icon className="mx-auto mb-3 h-12 w-12 text-muted-foreground/40" />
-          <p className="text-sm font-medium">No products available yet</p>
+          <p className="text-sm font-medium">{t("shop.noProducts")}</p>
           <p className="mt-1 text-xs text-muted-foreground">
             Check back soon — we&apos;re adding new products regularly!
           </p>

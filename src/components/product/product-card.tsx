@@ -4,6 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { Heart, ShoppingBag, Star, Eye, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/i18n/language-context";
 import { useCart, useWishlist } from "@/lib/store";
 import { cn } from "@/lib/utils";
 import { formatPrice, calculateDiscount } from "@/lib/types";
@@ -39,6 +40,7 @@ export function ProductCard({
   variant = "default",
   className,
 }: ProductCardProps) {
+  const { t } = useLanguage();
   const addItem = useCart((s) => s.addItem);
   const toggleWishlist = useWishlist((s) => s.toggle);
   const hasInWishlist = useWishlist((s) => s.has(product.id));

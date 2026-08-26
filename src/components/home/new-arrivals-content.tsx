@@ -3,6 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { useLanguage } from "@/i18n/language-context";
 import { ProductCard } from "@/components/product/product-card";
 import { ButtonLink } from "@/components/layout/container";
 
@@ -26,6 +27,7 @@ interface Product {
 }
 
 export function NewArrivalsContent({ products }: { products: Product[] }) {
+  const { t, locale } = useLanguage();
   if (products.length === 0) return null;
 
   return (
@@ -33,8 +35,8 @@ export function NewArrivalsContent({ products }: { products: Product[] }) {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mb-10 md:mb-12 flex flex-col items-end justify-between gap-4 md:flex-row">
           <div className="max-w-xl">
-            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-accent">Just Arrived</p>
-            <h2 className="font-serif text-3xl font-medium tracking-tight md:text-4xl">New Arrivals</h2>
+            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-accent">{locale === "bn" ? t("newArrivals.eyebrow") : "Just Arrived"}</p>
+            <h2 className="font-serif text-3xl font-medium tracking-tight md:text-4xl">{locale === "bn" ? t("newArrivals.title") : "New Arrivals"}</h2>
             <p className="mt-4 text-base text-muted-foreground md:text-lg">
               Discover the latest additions to our collection, featuring fresh designs and seasonal must-haves.
             </p>
