@@ -144,8 +144,11 @@ export default function AdminProductsPage() {
   async function handleSave(product: Product) {
     setSaving(true);
     try {
-      const method = editingProduct ? "PUT" : "POST";
-      const url = editingProduct
+      // If product has a real ID (not empty), it's an edit (PUT)
+      // Otherwise it's a new product (POST)
+      const isEditing = product.id && product.id.length > 0;
+      const method = isEditing ? "PUT" : "POST";
+      const url = isEditing
         ? `/api/admin/products?id=${product.id}`
         : "/api/admin/products";
 
@@ -161,7 +164,7 @@ export default function AdminProductsPage() {
       const data = await res.json();
 
       if (data.success) {
-        toast.success(editingProduct ? "Product updated" : "Product created");
+        toast.success(isEditing ? "Product updated" : "Product created");
         setIsDialogOpen(false);
         setEditingProduct(null);
         loadProducts();
