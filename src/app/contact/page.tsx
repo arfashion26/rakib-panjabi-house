@@ -1,8 +1,9 @@
 "use client";
 
 import * as React from "react";
-import { Mail, Phone, MapPin, Send, Clock } from "lucide-react";
+import { Mail, Phone, MapPin, Send, Clock, Facebook, Instagram, Youtube } from "lucide-react";
 import { useLanguage } from "@/i18n/language-context";
+import { siteConfig } from "@/lib/brand";
 import { Container } from "@/components/layout/container";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -108,6 +109,48 @@ export default function ContactPage() {
                   <span className="font-medium text-accent">24/7</span>
                 </div>
               </div>
+            </div>
+
+            {/* Social Media */}
+            <div className="rounded-lg border border-border/60 bg-card p-6">
+              <div className="mb-4 flex items-center gap-2">
+                <h3 className="font-serif text-lg font-medium">{t("footer.followUs")}</h3>
+              </div>
+              <div className="flex flex-wrap gap-3">
+                <a
+                  href={siteConfig.social.facebook}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Facebook"
+                  className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-border bg-background px-4 py-3 text-sm font-medium text-foreground transition-colors hover:border-[#1877F2] hover:bg-[#1877F2] hover:text-white"
+                >
+                  <Facebook className="h-5 w-5" />
+                  <span>Facebook</span>
+                </a>
+                <a
+                  href={siteConfig.social.instagram}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Instagram"
+                  className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-border bg-background px-4 py-3 text-sm font-medium text-foreground transition-colors hover:border-[#E4405F] hover:bg-[#E4405F] hover:text-white"
+                >
+                  <Instagram className="h-5 w-5" />
+                  <span>Instagram</span>
+                </a>
+                <a
+                  href={siteConfig.social.youtube}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="YouTube"
+                  className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-border bg-background px-4 py-3 text-sm font-medium text-foreground transition-colors hover:border-[#FF0000] hover:bg-[#FF0000] hover:text-white"
+                >
+                  <Youtube className="h-5 w-5" />
+                  <span>YouTube</span>
+                </a>
+              </div>
+              <p className="mt-3 text-xs text-muted-foreground text-center">
+                @alrakibpunjabihouse · @Alrakibfashionhouse · @Al-RakibFashionHouse
+              </p>
             </div>
           </div>
 

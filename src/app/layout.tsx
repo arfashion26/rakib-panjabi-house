@@ -134,9 +134,9 @@ export default function RootLayout({
       email: "info@alrakib.com",
     },
     sameAs: [
-      "https://facebook.com/rakibpanjabihouse",
-      "https://instagram.com/rakibpanjabihouse",
-      "https://youtube.com/@rakibpanjabihouse",
+      "https://www.facebook.com/Alrakibfashionhouse/",
+      "https://www.instagram.com/alrakibpunjabihouse/",
+      "https://www.youtube.com/@Al-RakibFashionHouse",
     ],
   };
 

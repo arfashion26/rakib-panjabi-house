@@ -142,15 +142,15 @@ export default function AdminSettingsPage() {
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="fb">Facebook URL</Label>
-              <Input id="fb" defaultValue="https://facebook.com/rakibpanjabihouse" />
+              <Input id="fb" defaultValue="https://www.facebook.com/Alrakibfashionhouse/" />
             </div>
             <div className="space-y-2">
               <Label htmlFor="ig">Instagram URL</Label>
-              <Input id="ig" defaultValue="https://instagram.com/rakibpanjabihouse" />
+              <Input id="ig" defaultValue="https://www.instagram.com/alrakibpunjabihouse/" />
             </div>
             <div className="space-y-2">
               <Label htmlFor="yt">YouTube URL</Label>
-              <Input id="yt" defaultValue="https://youtube.com/@rakibpanjabihouse" />
+              <Input id="yt" defaultValue="https://www.youtube.com/@Al-RakibFashionHouse" />
             </div>
             <div className="space-y-2">
               <Label htmlFor="tw">Twitter/X URL</Label>

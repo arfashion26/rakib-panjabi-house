@@ -5,6 +5,7 @@ import { Instagram } from "lucide-react";
 import { Container, SectionHeading } from "@/components/layout/container";
 
 import { useLanguage } from "@/i18n/language-context";
+import { siteConfig } from "@/lib/brand";
 interface InstagramContent {
   image1: string;
   image2: string;
@@ -42,7 +43,7 @@ export function InstagramFeed({ content }: { content?: InstagramContent }) {
           {images.map((img, idx) => (
             <Link
               key={idx}
-              href="https://instagram.com"
+              href={siteConfig.social.instagram}
               target="_blank"
               rel="noopener noreferrer"
               className="group relative aspect-square overflow-hidden rounded-md"
@@ -71,7 +72,7 @@ export function InstagramFeed({ content }: { content?: InstagramContent }) {
 
         <div className="mt-8 text-center">
           <a
-            href="https://instagram.com"
+            href={siteConfig.social.instagram}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 text-sm font-medium text-accent hover:underline"

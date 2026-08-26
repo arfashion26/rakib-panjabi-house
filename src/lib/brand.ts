@@ -16,9 +16,9 @@ export const siteConfig = {
   whatsapp: "+880 1716-243949",
   address: "Shop no- 78, Mukjoddha Super Market, 3rd Floor, Mirpur-1, Dhaka-1216",
   social: {
-    facebook: "https://facebook.com/rakibpanjabihouse",
-    instagram: "https://instagram.com/rakibpanjabihouse",
-    youtube: "https://youtube.com/@rakibpanjabihouse",
+    facebook: "https://www.facebook.com/Alrakibfashionhouse/",
+    instagram: "https://www.instagram.com/alrakibpunjabihouse/",
+    youtube: "https://www.youtube.com/@Al-RakibFashionHouse",
     tiktok: "",
     twitter: "",
   },
