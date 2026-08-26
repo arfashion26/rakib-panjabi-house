@@ -310,6 +310,46 @@ export async function placeOrder(data: {
       timestamp: new Date().toISOString(),
     });
 
+    // Step 4b: Auto-save shipping address for the customer
+    // Check if they already have this address saved
+    const { data: existingAddresses } = await admin
+      .from("addresses")
+      .select("id")
+      .eq("user_id", userId)
+      .limit(1);
+
+    // Always save the order address (if not a duplicate)
+    try {
+      // Check if this address already exists (by phone + address_line1)
+      const { data: dupCheck } = await admin
+        .from("addresses")
+        .select("id")
+        .eq("user_id", userId)
+        .eq("phone", data.phone)
+        .ilike("address_line1", data.address)
+        .maybeSingle();
+
+      if (!dupCheck) {
+        // New address — save it
+        const isFirst = !existingAddresses || existingAddresses.length === 0;
+        await admin.from("addresses").insert({
+          user_id: userId,
+          type: "SHIPPING",
+          first_name: data.name,
+          phone: data.phone,
+          address_line1: data.address,
+          city: data.area === "inside_dhaka" ? "Dhaka" : "Outside Dhaka",
+          district: data.area === "inside_dhaka" ? "Dhaka" : null,
+          country: "Bangladesh",
+          is_default: isFirst, // First address is default
+          label: "Order Address",
+        });
+      }
+    } catch (addrError) {
+      console.error("Address save error:", addrError);
+      // Don't fail the order if address save fails
+    }
+
     // Step 5: Create a notification for admins (optional)
     await admin.from("notifications").insert({
       user_id: userId,

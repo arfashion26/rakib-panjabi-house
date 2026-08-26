@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Plus, MapPin, Edit, Trash2, Check } from "lucide-react";
+import { Plus, MapPin, Edit, Trash2, Check, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,121 +10,147 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
 
 interface Address {
   id: string;
-  label: string;
-  firstName: string;
-  lastName: string;
+  type: string;
+  first_name: string;
+  last_name: string | null;
   phone: string;
-  addressLine1: string;
+  address_line1: string;
+  address_line2: string | null;
   city: string;
-  district: string;
-  postalCode: string;
-  isDefault: boolean;
+  district: string | null;
+  thana: string | null;
+  postal_code: string | null;
+  is_default: boolean;
+  label: string | null;
 }
 
 export default function AddressesPage() {
-  const [addresses, setAddresses] = React.useState<Address[]>([
-    {
-      id: "1",
-      label: "Home",
-      firstName: "Tanvir",
-      lastName: "Ahmed",
-      phone: "+880 1711-123456",
-      addressLine1: "House 12, Road 5, Dhanmondi",
-      city: "Dhaka",
-      district: "Dhaka",
-      postalCode: "1205",
-      isDefault: true,
-    },
-  ]);
+  const [addresses, setAddresses] = React.useState<Address[]>([]);
+  const [loading, setLoading] = React.useState(true);
   const [open, setOpen] = React.useState(false);
-  const [editingId, setEditingId] = React.useState<string | null>(null);
-  const [formData, setFormData] = React.useState<Partial<Address>>({
-    label: "",
-    firstName: "",
-    lastName: "",
-    phone: "",
-    addressLine1: "",
-    city: "",
-    district: "",
-    postalCode: "",
-    isDefault: false,
-  });
+  const [saving, setSaving] = React.useState(false);
+  const [formData, setFormData] = React.useState<Partial<Address>>({});
+
+  React.useEffect(() => {
+    fetchAddresses();
+  }, []);
+
+  async function fetchAddresses() {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/dashboard/addresses");
+      const data = await res.json();
+      if (data.success) {
+        setAddresses(data.addresses || []);
+      }
+    } catch {
+      setAddresses([]);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   function openNew() {
-    setEditingId(null);
     setFormData({
-      label: "",
-      firstName: "",
-      lastName: "",
+      first_name: "",
+      last_name: "",
       phone: "",
-      addressLine1: "",
+      address_line1: "",
+      address_line2: "",
       city: "",
       district: "",
-      postalCode: "",
-      isDefault: false,
+      thana: "",
+      postal_code: "",
+      is_default: addresses.length === 0,
+      label: "Home",
     });
     setOpen(true);
   }
 
   function openEdit(addr: Address) {
-    setEditingId(addr.id);
     setFormData(addr);
     setOpen(true);
   }
 
-  function saveAddress() {
-    if (
-      !formData.firstName ||
-      !formData.phone ||
-      !formData.addressLine1 ||
-      !formData.city
-    ) {
+  async function handleSave() {
+    if (!formData.first_name || !formData.phone || !formData.address_line1 || !formData.city) {
       toast.error("Please fill all required fields");
       return;
     }
 
-    if (editingId) {
-      setAddresses((prev) =>
-        prev.map((a) =>
-          a.id === editingId
-            ? { ...(formData as Address) }
-            : formData.isDefault
-            ? { ...a, isDefault: false }
-            : a
-        )
-      );
-      toast.success("Address updated");
-    } else {
-      const newAddr: Address = {
-        ...(formData as Address),
-        id: Date.now().toString(),
-      };
-      setAddresses((prev) =>
-        newAddr.isDefault
-          ? [...prev.map((a) => ({ ...a, isDefault: false })), newAddr]
-          : [...prev, newAddr]
-      );
-      toast.success("Address added");
+    setSaving(true);
+    try {
+      const isEditing = formData.id;
+      const url = isEditing
+        ? `/api/dashboard/addresses?id=${formData.id}`
+        : "/api/dashboard/addresses";
+      const method = isEditing ? "PUT" : "POST";
+
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        toast.success(isEditing ? "Address updated" : "Address added");
+        setOpen(false);
+        fetchAddresses();
+      } else {
+        toast.error(data.error || "Failed to save address");
+      }
+    } catch {
+      toast.error("Failed to save address");
+    } finally {
+      setSaving(false);
     }
-    setOpen(false);
   }
 
-  function deleteAddress(id: string) {
-    setAddresses((prev) => prev.filter((a) => a.id !== id));
-    toast.success("Address deleted");
+  async function handleDelete(id: string) {
+    if (!confirm("Delete this address?")) return;
+    try {
+      const res = await fetch(`/api/dashboard/addresses?id=${id}`, { method: "DELETE" });
+      const data = await res.json();
+      if (data.success) {
+        toast.success("Address deleted");
+        fetchAddresses();
+      }
+    } catch {
+      toast.error("Failed to delete address");
+    }
   }
 
-  function setDefault(id: string) {
-    setAddresses((prev) =>
-      prev.map((a) => ({ ...a, isDefault: a.id === id }))
+  async function setDefault(id: string) {
+    try {
+      const res = await fetch(`/api/dashboard/addresses?id=${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ is_default: true }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        toast.success("Default address updated");
+        fetchAddresses();
+      }
+    } catch {
+      toast.error("Failed to update default address");
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="py-16 text-center">
+        <Loader2 className="mx-auto mb-3 h-8 w-8 animate-spin text-muted-foreground" />
+        <p className="text-sm text-muted-foreground">Loading addresses...</p>
+      </div>
     );
-    toast.success("Default address updated");
   }
 
   return (
@@ -135,7 +161,7 @@ export default function AddressesPage() {
             My Addresses
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            Manage your saved shipping addresses
+            {addresses.length} saved {addresses.length === 1 ? "address" : "addresses"}
           </p>
         </div>
         <Button onClick={openNew}>
@@ -145,21 +171,18 @@ export default function AddressesPage() {
       </div>
 
       {addresses.length === 0 ? (
-        <div className="rounded-lg border border-dashed border-border bg-background p-12 text-center">
+        <div className="rounded-lg border border-dashed border-border p-12 text-center">
           <MapPin className="mx-auto mb-3 h-12 w-12 text-muted-foreground/40" />
           <p className="text-sm font-medium">No addresses saved</p>
           <p className="mt-1 text-xs text-muted-foreground">
-            Add your first shipping address to get started.
+            Add your delivery address to make checkout faster.
           </p>
         </div>
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
           {addresses.map((addr) => (
-            <div
-              key={addr.id}
-              className="relative rounded-lg border border-border/60 bg-background p-4"
-            >
-              {addr.isDefault && (
+            <div key={addr.id} className="relative rounded-lg border border-border/60 bg-background p-4">
+              {addr.is_default && (
                 <span className="absolute right-3 top-3 flex items-center gap-1 rounded-full bg-accent/10 px-2 py-0.5 text-[10px] font-medium text-accent">
                   <Check className="h-2.5 w-2.5" />
                   Default
@@ -167,44 +190,33 @@ export default function AddressesPage() {
               )}
               <div className="mb-3 flex items-center gap-2">
                 <span className="rounded-md bg-muted px-2 py-0.5 text-xs font-medium">
-                  {addr.label}
+                  {addr.label || "Address"}
                 </span>
               </div>
               <p className="text-sm font-medium">
-                {addr.firstName} {addr.lastName}
+                {addr.first_name} {addr.last_name}
               </p>
               <p className="text-sm text-muted-foreground">{addr.phone}</p>
-              <p className="mt-2 text-sm text-muted-foreground">
-                {addr.addressLine1}
-              </p>
+              <p className="mt-2 text-sm text-muted-foreground">{addr.address_line1}</p>
               <p className="text-sm text-muted-foreground">
-                {addr.city}, {addr.district} {addr.postalCode}
+                {addr.city}{addr.district ? `, ${addr.district}` : ""}{addr.postal_code ? ` ${addr.postal_code}` : ""}
               </p>
               <div className="mt-4 flex gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => openEdit(addr)}
-                >
+                <Button variant="outline" size="sm" onClick={() => openEdit(addr)}>
                   <Edit className="mr-1 h-3 w-3" />
                   Edit
                 </Button>
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => deleteAddress(addr.id)}
                   className="text-muted-foreground hover:text-red-500"
+                  onClick={() => handleDelete(addr.id)}
                 >
                   <Trash2 className="mr-1 h-3 w-3" />
                   Delete
                 </Button>
-                {!addr.isDefault && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setDefault(addr.id)}
-                    className="ml-auto"
-                  >
+                {!addr.is_default && (
+                  <Button variant="ghost" size="sm" className="ml-auto" onClick={() => setDefault(addr.id)}>
                     Set Default
                   </Button>
                 )}
@@ -214,123 +226,62 @@ export default function AddressesPage() {
         </div>
       )}
 
-      {/* Dialog */}
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>
-              {editingId ? "Edit Address" : "Add New Address"}
-            </DialogTitle>
+            <DialogTitle>{formData.id ? "Edit Address" : "Add New Address"}</DialogTitle>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="label">Label</Label>
-                <Input
-                  id="label"
-                  placeholder="Home, Office, etc."
-                  value={formData.label || ""}
-                  onChange={(e) =>
-                    setFormData({ ...formData, label: e.target.value })
-                  }
-                />
+                <Label htmlFor="firstName">First Name *</Label>
+                <Input id="firstName" value={formData.first_name || ""} onChange={(e) => setFormData({ ...formData, first_name: e.target.value })} />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="firstName">First Name *</Label>
-                <Input
-                  id="firstName"
-                  value={formData.firstName || ""}
-                  onChange={(e) =>
-                    setFormData({ ...formData, firstName: e.target.value })
-                  }
-                />
+                <Label htmlFor="lastName">Last Name</Label>
+                <Input id="lastName" value={formData.last_name || ""} onChange={(e) => setFormData({ ...formData, last_name: e.target.value })} />
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="lastName">Last Name</Label>
-                <Input
-                  id="lastName"
-                  value={formData.lastName || ""}
-                  onChange={(e) =>
-                    setFormData({ ...formData, lastName: e.target.value })
-                  }
-                />
+                <Label htmlFor="phone">Phone *</Label>
+                <Input id="phone" value={formData.phone || ""} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="phone">Phone *</Label>
-                <Input
-                  id="phone"
-                  value={formData.phone || ""}
-                  onChange={(e) =>
-                    setFormData({ ...formData, phone: e.target.value })
-                  }
-                />
+                <Label htmlFor="label">Label</Label>
+                <Input id="label" placeholder="Home, Office..." value={formData.label || ""} onChange={(e) => setFormData({ ...formData, label: e.target.value })} />
               </div>
             </div>
             <div className="space-y-2">
               <Label htmlFor="address1">Address *</Label>
-              <Input
-                id="address1"
-                placeholder="House #, Road #, Block"
-                value={formData.addressLine1 || ""}
-                onChange={(e) =>
-                  setFormData({ ...formData, addressLine1: e.target.value })
-                }
-              />
+              <Input id="address1" placeholder="House #, Road #, Block" value={formData.address_line1 || ""} onChange={(e) => setFormData({ ...formData, address_line1: e.target.value })} />
             </div>
             <div className="grid grid-cols-3 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="city">City *</Label>
-                <Input
-                  id="city"
-                  value={formData.city || ""}
-                  onChange={(e) =>
-                    setFormData({ ...formData, city: e.target.value })
-                  }
-                />
+                <Input id="city" value={formData.city || ""} onChange={(e) => setFormData({ ...formData, city: e.target.value })} />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="district">District</Label>
-                <Input
-                  id="district"
-                  value={formData.district || ""}
-                  onChange={(e) =>
-                    setFormData({ ...formData, district: e.target.value })
-                  }
-                />
+                <Input id="district" value={formData.district || ""} onChange={(e) => setFormData({ ...formData, district: e.target.value })} />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="postalCode">Postal Code</Label>
-                <Input
-                  id="postalCode"
-                  value={formData.postalCode || ""}
-                  onChange={(e) =>
-                    setFormData({ ...formData, postalCode: e.target.value })
-                  }
-                />
+                <Input id="postalCode" value={formData.postal_code || ""} onChange={(e) => setFormData({ ...formData, postal_code: e.target.value })} />
               </div>
             </div>
             <label className="flex items-center gap-2 text-sm">
-              <input
-                type="checkbox"
-                checked={formData.isDefault || false}
-                onChange={(e) =>
-                  setFormData({ ...formData, isDefault: e.target.checked })
-                }
-                className="h-4 w-4 rounded border-border"
-              />
+              <input type="checkbox" checked={formData.is_default || false} onChange={(e) => setFormData({ ...formData, is_default: e.target.checked })} className="h-4 w-4 rounded border-border" />
               Set as default address
             </label>
           </div>
-          <div className="flex justify-end gap-2">
-            <Button variant="outline" onClick={() => setOpen(false)}>
-              Cancel
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
+            <Button onClick={handleSave} disabled={saving}>
+              {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+              {formData.id ? "Save Changes" : "Add Address"}
             </Button>
-            <Button onClick={saveAddress}>
-              {editingId ? "Save Changes" : "Add Address"}
-            </Button>
-          </div>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>
