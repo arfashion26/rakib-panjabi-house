@@ -160,6 +160,9 @@ export default function AdminProductsPage() {
           brandId: null,
           categoryId: product.category_id,
           shortDescription: product.short_description,
+          // Explicitly map discount_price (DB snake_case) → discountPrice (API camelCase)
+          discountPrice: product.discount_price ?? null,
+          costPrice: (product as any).cost_price ?? null,
           isFeatured: product.is_featured,
           isBestSeller: product.is_best_seller,
           isNewArrival: product.is_new_arrival,
@@ -169,6 +172,17 @@ export default function AdminProductsPage() {
             url: img.url,
             isPrimary: img.is_primary,
             altText: product.name,
+          })),
+          // Convert sizes/colors to the camelCase shape the API expects
+          sizes: (product.sizes || []).map((s: any) => ({
+            size: s.size,
+            stock: s.stock,
+            sortOrder: s.sort_order ?? 0,
+          })),
+          colors: (product.colors || []).map((c: any) => ({
+            name: c.name,
+            hexValue: c.hex_value,
+            stock: c.stock,
           })),
         }),
       });
