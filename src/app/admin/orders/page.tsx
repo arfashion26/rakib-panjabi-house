@@ -265,16 +265,14 @@ export default function AdminOrdersPage() {
                           >
                             <Eye className="h-4 w-4" />
                           </Button>
-                          {["CANCELLED", "FAILED"].includes(order.status) && (
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-8 w-8 text-muted-foreground hover:text-red-500"
-                              onClick={() => setDeleteConfirm(order)}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          )}
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-muted-foreground hover:text-red-500"
+                            onClick={() => setDeleteConfirm(order)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
                         </div>
                       </td>
                     </tr>

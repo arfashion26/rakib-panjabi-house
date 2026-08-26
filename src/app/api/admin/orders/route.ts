@@ -174,35 +174,35 @@ export async function DELETE(request: NextRequest) {
 
     const admin = createAdminClient();
 
-    // Check order status — can only delete cancelled/failed orders
-    const { data: order } = await admin
-      .from("orders")
-      .select("status, order_number")
-      .eq("id", orderId)
-      .single();
-
-    if (!order) {
-      return NextResponse.json({ success: false, error: "Order not found" }, { status: 404 });
+    // Delete related records first (to avoid foreign key issues)
+    await admin.from("order_tracking_history").delete().eq("order_id", orderId);
+    await admin.from("payment_transactions").delete().eq("order_id", orderId);
+    await admin.from("order_coupons").delete().eq("order_id", orderId);
+    
+    // Set order_items.order_id to NULL if FK doesn't have CASCADE
+    try {
+      await admin.from("order_items").delete().eq("order_id", orderId);
+    } catch {
+      // If delete fails, try setting order_id null
+      try {
+        await admin.from("order_items").update({ order_id: null }).eq("order_id", orderId);
+      } catch {}
     }
+    
+    // Delete refunds related to this order
+    try {
+      await admin.from("refunds").delete().eq("order_id", orderId);
+    } catch {}
 
-    if (!["CANCELLED", "FAILED"].includes(order.status)) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: `Cannot delete order with status "${order.status}". Only cancelled or failed orders can be deleted.`,
-        },
-        { status: 400 }
-      );
-    }
-
-    // Delete order (cascade will delete items, tracking, transactions)
+    // Now delete the order
     const { error } = await admin.from("orders").delete().eq("id", orderId);
 
     if (error) {
+      console.error("Delete order DB error:", error.message);
       return NextResponse.json({ success: false, error: error.message }, { status: 500 });
     }
 
-    return NextResponse.json({ success: true, message: `Order ${order.order_number} deleted` });
+    return NextResponse.json({ success: true, message: "Order deleted" });
   } catch (error: any) {
     return NextResponse.json(
       { success: false, error: error.message },
