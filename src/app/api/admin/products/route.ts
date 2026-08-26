@@ -273,7 +273,7 @@ export async function DELETE(request: NextRequest) {
 
     const admin = createAdminClient();
 
-    // First delete all related records (to avoid foreign key constraints)
+    // Delete related records (some have CASCADE, some need manual delete)
     await admin.from("product_images").delete().eq("product_id", productId);
     await admin.from("product_sizes").delete().eq("product_id", productId);
     await admin.from("product_colors").delete().eq("product_id", productId);
@@ -283,6 +283,15 @@ export async function DELETE(request: NextRequest) {
     await admin.from("wishlist_items").delete().eq("product_id", productId);
     await admin.from("compare_items").delete().eq("product_id", productId);
     await admin.from("recently_viewed").delete().eq("product_id", productId);
+
+    // Set order_items.product_id to NULL (preserve order history)
+    // Wrapped in try-catch: column might be NOT NULL, that's OK — 
+    // the SQL fix (ON DELETE SET NULL) handles this at DB level
+    try {
+      await admin.from("order_items").update({ product_id: null }).eq("product_id", productId);
+    } catch {
+      // Ignore — will be handled by foreign key ON DELETE SET NULL
+    }
 
     // Now delete the product
     const { error } = await admin.from("products").delete().eq("id", productId);
