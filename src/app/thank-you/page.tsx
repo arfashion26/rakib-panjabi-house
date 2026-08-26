@@ -12,10 +12,12 @@ import {
   Sparkles,
   ArrowRight,
 } from "lucide-react";
+import { useLanguage } from "@/i18n/language-context";
 import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
 
 export default function ThankYouPage() {
+  const { t } = useLanguage();
   const [orderNumber, setOrderNumber] = React.useState("");
   const [isNewUser, setIsNewUser] = React.useState(false);
   const [phoneNumber, setPhoneNumber] = React.useState("");

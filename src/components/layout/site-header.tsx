@@ -168,6 +168,20 @@ function DesktopHeader() {
   const pathname = usePathname();
   const totalItems = useCart((s) => s.getTotalItems());
   const openCart = useCart((s) => s.openCart);
+  const { t } = useLanguage();
+
+  // Map nav items to translation keys
+  const navTitleMap: Record<string, string> = {
+    "Home": "nav.home",
+    "Shop": "nav.shop",
+    "New Arrivals": "nav.newArrivals",
+    "Best Sellers": "nav.bestSellers",
+    "Sale": "nav.sale",
+    "Lookbook": "nav.lookbook",
+    "Blog": "nav.blog",
+    "About Us": "nav.aboutUs",
+    "Contact": "nav.contact",
+  };
 
   return (
     <div className="hidden md:block">
@@ -239,7 +253,7 @@ function DesktopHeader() {
                 item.hasMegaMenu ? (
                   <NavigationMenuItem key={item.href}>
                     <NavigationMenuTrigger className="bg-transparent font-medium tracking-wide hover:bg-accent hover:text-accent-foreground data-[state=open]:bg-accent data-[state=open]:text-accent-foreground">
-                      {item.title}
+                      {navTitleMap[item.title] ? t(navTitleMap[item.title]) : item.title}
                     </NavigationMenuTrigger>
                     <ShopMegaMenu />
                   </NavigationMenuItem>
@@ -254,7 +268,7 @@ function DesktopHeader() {
                         )}
                         data-active={pathname === item.href}
                       >
-                        {item.title}
+                        {navTitleMap[item.title] ? t(navTitleMap[item.title]) : item.title}
                       </NavigationMenuLink>
                     </Link>
                   </NavigationMenuItem>
@@ -273,6 +287,7 @@ function DesktopHeader() {
  * Designed for dark background — uses semi-transparent white bg
  */
 function SearchBar() {
+  const { t } = useLanguage();
   const [open, setOpen] = React.useState(false);
   const [query, setQuery] = React.useState("");
 
@@ -290,7 +305,7 @@ function SearchBar() {
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-primary-foreground/50" />
           <input
             type="search"
-            placeholder="Search products..."
+            placeholder={t("common.search")}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onFocus={() => setOpen(true)}
@@ -323,7 +338,19 @@ function MobileHeader() {
   const pathname = usePathname();
   const totalItems = useCart((s) => s.getTotalItems());
   const openCart = useCart((s) => s.openCart);
-  const { locale, setLocale } = useLanguage();
+  const { locale, setLocale, t } = useLanguage();
+
+  const navTitleMap: Record<string, string> = {
+    "Home": "nav.home",
+    "Shop": "nav.shop",
+    "New Arrivals": "nav.newArrivals",
+    "Best Sellers": "nav.bestSellers",
+    "Sale": "nav.sale",
+    "Lookbook": "nav.lookbook",
+    "Blog": "nav.blog",
+    "About Us": "nav.aboutUs",
+    "Contact": "nav.contact",
+  };
 
   return (
     <div className="md:hidden bg-primary text-primary-foreground">
@@ -385,7 +412,7 @@ function MobileHeader() {
                     item.highlight && "text-accent"
                   )}
                 >
-                  {item.title}
+                  {navTitleMap[item.title] ? t(navTitleMap[item.title]) : item.title}
                 </Link>
               ))}
               <div className="my-3 border-t border-border" />

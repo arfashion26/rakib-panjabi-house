@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Sparkles, ArrowRight } from "lucide-react";
+import { useLanguage } from "@/i18n/language-context";
 
 interface HeroContent {
   eyebrow: string;
@@ -28,6 +29,20 @@ interface Announcement {
 }
 
 export function HeroBannerContent({ content, announcement }: { content: HeroContent; announcement: Announcement }) {
+  const { locale, t } = useLanguage();
+  // Use translations if in Bengali, otherwise use DB content
+  const eyebrow = locale === "bn" ? t("hero.eyebrow") : content.eyebrow;
+  const title = locale === "bn" ? t("hero.title") : content.title;
+  const titleAccent = locale === "bn" ? t("hero.titleAccent") : content.titleAccent;
+  const description = locale === "bn" ? t("hero.description") : content.description;
+  const primaryCtaText = locale === "bn" ? t("hero.exploreCollection") : content.primaryCtaText;
+  const secondaryCtaText = locale === "bn" ? t("hero.newArrivals") : content.secondaryCtaText;
+  const stat1Value = locale === "bn" ? t("hero.stat1Value") : content.stat1Value;
+  const stat1Label = locale === "bn" ? t("hero.stat1Label") : content.stat1Label;
+  const stat2Value = locale === "bn" ? t("hero.stat2Value") : content.stat2Value;
+  const stat2Label = locale === "bn" ? t("hero.stat2Label") : content.stat2Label;
+  const stat3Value = locale === "bn" ? t("hero.stat3Value") : content.stat3Value;
+  const stat3Label = locale === "bn" ? t("hero.stat3Label") : content.stat3Label;
   return (
     <>
       {/* Announcement bar */}
@@ -55,17 +70,17 @@ export function HeroBannerContent({ content, announcement }: { content: HeroCont
             <div className="text-center lg:text-left">
               <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/10 px-4 py-1.5 text-xs font-medium uppercase tracking-wider text-accent">
                 <Sparkles className="h-3 w-3" />
-                {content.eyebrow}
+                {eyebrow}
               </div>
 
               <h1 className="font-serif text-4xl font-medium leading-[1.1] tracking-tight md:text-5xl lg:text-6xl xl:text-7xl">
-                {content.title}
+                {title}
                 <br />
-                <span className="italic text-accent">{content.titleAccent}</span>
+                <span className="italic text-accent">{titleAccent}</span>
               </h1>
 
               <p className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-primary-foreground/80 md:text-lg lg:mx-0">
-                {content.description}
+                {description}
               </p>
 
               <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row lg:justify-start">
@@ -73,14 +88,14 @@ export function HeroBannerContent({ content, announcement }: { content: HeroCont
                   href={content.primaryCtaLink}
                   className="inline-flex h-11 w-full items-center justify-center rounded-md bg-accent px-6 text-sm font-medium uppercase tracking-wider text-accent-foreground transition-colors hover:bg-accent/90 sm:w-auto"
                 >
-                  {content.primaryCtaText}
+                  {primaryCtaText}
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
                 <Link
                   href={content.secondaryCtaLink}
                   className="inline-flex h-11 w-full items-center justify-center rounded-md border border-primary-foreground/30 px-6 text-sm font-medium uppercase tracking-wider text-primary-foreground transition-colors hover:bg-primary-foreground/10 sm:w-auto"
                 >
-                  {content.secondaryCtaText}
+                  {secondaryCtaText}
                 </Link>
               </div>
 
@@ -88,26 +103,26 @@ export function HeroBannerContent({ content, announcement }: { content: HeroCont
               <div className="mt-12 grid grid-cols-3 gap-6 border-t border-primary-foreground/10 pt-6 lg:max-w-md">
                 <div>
                   <div className="font-serif text-2xl font-medium text-accent md:text-3xl">
-                    {content.stat1Value}
+                    {stat1Value}
                   </div>
                   <div className="mt-1 text-xs text-primary-foreground/60">
-                    {content.stat1Label}
+                    {stat1Label}
                   </div>
                 </div>
                 <div>
                   <div className="font-serif text-2xl font-medium text-accent md:text-3xl">
-                    {content.stat2Value}
+                    {stat2Value}
                   </div>
                   <div className="mt-1 text-xs text-primary-foreground/60">
-                    {content.stat2Label}
+                    {stat2Label}
                   </div>
                 </div>
                 <div>
                   <div className="font-serif text-2xl font-medium text-accent md:text-3xl">
-                    {content.stat3Value}
+                    {stat3Value}
                   </div>
                   <div className="mt-1 text-xs text-primary-foreground/60">
-                    {content.stat3Label}
+                    {stat3Label}
                   </div>
                 </div>
               </div>

@@ -19,6 +19,7 @@ import { Logo } from "@/components/logo";
 import { siteConfig, footerNav, paymentMethods } from "@/lib/brand";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/i18n/language-context";
 
 /**
  * Trust badges row (shipping, returns, support, secure)
@@ -58,6 +59,7 @@ function TrustBadges() {
  * Newsletter subscription
  */
 function Newsletter() {
+  const { t } = useLanguage();
   const [email, setEmail] = React.useState("");
   const [submitted, setSubmitted] = React.useState(false);
 
@@ -75,11 +77,10 @@ function Newsletter() {
       <div className="mx-auto max-w-7xl px-4 py-12">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="font-serif text-2xl font-medium md:text-3xl">
-            Join Our Exclusive Circle
+            {t("newsletter.title")}
           </h2>
           <p className="mt-2 text-sm text-primary-foreground/80">
-            Subscribe to receive early access to new collections, private sales, and
-            style inspiration straight to your inbox.
+            {t("newsletter.description")}
           </p>
           <form
             onSubmit={handleSubmit}
@@ -90,7 +91,7 @@ function Newsletter() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your email address"
+              placeholder={t("newsletter.placeholder")}
               className="h-11 border-primary-foreground/20 bg-primary-foreground/5 text-primary-foreground placeholder:text-primary-foreground/50"
             />
             <Button
@@ -152,6 +153,7 @@ function FooterColumn({
  * Main footer
  */
 export function SiteFooter() {
+  const { t } = useLanguage();
   const socials = [
     { icon: Facebook, href: siteConfig.social.facebook, label: "Facebook" },
     { icon: Instagram, href: siteConfig.social.instagram, label: "Instagram" },
@@ -170,7 +172,7 @@ export function SiteFooter() {
             {/* Left: Contact info */}
             <div className="order-2 text-center md:order-1 md:text-left">
               <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-accent">
-                Contact Us
+                {t("footer.contactUs")}
               </p>
               <a
                 href={`mailto:${siteConfig.email}`}
@@ -202,7 +204,7 @@ export function SiteFooter() {
             {/* Right: Social + Description */}
             <div className="order-3 text-center md:text-right">
               <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-accent">
-                Follow Us
+                {t("footer.followUs")}
               </p>
               {socials.length > 0 && (
                 <div className="flex justify-center gap-3 md:justify-end">
@@ -257,8 +259,8 @@ export function SiteFooter() {
         <div className="mx-auto max-w-7xl px-4 py-6">
           <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
             <p className="text-xs text-muted-foreground">
-              © {new Date().getFullYear()} {siteConfig.name}. All rights reserved.
-              Crafted with care in Bangladesh.
+              © {new Date().getFullYear()} {siteConfig.name}. {t("footer.rights")}
+              {t("footer.craftedIn")}
             </p>
 
             {/* Payment methods */}

@@ -25,6 +25,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Container } from "@/components/layout/container";
 import { formatPrice } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/i18n/language-context";
 import { toast } from "sonner";
 
 // COD charge based on delivery area
@@ -84,6 +85,7 @@ const PAYMENT_METHODS = [
 export default function CheckoutPage() {
   const router = useRouter();
   const { items, getSubtotal, clearCart } = useCart();
+  const { t } = useLanguage();
   const [processing, setProcessing] = React.useState(false);
   const [orderPlaced, setOrderPlaced] = React.useState(false);
 
@@ -193,7 +195,7 @@ export default function CheckoutPage() {
         <span className="mx-1">/</span>
         <Link href="/cart" className="hover:text-accent">Cart</Link>
         <span className="mx-1">/</span>
-        <span className="text-foreground">Checkout</span>
+        <span className="text-foreground">{t("checkout.title")}</span>
       </nav>
 
       <h1 className="mb-8 font-serif text-3xl font-medium tracking-tight md:text-4xl">
@@ -212,7 +214,7 @@ export default function CheckoutPage() {
             <div className="space-y-4">
               {/* Name */}
               <div className="space-y-2">
-                <Label htmlFor="name">Full Name *</Label>
+                <Label htmlFor="name">{t("checkout.fullName")} *</Label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                   <Input
@@ -228,7 +230,7 @@ export default function CheckoutPage() {
 
               {/* Phone */}
               <div className="space-y-2">
-                <Label htmlFor="phone">Phone Number *</Label>
+                <Label htmlFor="phone">{t("checkout.phoneNumber")} *</Label>
                 <div className="relative">
                   <Phone className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                   <Input
@@ -245,7 +247,7 @@ export default function CheckoutPage() {
 
               {/* Address */}
               <div className="space-y-2">
-                <Label htmlFor="address">Delivery Address *</Label>
+                <Label htmlFor="address">{t("checkout.deliveryAddress")} *</Label>
                 <textarea
                   id="address"
                   placeholder="House #, Road #, Block, Area, Thana"
@@ -259,7 +261,7 @@ export default function CheckoutPage() {
 
               {/* Area selection */}
               <div className="space-y-2">
-                <Label>Delivery Area *</Label>
+                <Label>{t("checkout.deliveryArea")} *</Label>
                 <RadioGroup
                   value={form.area}
                   onValueChange={(v) => updateField("area", v as "inside_dhaka" | "outside_dhaka")}
@@ -275,7 +277,7 @@ export default function CheckoutPage() {
                   >
                     <RadioGroupItem value="inside_dhaka" id="inside_dhaka" />
                     <div>
-                      <div className="text-sm font-medium">Inside Dhaka</div>
+                      <div className="text-sm font-medium">{t("checkout.insideDhaka")}</div>
                       <div className="text-xs text-muted-foreground">
                         COD: ৳{COD_CHARGES.inside_dhaka} · Delivery: 1 day
                       </div>
@@ -291,7 +293,7 @@ export default function CheckoutPage() {
                   >
                     <RadioGroupItem value="outside_dhaka" id="outside_dhaka" />
                     <div>
-                      <div className="text-sm font-medium">Outside Dhaka</div>
+                      <div className="text-sm font-medium">{t("checkout.outsideDhaka")}</div>
                       <div className="text-xs text-muted-foreground">
                         COD: ৳{COD_CHARGES.outside_dhaka} · Delivery: 1-3 days
                       </div>
@@ -445,7 +447,7 @@ export default function CheckoutPage() {
             {/* Totals */}
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Subtotal</span>
+                <span className="text-muted-foreground">{t("checkout.subtotal")}</span>
                 <span className="font-medium">{formatPrice(subtotal)}</span>
               </div>
               {codCharge > 0 && (
@@ -461,7 +463,7 @@ export default function CheckoutPage() {
             <Separator className="my-4" />
 
             <div className="flex items-center justify-between">
-              <span className="font-medium">Total</span>
+              <span className="font-medium">{t("checkout.total")}</span>
               <span className="font-serif text-2xl font-medium">{formatPrice(total)}</span>
             </div>
 

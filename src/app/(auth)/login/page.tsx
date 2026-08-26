@@ -10,7 +10,9 @@ import { Label } from "@/components/ui/label";
 import { Phone, Loader2, ArrowRight, ShoppingBag } from "lucide-react";
 import { toast } from "sonner";
 
+import { useLanguage } from "@/i18n/language-context";
 function LoginForm() {
+  const { t } = useLanguage();
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirect") || "/dashboard";
@@ -58,13 +60,13 @@ function LoginForm() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="phone">Phone Number</Label>
+            <Label htmlFor="phone">{t("login.phoneNumber")}</Label>
             <div className="relative">
               <Phone className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 id="phone"
                 type="tel"
-                placeholder="01XXX-XXXXXX"
+                placeholder={t("login.phonePlaceholder")}
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 className="pl-10"
