@@ -19,6 +19,7 @@ import {
   ChevronRight,
   FileEdit,
   Star,
+  FolderOpen,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -46,6 +47,7 @@ const navItems: NavItem[] = [
   { href: "/admin/banners", label: "Banners", icon: ImageIcon, group: "content" },
   { href: "/admin/blog", label: "Blog", icon: FileText, group: "content" },
   { href: "/admin/reviews", label: "Reviews", icon: Star, group: "content" },
+  { href: "/admin/media", label: "Media", icon: FolderOpen, group: "content" },
 
   { href: "/admin/settings", label: "Settings", icon: Settings, group: "system" },
 ];
