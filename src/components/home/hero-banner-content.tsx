@@ -102,7 +102,7 @@ export function HeroBannerContent({ content, announcement }: { content: HeroCont
 
   return (
     <section
-      className="relative h-[70vh] min-h-[500px] w-full overflow-hidden bg-primary md:h-[80vh] md:min-h-[600px]"
+      className="relative h-[60vh] min-h-[400px] w-full overflow-hidden bg-primary md:h-[65vh] md:min-h-[500px] lg:h-[70vh]"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
