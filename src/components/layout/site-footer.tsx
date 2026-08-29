@@ -10,50 +10,12 @@ import {
   Phone,
   MapPin,
   Send,
-  ShieldCheck,
-  Truck,
-  RefreshCw,
-  Headphones,
 } from "lucide-react";
 import { Logo } from "@/components/logo";
 import { siteConfig, footerNav, paymentMethods } from "@/lib/brand";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/i18n/language-context";
-
-/**
- * Trust badges row (shipping, returns, support, secure)
- */
-function TrustBadges() {
-  const badges = [
-    { icon: Truck, title: "Free Shipping", subtitle: "On orders over ৳2000" },
-    { icon: RefreshCw, title: "Easy Returns", subtitle: "7-day return policy" },
-    { icon: ShieldCheck, title: "Secure Payment", subtitle: "100% protected" },
-    { icon: Headphones, title: "24/7 Support", subtitle: "Dedicated assistance" },
-  ];
-  return (
-    <div className="border-b border-border/60 bg-muted/30">
-      <div className="mx-auto max-w-7xl px-4 py-8">
-        <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
-          {badges.map((badge) => (
-            <div
-              key={badge.title}
-              className="flex flex-col items-center gap-2 text-center md:flex-row md:text-left"
-            >
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-accent/10 text-accent">
-                <badge.icon className="h-5 w-5" />
-              </div>
-              <div>
-                <div className="text-sm font-semibold">{badge.title}</div>
-                <div className="text-xs text-muted-foreground">{badge.subtitle}</div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
 
 /**
  * Newsletter subscription
@@ -108,10 +70,6 @@ function Newsletter() {
               ✓ Thank you for subscribing! Check your inbox for a welcome message.
             </p>
           )}
-          <p className="mt-3 text-xs text-primary-foreground/60">
-            By subscribing, you agree to our Privacy Policy and consent to receive
-            updates from Rakib Panjabi House.
-          </p>
         </div>
       </div>
     </div>
@@ -162,7 +120,6 @@ export function SiteFooter() {
 
   return (
     <footer className="mt-auto bg-background">
-      <TrustBadges />
       <Newsletter />
 
       {/* Brand section — BLACK background, 3-column layout with logo CENTER */}

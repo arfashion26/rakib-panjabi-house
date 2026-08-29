@@ -1,6 +1,7 @@
 import { getHomepageContent } from "@/lib/services/homepage";
 import { getProducts } from "@/lib/services/products";
 import { HeroBannerContent } from "@/components/home/hero-banner-content";
+import { TrustBadges } from "@/components/home/trust-badges";
 import { FeaturedCategories } from "@/components/home/featured-categories";
 import { NewArrivals } from "@/components/home/new-arrivals";
 import { TrendingProducts } from "@/components/home/product-sections";
@@ -18,6 +19,7 @@ export default async function Home() {
   return (
     <>
       <HeroBannerContent content={{ ...content.hero, heroSlides: content.heroSlides } as any} announcement={content.announcement} />
+      <TrustBadges />
       <FeaturedCategories />
       <NewArrivals />
       <FlashSale />
