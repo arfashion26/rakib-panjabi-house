@@ -1,20 +1,27 @@
 "use client";
 
 import * as React from "react";
-import { MessageCircle, X } from "lucide-react";
+import { X } from "lucide-react";
 
 /**
- * WhatsApp floating button.
+ * Floating chat buttons — WhatsApp + Messenger.
  *
- * Shows a green floating button at the bottom-right of every page
+ * Shows two floating buttons at the bottom-right of every page
  * (except admin/dashboard/auth routes — handled by AppShell).
  *
- * Clicking it opens WhatsApp with a pre-filled message.
+ * - WhatsApp (green): opens wa.me with pre-filled message
+ * - Messenger (blue): opens m.me with the page's messenger
+ *
  * After 3 seconds, a small tooltip appears prompting the user to chat.
  */
+
 const WHATSAPP_NUMBER = "8801716243949"; // +880 1716-243949
 const WHATSAPP_DEFAULT_MESSAGE =
   "Hello Al-Rakib Panjabi House! I have a question about your products.";
+
+// Facebook page username for Messenger deep link (m.me/<username>)
+// Derived from https://www.facebook.com/Alrakibfashionhouse/
+const MESSENGER_PAGE_USERNAME = "Alrakibfashionhouse";
 
 export function WhatsAppButton() {
   const [showTooltip, setShowTooltip] = React.useState(false);
@@ -22,7 +29,7 @@ export function WhatsAppButton() {
 
   // Show tooltip after 3 seconds (if not dismissed)
   React.useEffect(() => {
-    const seen = sessionStorage.getItem("wa_tooltip_seen");
+    const seen = sessionStorage.getItem("chat_tooltip_seen");
     if (seen) return;
     const timer = setTimeout(() => setShowTooltip(true), 3000);
     return () => clearTimeout(timer);
@@ -31,7 +38,7 @@ export function WhatsAppButton() {
   function dismissTooltip() {
     setShowTooltip(false);
     setDismissed(true);
-    sessionStorage.setItem("wa_tooltip_seen", "1");
+    sessionStorage.setItem("chat_tooltip_seen", "1");
   }
 
   function openWhatsApp() {
@@ -39,11 +46,16 @@ export function WhatsAppButton() {
     window.open(url, "_blank", "noopener,noreferrer");
   }
 
+  function openMessenger() {
+    const url = `https://m.me/${MESSENGER_PAGE_USERNAME}`;
+    window.open(url, "_blank", "noopener,noreferrer");
+  }
+
   return (
-    <div className="fixed bottom-5 right-5 z-50 flex flex-col items-end gap-2 print:hidden">
+    <div className="fixed bottom-5 right-5 z-50 flex flex-col items-end gap-3 print:hidden">
       {/* Tooltip */}
       {showTooltip && !dismissed && (
-        <div className="relative max-w-[220px] animate-in fade-in slide-in-from-bottom-2 duration-300">
+        <div className="relative max-w-[240px] animate-in fade-in slide-in-from-bottom-2 duration-300">
           <div className="rounded-xl border border-border bg-background p-3 shadow-xl">
             <button
               onClick={dismissTooltip}
@@ -56,7 +68,7 @@ export function WhatsAppButton() {
               Need help? Chat with us!
             </p>
             <p className="mt-0.5 text-[11px] text-muted-foreground">
-              Quick replies on WhatsApp
+              We reply fast on WhatsApp & Messenger
             </p>
           </div>
           {/* Arrow pointing to button */}
@@ -64,25 +76,48 @@ export function WhatsAppButton() {
         </div>
       )}
 
-      {/* WhatsApp button */}
-      <button
-        onClick={openWhatsApp}
-        aria-label="Chat on WhatsApp"
-        className="group relative flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-lg transition-all hover:scale-110 hover:bg-[#1ebe5d] hover:shadow-xl active:scale-95"
-      >
-        {/* Pulse ring */}
-        <span className="absolute inset-0 animate-ping rounded-full bg-[#25D366] opacity-20 group-hover:opacity-0" />
-
-        {/* WhatsApp icon */}
-        <svg
-          className="relative h-7 w-7"
-          viewBox="0 0 24 24"
-          fill="currentColor"
-          aria-hidden="true"
+      {/* Stack of chat buttons (Messenger on top, WhatsApp on bottom) */}
+      <div className="flex flex-col items-end gap-3">
+        {/* Messenger button */}
+        <button
+          onClick={openMessenger}
+          aria-label="Chat on Messenger"
+          className="group relative flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-[#0084FF] to-[#0066CC] text-white shadow-lg transition-all hover:scale-110 hover:shadow-xl active:scale-95"
         >
-          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
-        </svg>
-      </button>
+          {/* Pulse ring */}
+          <span className="absolute inset-0 animate-ping rounded-full bg-[#0084FF] opacity-20 group-hover:opacity-0" />
+
+          {/* Messenger (Facebook) icon — lightning bolt speech bubble */}
+          <svg
+            className="relative h-6 w-6"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            aria-hidden="true"
+          >
+            <path d="M12 0C5.373 0 0 4.974 0 11.111c0 3.498 1.744 6.614 4.469 8.652V24l4.088-2.242c1.092.301 2.246.464 3.443.464 6.627 0 12-4.973 12-11.111S18.627 0 12 0zm1.191 14.963l-3.055-3.26-5.963 3.26L9.736 8l3.131 3.259L18.762 8l-5.571 6.963z"/>
+          </svg>
+        </button>
+
+        {/* WhatsApp button (slightly larger to stand out) */}
+        <button
+          onClick={openWhatsApp}
+          aria-label="Chat on WhatsApp"
+          className="group relative flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-lg transition-all hover:scale-110 hover:bg-[#1ebe5d] hover:shadow-xl active:scale-95"
+        >
+          {/* Pulse ring */}
+          <span className="absolute inset-0 animate-ping rounded-full bg-[#25D366] opacity-20 group-hover:opacity-0" />
+
+          {/* WhatsApp icon */}
+          <svg
+            className="relative h-7 w-7"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            aria-hidden="true"
+          >
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
+          </svg>
+        </button>
+      </div>
     </div>
   );
 }
