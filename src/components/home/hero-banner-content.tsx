@@ -46,19 +46,11 @@ export function HeroBannerContent({ content, announcement }: { content: HeroCont
   // Use admin-uploaded image (from DB homepage content)
   const heroImage = content.image;
 
+  // Note: Announcement bar is rendered by SiteHeader (single source)
+  // The 'announcement' prop is accepted for API compatibility but not rendered here.
+
   return (
     <>
-      {/* Announcement bar */}
-      {announcement.enabled && (
-        <div className="bg-accent text-accent-foreground">
-          <div className="mx-auto max-w-7xl px-4">
-            <div className="flex h-9 items-center justify-center text-center text-xs">
-              <span className="font-medium tracking-wide">{announcement.text}</span>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Hero section — full-bleed image with gradient overlay */}
       <section className="relative min-h-[600px] overflow-hidden bg-primary md:min-h-[680px] lg:min-h-[760px]">
         {/* Background image */}

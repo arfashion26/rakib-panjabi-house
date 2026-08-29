@@ -6,7 +6,7 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-inter);
+  --font-sans: var(--font-poppins);
   --font-serif: var(--font-playfair);
   --font-mono: var(--font-geist-mono);
   --color-sidebar-ring: var(--sidebar-ring);
@@ -73,19 +73,19 @@
   --muted: oklch(0.96 0.005 80);
   --muted-foreground: oklch(0.45 0.01 264);
 
-  /* Accent - Warm gold (luxury signature) */
-  --accent: oklch(0.72 0.13 75);                  /* Burnished gold */
-  --accent-foreground: oklch(0.18 0.01 264);
+  /* Accent - Brand yellow (#FFDB01) — from logo */
+  --accent: oklch(0.893 0.417 124.6);              /* #FFDB01 brand yellow */
+  --accent-foreground: oklch(0.18 0.01 264);     /* Dark charcoal text on yellow */
 
   /* Destructive */
   --destructive: oklch(0.55 0.22 27);
   --border: oklch(0.90 0.005 80);
   --input: oklch(0.92 0.005 80);
-  --ring: oklch(0.72 0.13 75);                    /* Matches accent */
+  --ring: oklch(0.893 0.417 124.6);               /* Matches accent (#FFDB01) */
 
   /* Charts */
   --chart-1: oklch(0.18 0.01 264);                /* Charcoal */
-  --chart-2: oklch(0.72 0.13 75);                 /* Gold */
+  --chart-2: oklch(0.893 0.417 124.6);             /* Brand yellow */
   --chart-3: oklch(0.55 0.22 27);                 /* Terracotta */
   --chart-4: oklch(0.50 0.08 200);                /* Slate blue */
   --chart-5: oklch(0.65 0.15 145);                /* Sage green */
@@ -95,7 +95,7 @@
   --sidebar-foreground: oklch(0.18 0.01 264);
   --sidebar-primary: oklch(0.18 0.01 264);
   --sidebar-primary-foreground: oklch(0.985 0.002 95);
-  --sidebar-accent: oklch(0.96 0.005 80);
+  --sidebar-accent: oklch(0.96 0.02 124);         /* Light yellow tint */
   --sidebar-accent-foreground: oklch(0.18 0.01 264);
   --sidebar-border: oklch(0.90 0.005 80);
   --sidebar-ring: oklch(0.72 0.13 75);

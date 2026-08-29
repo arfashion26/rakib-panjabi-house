@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Playfair_Display } from "next/font/google";
+import { Poppins, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -10,12 +10,16 @@ import { getCustomCode } from "@/lib/services/custom-code";
 // The layout is async (it fetches custom code from the DB), so Next.js
 // automatically renders it dynamically. No need for force-dynamic here —
 // that can interfere with auth cookie handling in some cases.
-const inter = Inter({
-  variable: "--font-inter",
+
+// Poppins — primary font for all body text, headings, UI
+const poppins = Poppins({
+  variable: "--font-poppins",
   subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
   display: "swap",
 });
 
+// Playfair Display — serif font for elegant headings (hero, section titles)
 const playfair = Playfair_Display({
   variable: "--font-playfair",
   subsets: ["latin"],
@@ -177,7 +181,7 @@ export default async function RootLayout({
         )}
       </head>
       <body
-        className={`${inter.variable} ${playfair.variable} antialiased bg-background text-foreground`}
+        className={`${poppins.variable} ${playfair.variable} antialiased bg-background text-foreground`}
       >
         {/* Custom tracking code for top of <body> (GTM noscript, early pixels) */}
         {customCode.body_top && (
