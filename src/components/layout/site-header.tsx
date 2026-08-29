@@ -11,11 +11,12 @@ import {
   Menu,
   X,
   ChevronDown,
-  Globe,
   Phone,
+  Truck,
+  ShieldCheck,
+  RefreshCw,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Logo } from "@/components/logo";
 import {
   mainNav,
   categories,
@@ -41,15 +42,10 @@ import {
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 
 /**
- * Top announcement bar (above header)
+ * Top announcement bar (above header) — gold accent
+ * Shows phone, announcement text, language toggle, currency
  */
 function AnnouncementBar() {
   const { locale, setLocale, t } = useLanguage();
@@ -57,37 +53,47 @@ function AnnouncementBar() {
     <div className="bg-accent text-accent-foreground">
       <div className="mx-auto max-w-7xl px-4">
         <div className="flex h-9 items-center justify-between text-xs">
-          <div className="hidden md:flex items-center gap-2">
+          {/* Left: phone (desktop only) */}
+          <div className="hidden items-center gap-2 md:flex">
             <Phone className="h-3 w-3" />
-            <span>{siteConfig.phone}</span>
+            <span className="font-medium">{siteConfig.phone}</span>
           </div>
+
+          {/* Center: announcement text */}
           <div className="flex-1 text-center md:flex-none">
             <span className="font-medium tracking-wide">
               {t("announcement.text")}
             </span>
           </div>
-          <div className="hidden md:flex items-center gap-3">
-            {/* Language Toggle */}
+
+          {/* Right: language toggle + currency (desktop only) */}
+          <div className="hidden items-center gap-3 md:flex">
             <div className="flex items-center gap-1 rounded-full bg-accent-foreground/10 px-1 py-0.5">
               <button
                 onClick={() => setLocale("en")}
-                className={`rounded-full px-2 py-0.5 text-xs font-medium transition-colors ${
-                  locale === "en" ? "bg-accent-foreground text-accent" : "text-accent-foreground/70 hover:text-accent-foreground"
-                }`}
+                className={cn(
+                  "rounded-full px-2.5 py-0.5 text-xs font-medium transition-colors",
+                  locale === "en"
+                    ? "bg-accent-foreground text-accent"
+                    : "text-accent-foreground/70 hover:text-accent-foreground"
+                )}
               >
                 EN
               </button>
               <button
                 onClick={() => setLocale("bn")}
-                className={`rounded-full px-2 py-0.5 text-xs font-medium transition-colors ${
-                  locale === "bn" ? "bg-accent-foreground text-accent" : "text-accent-foreground/70 hover:text-accent-foreground"
-                }`}
+                className={cn(
+                  "rounded-full px-2.5 py-0.5 text-xs font-medium transition-colors",
+                  locale === "bn"
+                    ? "bg-accent-foreground text-accent"
+                    : "text-accent-foreground/70 hover:text-accent-foreground"
+                )}
               >
                 বাংলা
               </button>
             </div>
-            <span className="text-accent-foreground/60">|</span>
-            <span>৳ BDT</span>
+            <span className="text-accent-foreground/40">|</span>
+            <span className="font-medium">৳ BDT</span>
           </div>
         </div>
       </div>
@@ -100,14 +106,15 @@ function AnnouncementBar() {
  */
 function ShopMegaMenu() {
   const featuredCategories = categories.filter((c) => c.featured).slice(0, 4);
+  const { t } = useLanguage();
   return (
     <NavigationMenuContent>
       <div className="grid w-[600px] gap-3 p-6 md:grid-cols-[1.5fr_1fr]">
         <div>
-          <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-            All Categories
+          <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            {t("products.categories")}
           </h3>
-          <ul className="grid grid-cols-2 gap-2">
+          <ul className="grid grid-cols-2 gap-1">
             {categories.slice(0, 12).map((cat) => (
               <li key={cat.slug}>
                 <Link
@@ -124,10 +131,10 @@ function ShopMegaMenu() {
           </ul>
         </div>
         <div className="rounded-lg bg-gradient-to-br from-accent/15 to-accent/5 p-4">
-          <h3 className="mb-2 text-sm font-semibold uppercase tracking-wider text-accent">
-            Featured
+          <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-accent">
+            {t("categories.title")}
           </h3>
-          <div className="space-y-2">
+          <div className="space-y-1">
             {featuredCategories.map((cat) => (
               <Link
                 key={cat.slug}
@@ -143,9 +150,9 @@ function ShopMegaMenu() {
           </div>
           <Link
             href="/shop"
-            className="mt-4 block rounded-md bg-primary px-4 py-2 text-center text-xs font-medium uppercase tracking-wider text-primary-foreground hover:opacity-90"
+            className="mt-4 block rounded-md bg-primary px-4 py-2 text-center text-xs font-medium uppercase tracking-wider text-primary-foreground transition-opacity hover:opacity-90"
           >
-            View All Products
+            {t("shop.browseAll")}
           </Link>
         </div>
       </div>
@@ -154,15 +161,36 @@ function ShopMegaMenu() {
 }
 
 /**
- * Main desktop header
- *
- * Design: Clean single-row layout
- * - Top: Announcement bar (gold)
- * - Main row: Search (left) | Logo CENTER (black bg, large) | Actions (right)
- * - Bottom: Navigation (cream bg with gold accents)
- *
- * The logo is on black background so it blends seamlessly with the
- * logo's own black background. Logo is large and prominent.
+ * Logo component — circular logo image
+ */
+function HeaderLogo({ size = "md" }: { size?: "sm" | "md" }) {
+  const dim = size === "sm" ? "h-10 w-10" : "h-12 w-12";
+  return (
+    <Link href="/" aria-label="Al-Rakib Panjabi House - Home" className="flex items-center gap-2.5 group">
+      <div className={cn("relative shrink-0 overflow-hidden rounded-full ring-2 ring-accent/40 transition-transform group-hover:scale-105", dim)}>
+        <img
+          src="/logo.jpg"
+          alt="Al-Rakib Panjabi House"
+          className="h-full w-full object-cover"
+          width={size === "sm" ? 40 : 48}
+          height={size === "sm" ? 40 : 48}
+        />
+      </div>
+      <div className="hidden flex-col leading-none sm:flex">
+        <span className="font-serif text-sm font-semibold text-primary-foreground">
+          Al-Rakib
+        </span>
+        <span className="text-[9px] uppercase tracking-[0.2em] text-accent">
+          Panjabi House
+        </span>
+      </div>
+    </Link>
+  );
+}
+
+/**
+ * Desktop header — single row on black background
+ * Layout: Logo (left) | Navigation (center) | Search + Actions (right)
  */
 function DesktopHeader() {
   const pathname = usePathname();
@@ -170,7 +198,6 @@ function DesktopHeader() {
   const openCart = useCart((s) => s.openCart);
   const { t } = useLanguage();
 
-  // Map nav items to translation keys
   const navTitleMap: Record<string, string> = {
     "Home": "nav.home",
     "Shop": "nav.shop",
@@ -184,115 +211,113 @@ function DesktopHeader() {
   };
 
   return (
-    <div className="hidden md:block">
-      {/* Main row: search | logo | actions on BLACK background */}
-      <div className="bg-primary">
-        <div className="mx-auto max-w-7xl px-4">
-          <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-4 py-4">
-            {/* Left: Search (on black bg) */}
-            <div className="flex items-center">
-              <SearchBar />
-            </div>
+    <div className="hidden border-b border-primary-foreground/10 bg-primary md:block">
+      <div className="mx-auto max-w-7xl px-4 lg:px-6">
+        <div className="flex h-16 items-center justify-between gap-6">
+          {/* Left: Logo */}
+          <div className="flex items-center">
+            <HeaderLogo size="md" />
+          </div>
 
-            {/* Center: Logo (large, blends with black bg) */}
-            <div className="flex justify-center">
-              <Link href="/" aria-label="Al-Rakib Panjabi House - Home" className="group">
-                <Logo size="md" variant="light" />
-              </Link>
-            </div>
-
-            {/* Right: Action icons (on black bg) */}
-            <div className="flex items-center justify-end gap-1">
-              <Button
-                variant="ghost"
-                size="icon"
-                asChild
-                aria-label="Wishlist"
-                className="text-primary-foreground hover:bg-accent hover:text-accent-foreground"
-              >
-                <Link href="/wishlist">
-                  <Heart className="h-5 w-5" />
-                </Link>
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                asChild
-                aria-label="Account"
-                className="text-primary-foreground hover:bg-accent hover:text-accent-foreground"
-              >
-                <Link href="/dashboard">
-                  <User className="h-5 w-5" />
-                </Link>
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                aria-label="Cart"
-                className="relative text-primary-foreground hover:bg-accent hover:text-accent-foreground"
-                onClick={openCart}
-              >
-                <ShoppingBag className="h-5 w-5" />
-                {totalItems > 0 && (
-                  <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-accent text-[10px] font-bold text-accent-foreground">
-                    {totalItems > 99 ? "99+" : totalItems}
-                  </span>
+          {/* Center: Navigation */}
+          <nav className="flex-1">
+            <NavigationMenu>
+              <NavigationMenuList className="flex-wrap justify-center gap-0.5">
+                {mainNav.map((item) =>
+                  item.hasMegaMenu ? (
+                    <NavigationMenuItem key={item.href}>
+                      <NavigationMenuTrigger className="h-9 bg-transparent px-3 text-sm font-medium tracking-wide text-primary-foreground/80 hover:bg-accent hover:text-accent-foreground data-[state=open]:bg-accent data-[state=open]:text-accent-foreground">
+                        {navTitleMap[item.title] ? t(navTitleMap[item.title]) : item.title}
+                      </NavigationMenuTrigger>
+                      <ShopMegaMenu />
+                    </NavigationMenuItem>
+                  ) : (
+                    <NavigationMenuItem key={item.href}>
+                      <Link href={item.href} legacyBehavior passHref>
+                        <NavigationMenuLink
+                          className={cn(
+                            navigationMenuTriggerStyle(),
+                            "h-9 bg-transparent px-3 text-sm font-medium tracking-wide text-primary-foreground/80 hover:bg-accent hover:text-accent-foreground",
+                            item.highlight && "text-accent font-semibold",
+                            pathname === item.href && "text-accent"
+                          )}
+                        >
+                          {navTitleMap[item.title] ? t(navTitleMap[item.title]) : item.title}
+                        </NavigationMenuLink>
+                      </Link>
+                    </NavigationMenuItem>
+                  )
                 )}
-              </Button>
-            </div>
+              </NavigationMenuList>
+            </NavigationMenu>
+          </nav>
+
+          {/* Right: Search + Actions */}
+          <div className="flex items-center gap-1">
+            {/* Search */}
+            <SearchBar />
+
+            {/* Divider */}
+            <div className="mx-1 h-6 w-px bg-primary-foreground/15" />
+
+            {/* Wishlist */}
+            <Button
+              variant="ghost"
+              size="icon"
+              asChild
+              aria-label="Wishlist"
+              className="h-9 w-9 text-primary-foreground/80 hover:bg-accent hover:text-accent-foreground"
+            >
+              <Link href="/wishlist">
+                <Heart className="h-[18px] w-[18px]" />
+              </Link>
+            </Button>
+
+            {/* Account */}
+            <Button
+              variant="ghost"
+              size="icon"
+              asChild
+              aria-label="Account"
+              className="h-9 w-9 text-primary-foreground/80 hover:bg-accent hover:text-accent-foreground"
+            >
+              <Link href="/dashboard">
+                <User className="h-[18px] w-[18px]" />
+              </Link>
+            </Button>
+
+            {/* Cart */}
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label="Cart"
+              className="relative h-9 w-9 text-primary-foreground/80 hover:bg-accent hover:text-accent-foreground"
+              onClick={openCart}
+            >
+              <ShoppingBag className="h-[18px] w-[18px]" />
+              {totalItems > 0 && (
+                <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-accent px-1 text-[10px] font-bold text-accent-foreground">
+                  {totalItems > 99 ? "99+" : totalItems}
+                </span>
+              )}
+            </Button>
           </div>
         </div>
       </div>
-
-      {/* Navigation row — cream background with gold accents */}
-      <nav className="border-b border-border bg-background">
-        <div className="mx-auto max-w-7xl px-4">
-          <NavigationMenu>
-            <NavigationMenuList className="flex-wrap justify-center py-3">
-              {mainNav.map((item) =>
-                item.hasMegaMenu ? (
-                  <NavigationMenuItem key={item.href}>
-                    <NavigationMenuTrigger className="bg-transparent font-medium tracking-wide hover:bg-accent hover:text-accent-foreground data-[state=open]:bg-accent data-[state=open]:text-accent-foreground">
-                      {navTitleMap[item.title] ? t(navTitleMap[item.title]) : item.title}
-                    </NavigationMenuTrigger>
-                    <ShopMegaMenu />
-                  </NavigationMenuItem>
-                ) : (
-                  <NavigationMenuItem key={item.href}>
-                    <Link href={item.href} legacyBehavior passHref>
-                      <NavigationMenuLink
-                        className={cn(
-                          navigationMenuTriggerStyle(),
-                          "bg-transparent font-medium tracking-wide hover:bg-accent hover:text-accent-foreground",
-                          item.highlight && "text-accent font-semibold"
-                        )}
-                        data-active={pathname === item.href}
-                      >
-                        {navTitleMap[item.title] ? t(navTitleMap[item.title]) : item.title}
-                      </NavigationMenuLink>
-                    </Link>
-                  </NavigationMenuItem>
-                )
-              )}
-            </NavigationMenuList>
-          </NavigationMenu>
-        </div>
-      </nav>
     </div>
   );
 }
 
 /**
- * Search bar with autocomplete placeholder
- * Designed for dark background — uses semi-transparent white bg
+ * Search bar — compact, expands on focus
  */
 function SearchBar() {
   const { t } = useLanguage();
-  const [open, setOpen] = React.useState(false);
   const [query, setQuery] = React.useState("");
+  const [expanded, setExpanded] = React.useState(false);
 
   return (
-    <div className="relative w-full max-w-xs">
+    <div className="relative">
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -308,30 +333,22 @@ function SearchBar() {
             placeholder={t("common.search")}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            onFocus={() => setOpen(true)}
-            onBlur={() => setTimeout(() => setOpen(false), 150)}
-            className="h-9 w-full rounded-full border border-primary-foreground/20 bg-primary-foreground/5 pl-9 pr-4 text-sm text-primary-foreground placeholder:text-primary-foreground/40 focus:border-accent focus:bg-primary-foreground/10 focus:outline-none focus:ring-1 focus:ring-accent/30 transition-colors"
+            onFocus={() => setExpanded(true)}
+            onBlur={() => setExpanded(false)}
+            className={cn(
+              "h-9 rounded-full border border-primary-foreground/20 bg-primary-foreground/5 pl-9 pr-4 text-sm text-primary-foreground placeholder:text-primary-foreground/40 transition-all focus:border-accent focus:bg-primary-foreground/10 focus:outline-none focus:ring-1 focus:ring-accent/30",
+              expanded ? "w-56" : "w-40"
+            )}
           />
         </div>
       </form>
-      {open && query && (
-        <div className="absolute left-0 right-0 top-full z-50 mt-1 rounded-md border border-border bg-popover p-2 shadow-lg">
-          <p className="px-2 py-1.5 text-xs text-muted-foreground">
-            Press Enter to search for &ldquo;{query}&rdquo;
-          </p>
-        </div>
-      )}
     </div>
   );
 }
 
 /**
- * Mobile header
- *
- * Design: Black background with centered logo
- * Top: Announcement bar (gold)
- * Logo row: Black background with centered logo
- * Action row: Menu (left), Search/Wishlist/Cart (right) on black bg
+ * Mobile header — compact, single row with drawer menu
+ * Layout: Menu (left) | Logo (center) | Cart (right)
  */
 function MobileHeader() {
   const [open, setOpen] = React.useState(false);
@@ -353,105 +370,168 @@ function MobileHeader() {
   };
 
   return (
-    <div className="md:hidden bg-primary text-primary-foreground">
-      {/* Logo row — centered on black */}
-      <div className="flex items-center justify-center py-4">
-        <Link href="/" aria-label="Home">
-          <Logo size="sm" variant="light" />
-        </Link>
-      </div>
-
-      {/* Language toggle for mobile */}
-      <div className="flex justify-center pb-2">
-        <div className="flex items-center gap-1 rounded-full bg-primary-foreground/10 px-1 py-0.5">
-          <button
-            onClick={() => setLocale("en")}
-            className={`rounded-full px-3 py-0.5 text-xs font-medium transition-colors ${
-              locale === "en" ? "bg-accent text-accent-foreground" : "text-primary-foreground/70"
-            }`}
-          >
-            EN
-          </button>
-          <button
-            onClick={() => setLocale("bn")}
-            className={`rounded-full px-3 py-0.5 text-xs font-medium transition-colors ${
-              locale === "bn" ? "bg-accent text-accent-foreground" : "text-primary-foreground/70"
-            }`}
-          >
-            বাংলা
-          </button>
-        </div>
-      </div>
-
-      {/* Action row — black background */}
-      <div className="flex items-center justify-between border-t border-accent/20 px-4 py-2.5">
-        {/* Left: menu button */}
+    <div className="border-b border-primary-foreground/10 bg-primary text-primary-foreground md:hidden">
+      <div className="flex h-14 items-center justify-between px-4">
+        {/* Left: Menu button */}
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild>
-            <Button variant="ghost" size="icon" aria-label="Open menu" className="text-primary-foreground hover:bg-accent hover:text-accent-foreground">
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label="Open menu"
+              className="h-10 w-10 text-primary-foreground hover:bg-accent hover:text-accent-foreground"
+            >
               <Menu className="h-5 w-5" />
             </Button>
           </SheetTrigger>
-          <SheetContent side="left" className="w-[300px] sm:w-[350px] overflow-y-auto bg-background">
-            <SheetHeader>
-              <SheetTitle className="text-left">
-                <Logo size="sm" />
+          <SheetContent side="left" className="w-[300px] overflow-y-auto bg-background p-0">
+            <SheetHeader className="border-b border-border bg-primary px-4 py-4">
+              <SheetTitle className="flex items-center justify-between">
+                <HeaderLogo size="sm" />
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-primary-foreground hover:bg-accent hover:text-accent-foreground"
+                  onClick={() => setOpen(false)}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
               </SheetTitle>
             </SheetHeader>
-            <div className="mt-6 flex flex-col gap-1">
+
+            {/* Mobile nav */}
+            <div className="flex flex-col gap-0.5 p-3">
               {mainNav.map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}
                   onClick={() => setOpen(false)}
                   className={cn(
-                    "rounded-md px-3 py-2.5 text-base font-medium",
+                    "flex items-center justify-between rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
                     pathname === item.href
                       ? "bg-accent/10 text-accent"
-                      : "hover:bg-accent/5",
+                      : "text-foreground hover:bg-accent/5",
                     item.highlight && "text-accent"
                   )}
                 >
                   {navTitleMap[item.title] ? t(navTitleMap[item.title]) : item.title}
+                  {item.highlight && (
+                    <span className="rounded-full bg-accent px-1.5 py-0.5 text-[9px] font-bold text-accent-foreground">
+                      SALE
+                    </span>
+                  )}
                 </Link>
               ))}
+
+              {/* Categories section */}
               <div className="my-3 border-t border-border" />
               <p className="px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Categories
+                {t("products.categories")}
               </p>
-              {categories.slice(0, 8).map((cat) => (
-                <Link
-                  key={cat.slug}
-                  href={cat.href}
-                  onClick={() => setOpen(false)}
-                  className="rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-accent/5 hover:text-foreground"
-                >
-                  {cat.name}
-                </Link>
-              ))}
+              <div className="mt-1 grid grid-cols-2 gap-1">
+                {categories.slice(0, 10).map((cat) => (
+                  <Link
+                    key={cat.slug}
+                    href={cat.href}
+                    onClick={() => setOpen(false)}
+                    className="rounded-md px-3 py-2 text-xs text-muted-foreground hover:bg-accent/5 hover:text-foreground"
+                  >
+                    {cat.name}
+                  </Link>
+                ))}
+              </div>
+
+              {/* Language toggle */}
+              <div className="my-3 border-t border-border" />
+              <div className="px-3">
+                <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  {t("dashboard.language")}
+                </p>
+                <div className="flex items-center gap-1 rounded-full bg-muted p-1">
+                  <button
+                    onClick={() => setLocale("en")}
+                    className={cn(
+                      "flex-1 rounded-full px-3 py-1.5 text-xs font-medium transition-colors",
+                      locale === "en" ? "bg-accent text-accent-foreground" : "text-muted-foreground"
+                    )}
+                  >
+                    English
+                  </button>
+                  <button
+                    onClick={() => setLocale("bn")}
+                    className={cn(
+                      "flex-1 rounded-full px-3 py-1.5 text-xs font-medium transition-colors",
+                      locale === "bn" ? "bg-accent text-accent-foreground" : "text-muted-foreground"
+                    )}
+                  >
+                    বাংলা
+                  </button>
+                </div>
+              </div>
+
+              {/* Contact info */}
+              <div className="my-3 border-t border-border" />
+              <div className="px-3 space-y-2">
+                <a href={`tel:${siteConfig.phone}`} className="flex items-center gap-2 text-xs text-muted-foreground hover:text-accent">
+                  <Phone className="h-3 w-3" />
+                  {siteConfig.phone}
+                </a>
+                <a href={`mailto:${siteConfig.email}`} className="flex items-center gap-2 text-xs text-muted-foreground hover:text-accent">
+                  <Search className="h-3 w-3" />
+                  {siteConfig.email}
+                </a>
+              </div>
             </div>
           </SheetContent>
         </Sheet>
 
-        {/* Center: spacer */}
-        <div className="flex-1" />
+        {/* Center: Logo */}
+        <Link href="/" aria-label="Home" className="absolute left-1/2 -translate-x-1/2">
+          <div className="relative h-9 w-9 overflow-hidden rounded-full ring-2 ring-accent/40">
+            <img
+              src="/logo.jpg"
+              alt="Al-Rakib Panjabi House"
+              className="h-full w-full object-cover"
+              width={36}
+              height={36}
+            />
+          </div>
+        </Link>
 
-        {/* Right: Action icons */}
-        <div className="flex items-center gap-1">
-          <Button variant="ghost" size="icon" asChild aria-label="Search" className="text-primary-foreground hover:bg-accent hover:text-accent-foreground">
+        {/* Right: Actions */}
+        <div className="flex items-center gap-0.5">
+          <Button
+            variant="ghost"
+            size="icon"
+            asChild
+            aria-label="Search"
+            className="h-9 w-9 text-primary-foreground/80 hover:bg-accent hover:text-accent-foreground"
+          >
             <Link href="/shop">
-              <Search className="h-5 w-5" />
+              <Search className="h-[18px] w-[18px]" />
             </Link>
           </Button>
-          <Button variant="ghost" size="icon" asChild aria-label="Wishlist" className="text-primary-foreground hover:bg-accent hover:text-accent-foreground">
+          <Button
+            variant="ghost"
+            size="icon"
+            asChild
+            aria-label="Wishlist"
+            className="h-9 w-9 text-primary-foreground/80 hover:bg-accent hover:text-accent-foreground"
+          >
             <Link href="/wishlist">
-              <Heart className="h-5 w-5" />
+              <Heart className="h-[18px] w-[18px]" />
             </Link>
           </Button>
-          <Button variant="ghost" size="icon" aria-label="Cart" className="relative text-primary-foreground hover:bg-accent hover:text-accent-foreground" onClick={openCart}>
-            <ShoppingBag className="h-5 w-5" />
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label="Cart"
+            className="relative h-9 w-9 text-primary-foreground/80 hover:bg-accent hover:text-accent-foreground"
+            onClick={openCart}
+          >
+            <ShoppingBag className="h-[18px] w-[18px]" />
             {totalItems > 0 && (
-              <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-accent text-[10px] font-bold text-accent-foreground">
+              <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-accent px-1 text-[10px] font-bold text-accent-foreground">
                 {totalItems > 99 ? "99+" : totalItems}
               </span>
             )}
