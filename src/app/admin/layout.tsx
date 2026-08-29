@@ -41,6 +41,7 @@ const navItems: NavItem[] = [
   { href: "/admin/products", label: "Products", icon: Package, group: "catalog" },
   { href: "/admin/categories", label: "Categories", icon: Tag, group: "catalog" },
   { href: "/admin/coupons", label: "Coupons", icon: Tag, group: "catalog" },
+  { href: "/admin/menu", label: "Menu", icon: Menu, group: "catalog" },
   { href: "/admin/homepage", label: "Homepage", icon: Home, group: "catalog" },
   { href: "/admin/pages", label: "Pages", icon: FileEdit, group: "catalog" },
 

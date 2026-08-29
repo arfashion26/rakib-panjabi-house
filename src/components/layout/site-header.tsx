@@ -190,25 +190,35 @@ function HeaderLogo({ size = "md" }: { size?: "sm" | "md" }) {
 
 /**
  * Desktop header — single row on black background
- * Layout: Logo (left) | Navigation (center) | Search + Actions (right)
+ * Layout: Logo (left) | Navigation (center, wider spacing) | Search + Actions (right)
  */
 function DesktopHeader() {
   const pathname = usePathname();
   const totalItems = useCart((s) => s.getTotalItems());
   const openCart = useCart((s) => s.openCart);
-  const { t } = useLanguage();
+  const { locale, t } = useLanguage();
 
-  const navTitleMap: Record<string, string> = {
-    "Home": "nav.home",
-    "Shop": "nav.shop",
-    "New Arrivals": "nav.newArrivals",
-    "Best Sellers": "nav.bestSellers",
-    "Sale": "nav.sale",
-    "Lookbook": "nav.lookbook",
-    "Blog": "nav.blog",
-    "About Us": "nav.aboutUs",
-    "Contact": "nav.contact",
-  };
+  // Fetch DB-driven nav items
+  const [navItems, setNavItems] = React.useState<Array<{
+    id: string;
+    label: string;
+    label_bn: string;
+    href: string;
+    sort_order: number;
+    is_active: boolean;
+    open_in_new_tab: boolean;
+  }>>([]);
+
+  React.useEffect(() => {
+    fetch("/api/nav-menu")
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.success && data.items?.length > 0) {
+          setNavItems(data.items);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   return (
     <div className="hidden border-b border-primary-foreground/10 bg-primary md:block">
@@ -219,34 +229,47 @@ function DesktopHeader() {
             <HeaderLogo size="md" />
           </div>
 
-          {/* Center: Navigation */}
+          {/* Center: Navigation — wider spacing */}
           <nav className="flex-1">
             <NavigationMenu>
-              <NavigationMenuList className="flex-wrap justify-center gap-0.5">
-                {mainNav.map((item) =>
-                  item.hasMegaMenu ? (
-                    <NavigationMenuItem key={item.href}>
-                      <NavigationMenuTrigger className="h-9 bg-transparent px-3 text-sm font-medium tracking-wide text-primary-foreground/80 hover:bg-accent hover:text-accent-foreground data-[state=open]:bg-accent data-[state=open]:text-accent-foreground">
-                        {navTitleMap[item.title] ? t(navTitleMap[item.title]) : item.title}
-                      </NavigationMenuTrigger>
-                      <ShopMegaMenu />
-                    </NavigationMenuItem>
-                  ) : (
-                    <NavigationMenuItem key={item.href}>
-                      <Link href={item.href} legacyBehavior passHref>
-                        <NavigationMenuLink
-                          className={cn(
-                            navigationMenuTriggerStyle(),
-                            "h-9 bg-transparent px-3 text-sm font-medium tracking-wide text-primary-foreground/80 hover:bg-accent hover:text-accent-foreground",
-                            item.highlight && "text-accent font-semibold",
-                            pathname === item.href && "text-accent"
-                          )}
+              <NavigationMenuList className="flex-wrap justify-center gap-1">
+                {navItems.length > 0 ? (
+                  navItems.map((item) =>
+                    item.href === "/shop" ? (
+                      <NavigationMenuItem key={item.id}>
+                        <NavigationMenuTrigger className="h-9 bg-transparent px-4 text-sm font-medium tracking-wide text-primary-foreground/80 hover:bg-accent hover:text-accent-foreground data-[state=open]:bg-accent data-[state=open]:text-accent-foreground">
+                          {locale === "bn" && item.label_bn ? item.label_bn : item.label}
+                        </NavigationMenuTrigger>
+                        <ShopMegaMenu />
+                      </NavigationMenuItem>
+                    ) : (
+                      <NavigationMenuItem key={item.id}>
+                        <Link
+                          href={item.href}
+                          legacyBehavior
+                          passHref
+                          target={item.open_in_new_tab ? "_blank" : undefined}
                         >
-                          {navTitleMap[item.title] ? t(navTitleMap[item.title]) : item.title}
-                        </NavigationMenuLink>
-                      </Link>
-                    </NavigationMenuItem>
+                          <NavigationMenuLink
+                            className={cn(
+                              navigationMenuTriggerStyle(),
+                              "h-9 bg-transparent px-4 text-sm font-medium tracking-wide text-primary-foreground/80 hover:bg-accent hover:text-accent-foreground",
+                              pathname === item.href && "text-accent"
+                            )}
+                          >
+                            {locale === "bn" && item.label_bn ? item.label_bn : item.label}
+                          </NavigationMenuLink>
+                        </Link>
+                      </NavigationMenuItem>
+                    )
                   )
+                ) : (
+                  // Fallback: static nav while loading
+                  <NavigationMenuItem>
+                    <NavigationMenuLink className={cn(navigationMenuTriggerStyle(), "h-9 bg-transparent px-4 text-sm text-primary-foreground/50")}>
+                      Loading...
+                    </NavigationMenuLink>
+                  </NavigationMenuItem>
                 )}
               </NavigationMenuList>
             </NavigationMenu>
@@ -357,17 +380,26 @@ function MobileHeader() {
   const openCart = useCart((s) => s.openCart);
   const { locale, setLocale, t } = useLanguage();
 
-  const navTitleMap: Record<string, string> = {
-    "Home": "nav.home",
-    "Shop": "nav.shop",
-    "New Arrivals": "nav.newArrivals",
-    "Best Sellers": "nav.bestSellers",
-    "Sale": "nav.sale",
-    "Lookbook": "nav.lookbook",
-    "Blog": "nav.blog",
-    "About Us": "nav.aboutUs",
-    "Contact": "nav.contact",
-  };
+  // Fetch DB-driven nav items
+  const [navItems, setNavItems] = React.useState<Array<{
+    id: string;
+    label: string;
+    label_bn: string;
+    href: string;
+    is_active: boolean;
+    open_in_new_tab: boolean;
+  }>>([]);
+
+  React.useEffect(() => {
+    fetch("/api/nav-menu")
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.success && data.items?.length > 0) {
+          setNavItems(data.items);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   return (
     <div className="border-b border-primary-foreground/10 bg-primary text-primary-foreground md:hidden">
@@ -399,27 +431,22 @@ function MobileHeader() {
               </SheetTitle>
             </SheetHeader>
 
-            {/* Mobile nav */}
+            {/* Mobile nav — DB-driven */}
             <div className="flex flex-col gap-0.5 p-3">
-              {mainNav.map((item) => (
+              {navItems.map((item) => (
                 <Link
-                  key={item.href}
+                  key={item.id}
                   href={item.href}
                   onClick={() => setOpen(false)}
+                  target={item.open_in_new_tab ? "_blank" : undefined}
                   className={cn(
                     "flex items-center justify-between rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
                     pathname === item.href
                       ? "bg-accent/10 text-accent"
-                      : "text-foreground hover:bg-accent/5",
-                    item.highlight && "text-accent"
+                      : "text-foreground hover:bg-accent/5"
                   )}
                 >
-                  {navTitleMap[item.title] ? t(navTitleMap[item.title]) : item.title}
-                  {item.highlight && (
-                    <span className="rounded-full bg-accent px-1.5 py-0.5 text-[9px] font-bold text-accent-foreground">
-                      SALE
-                    </span>
-                  )}
+                  {locale === "bn" && item.label_bn ? item.label_bn : item.label}
                 </Link>
               ))}
 
