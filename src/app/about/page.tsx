@@ -3,9 +3,16 @@
 import { Container, SectionHeading } from "@/components/layout/container";
 import { Award, Heart, Sparkles, Users, Target, Eye } from "lucide-react";
 import { useLanguage } from "@/i18n/language-context";
+import { usePageContent, pickContent } from "@/lib/hooks/use-page-content";
 
 export default function AboutPage() {
   const { t } = useLanguage();
+  const { content } = usePageContent("about");
+
+  // Use edited content if available, otherwise fall back to translation keys
+  const heroEyebrow = pickContent(content?.heroEyebrow, t("about.eyebrow"));
+  const heroTitle = pickContent(content?.heroTitle, t("about.title"));
+  const heroDesc = pickContent(content?.heroDescription, t("about.heroDesc"));
 
   const values = [
     { icon: Award, title: t("about.premiumQuality"), description: t("about.premiumQualityDesc") },
@@ -32,13 +39,13 @@ export default function AboutPage() {
         <Container className="relative">
           <div className="mx-auto max-w-3xl text-center">
             <p className="mb-4 text-xs font-semibold uppercase tracking-[0.3em] text-accent">
-              {t("about.eyebrow")}
+              {heroEyebrow}
             </p>
             <h1 className="font-serif text-4xl font-medium leading-tight tracking-tight md:text-5xl lg:text-6xl">
-              {t("about.title")}
+              {heroTitle}
             </h1>
             <p className="mt-6 text-base leading-relaxed text-primary-foreground/80 md:text-lg">
-              {t("about.heroDesc")}
+              {heroDesc}
             </p>
           </div>
         </Container>

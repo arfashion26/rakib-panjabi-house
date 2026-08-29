@@ -17,6 +17,7 @@ import {
   Home,
   Store,
   ChevronRight,
+  FileEdit,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -39,6 +40,7 @@ const navItems: NavItem[] = [
   { href: "/admin/categories", label: "Categories", icon: Tag, group: "catalog" },
   { href: "/admin/coupons", label: "Coupons", icon: Tag, group: "catalog" },
   { href: "/admin/homepage", label: "Homepage", icon: Home, group: "catalog" },
+  { href: "/admin/pages", label: "Pages", icon: FileEdit, group: "catalog" },
 
   { href: "/admin/banners", label: "Banners", icon: ImageIcon, group: "content" },
   { href: "/admin/blog", label: "Blog", icon: FileText, group: "content" },
