@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { PaymentMethodsConfig } from "@/components/admin/payment-methods-config";
 import { CustomCodeEditor } from "@/components/admin/custom-code-editor";
+import { ChangePasswordSection } from "@/components/admin/change-password-section";
 import { toast } from "sonner";
 
 export default function AdminSettingsPage() {
@@ -136,6 +137,9 @@ export default function AdminSettingsPage() {
 
         {/* Custom Tracking Code — inject scripts into head/body/footer */}
         <CustomCodeEditor />
+
+        {/* Change Password — admin can change their own password */}
+        <ChangePasswordSection />
       </div>
     </div>
   );
