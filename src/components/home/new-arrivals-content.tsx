@@ -31,17 +31,17 @@ export function NewArrivalsContent({ products }: { products: Product[] }) {
   if (products.length === 0) return null;
 
   return (
-    <section className="bg-muted/30 py-12 md:py-16 lg:py-20">
+    <section className="bg-primary py-14 text-primary-foreground md:py-20 lg:py-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mb-10 md:mb-12 flex flex-col items-end justify-between gap-4 md:flex-row">
           <div className="max-w-xl">
             <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-accent">{t("newArrivals.eyebrow")}</p>
-            <h2 className="font-serif text-3xl font-medium tracking-tight md:text-4xl">{t("newArrivals.title")}</h2>
-            <p className="mt-4 text-base text-muted-foreground md:text-lg">
+            <h2 className="font-serif text-3xl font-medium tracking-tight md:text-4xl text-primary-foreground">{t("newArrivals.title")}</h2>
+            <p className="mt-4 text-base text-primary-foreground/70 md:text-lg">
               {t("newArrivals.description")}
             </p>
           </div>
-          <ButtonLink href="/new-arrivals" variant="ghost" className="shrink-0">
+          <ButtonLink href="/new-arrivals" variant="ghost" className="shrink-0 text-primary-foreground hover:bg-primary-foreground/10">
             {t("newArrivals.viewAll")}
             <ArrowRight className="ml-2 h-4 w-4" />
           </ButtonLink>

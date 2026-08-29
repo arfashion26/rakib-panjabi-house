@@ -17,7 +17,7 @@ interface Content {
 export function PremiumCTAContent({ content }: { content: Content }) {
   const { t } = useLanguage();
   return (
-    <section className="relative overflow-hidden bg-primary py-16 text-primary-foreground md:py-24">
+    <section className="relative overflow-hidden bg-primary py-14 text-primary-foreground md:py-20 lg:py-24">
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-gradient-to-r from-primary via-primary to-primary/90" />
         <div className="absolute right-0 top-0 h-[400px] w-[400px] rounded-full bg-accent/20 blur-3xl" />

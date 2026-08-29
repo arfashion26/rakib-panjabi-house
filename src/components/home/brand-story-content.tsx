@@ -22,7 +22,7 @@ export function BrandStoryContent({ content }: { content: Content }) {
   ];
 
   return (
-    <section className="py-12 md:py-16 lg:py-20">
+    <section className="bg-background py-14 md:py-20 lg:py-24">
       <Container>
         <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
           <div className="relative">

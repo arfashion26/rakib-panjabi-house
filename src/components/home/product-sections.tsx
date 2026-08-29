@@ -32,7 +32,7 @@ export function TrendingProducts({ products }: { products: Product[] }) {
   if (products.length === 0) return null;
 
   return (
-    <section className="py-12 md:py-16 lg:py-20">
+    <section className="bg-background py-14 md:py-20 lg:py-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mb-10 md:mb-12 flex flex-col items-end justify-between gap-4 md:flex-row">
           <div className="max-w-xl">

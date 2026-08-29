@@ -57,7 +57,7 @@ export function CustomerReviewsContent({ content }: { content: Content }) {
   }
 
   return (
-    <section className="bg-muted/30 py-12 md:py-16 lg:py-20">
+    <section className="bg-primary py-14 text-primary-foreground md:py-20 lg:py-24">
       <Container>
         <SectionHeading
           eyebrow={t("reviews.eyebrow")}
@@ -66,25 +66,25 @@ export function CustomerReviewsContent({ content }: { content: Content }) {
         />
         <div className="grid gap-6 md:grid-cols-3">
           {reviews.map((review, idx) => (
-            <div key={review.id || idx} className="relative flex flex-col rounded-lg border border-border/60 bg-card p-6 shadow-sm transition-shadow hover:shadow-md">
+            <div key={review.id || idx} className="relative flex flex-col rounded-lg border border-primary-foreground/15 bg-primary-foreground/5 p-6 backdrop-blur-sm transition-all hover:border-accent/30 hover:bg-primary-foreground/10">
               <Quote className="absolute right-6 top-6 h-8 w-8 text-accent/20" />
               <div className="mb-4 flex gap-1">
                 {Array.from({ length: review.rating }).map((_, i) => (
                   <Star key={i} className="h-4 w-4 fill-accent text-accent" />
                 ))}
               </div>
-              <p className="mb-6 flex-1 text-sm leading-relaxed text-foreground/90">
+              <p className="mb-6 flex-1 text-sm leading-relaxed text-primary-foreground/90">
                 &ldquo;{review.review_text}&rdquo;
               </p>
-              <div className="flex items-center gap-3 border-t border-border/60 pt-4">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/10 text-sm font-semibold text-accent">
+              <div className="flex items-center gap-3 border-t border-primary-foreground/15 pt-4">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/15 text-sm font-semibold text-accent">
                   {getInitials(review.customer_name)}
                 </div>
                 <div>
-                  <div className="text-sm font-semibold text-foreground">
+                  <div className="text-sm font-semibold text-primary-foreground">
                     {review.customer_name}
                   </div>
-                  <div className="text-xs text-muted-foreground">
+                  <div className="text-xs text-primary-foreground/60">
                     {review.customer_location}
                     {review.product_name ? ` · ${review.product_name}` : ""} · {t("reviews.verifiedPurchase")}
                   </div>
@@ -93,12 +93,12 @@ export function CustomerReviewsContent({ content }: { content: Content }) {
             </div>
           ))}
         </div>
-        <div className="mt-12 flex flex-wrap items-center justify-center gap-8 border-t border-border/60 pt-8 md:gap-16">
-          <div className="text-center"><div className="font-serif text-3xl font-medium text-accent md:text-4xl">{t("reviews.stat1Value")}</div><div className="mt-1 text-xs uppercase tracking-wider text-muted-foreground">{t("reviews.stat1Label")}</div></div>
-          <div className="h-12 w-px bg-border/60 hidden md:block" />
-          <div className="text-center"><div className="font-serif text-3xl font-medium text-accent md:text-4xl">{t("reviews.stat2Value")}</div><div className="mt-1 text-xs uppercase tracking-wider text-muted-foreground">{t("reviews.stat2Label")}</div></div>
-          <div className="h-12 w-px bg-border/60 hidden md:block" />
-          <div className="text-center"><div className="font-serif text-3xl font-medium text-accent md:text-4xl">{t("reviews.stat3Value")}</div><div className="mt-1 text-xs uppercase tracking-wider text-muted-foreground">{t("reviews.stat3Label")}</div></div>
+        <div className="mt-12 flex flex-wrap items-center justify-center gap-8 border-t border-primary-foreground/15 pt-8 md:gap-16">
+          <div className="text-center"><div className="font-serif text-3xl font-medium text-accent md:text-4xl">{t("reviews.stat1Value")}</div><div className="mt-1 text-xs uppercase tracking-wider text-primary-foreground/50">{t("reviews.stat1Label")}</div></div>
+          <div className="h-12 w-px bg-primary-foreground/15 hidden md:block" />
+          <div className="text-center"><div className="font-serif text-3xl font-medium text-accent md:text-4xl">{t("reviews.stat2Value")}</div><div className="mt-1 text-xs uppercase tracking-wider text-primary-foreground/50">{t("reviews.stat2Label")}</div></div>
+          <div className="h-12 w-px bg-primary-foreground/15 hidden md:block" />
+          <div className="text-center"><div className="font-serif text-3xl font-medium text-accent md:text-4xl">{t("reviews.stat3Value")}</div><div className="mt-1 text-xs uppercase tracking-wider text-primary-foreground/50">{t("reviews.stat3Label")}</div></div>
         </div>
       </Container>
     </section>

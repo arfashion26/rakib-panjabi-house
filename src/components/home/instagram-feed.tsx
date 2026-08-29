@@ -31,7 +31,7 @@ export function InstagramFeed({ content }: { content?: InstagramContent }) {
     : ["", "", "", "", "", ""];
 
   return (
-    <section className="py-12 md:py-16 lg:py-20">
+    <section className="bg-background py-14 md:py-20 lg:py-24">
       <Container>
         <SectionHeading
           eyebrow={t("instagram.eyebrow")}

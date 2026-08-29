@@ -71,7 +71,7 @@ export function FlashSaleContent({ products }: { products: Product[] }) {
 
   return (
     <section className="bg-primary text-primary-foreground">
-      <div className="mx-auto max-w-7xl px-4 py-12 md:py-16 lg:py-20">
+      <div className="mx-auto max-w-7xl px-4 py-14 md:py-20 lg:py-24">
         <div className="mb-10 flex flex-col items-center gap-6 text-center md:mb-12 md:flex-row md:justify-between md:text-left">
           <div className="flex items-center gap-3">
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-accent text-accent-foreground">
