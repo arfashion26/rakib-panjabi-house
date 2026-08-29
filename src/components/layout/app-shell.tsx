@@ -4,6 +4,7 @@ import * as React from "react";
 import { usePathname } from "next/navigation";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
+import { WhatsAppButton } from "@/components/layout/whatsapp-button";
 
 /**
  * AppShell — Wraps all pages with Header + Footer.
@@ -42,6 +43,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <SiteHeader />
       <main className="flex-1">{children}</main>
       <SiteFooter />
+      {/* Floating WhatsApp button — visible on all public pages */}
+      <WhatsAppButton />
     </div>
   );
 }
