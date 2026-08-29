@@ -1,5 +1,11 @@
+import type { Metadata } from "next";
 import { getProducts } from "@/lib/services/products";
 import { ProductGridPage } from "@/components/product/product-grid-page";
+import { getPageMetadata } from "@/lib/get-page-metadata";
+
+export async function generateMetadata(): Promise<Metadata> {
+  return getPageMetadata("sale");
+}
 
 export default async function SalePage() {
   const { products } = await getProducts({ isFlashSale: true, sortBy: "newest", limit: 100 });

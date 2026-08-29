@@ -44,7 +44,7 @@ export async function generateMetadata({
   const url = `${siteConfig.url}/product/${product.slug}`;
 
   return {
-    title,
+    title: { absolute: title },
     description,
     alternates: { canonical: url },
     openGraph: {

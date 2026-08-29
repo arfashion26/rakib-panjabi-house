@@ -1,5 +1,11 @@
+import type { Metadata } from "next";
 import { getProducts } from "@/lib/services/products";
 import { ProductGridPage } from "@/components/product/product-grid-page";
+import { getPageMetadata } from "@/lib/get-page-metadata";
+
+export async function generateMetadata(): Promise<Metadata> {
+  return getPageMetadata("best-sellers");
+}
 
 export default async function BestSellersPage() {
   const { products } = await getProducts({ isBestSeller: true, sortBy: "popular", limit: 100 });

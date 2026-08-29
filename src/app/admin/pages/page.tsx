@@ -106,6 +106,7 @@ function PageList({ onSelect }: { onSelect: (slug: PageSlug) => void }) {
           const info = PAGE_INFO[slug];
           const pageData = pages.find((p) => p.slug === slug);
           const isEdited = pageData?.isEdited;
+          const currentMetaTitle = pageData?.heroTitle || info.defaultMetaTitle;
 
           return (
             <button
@@ -125,6 +126,17 @@ function PageList({ onSelect }: { onSelect: (slug: PageSlug) => void }) {
               </div>
               <p className="text-sm font-semibold">{info.title}</p>
               <p className="mt-1 text-xs text-muted-foreground">{info.description}</p>
+
+              {/* Current meta title preview */}
+              <div className="mt-3 rounded-md bg-muted/40 p-2">
+                <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+                  Meta Title
+                </p>
+                <p className="mt-0.5 line-clamp-1 text-xs text-foreground">
+                  {currentMetaTitle}
+                </p>
+              </div>
+
               <div className="mt-3 flex items-center gap-1 text-xs text-accent opacity-0 transition-opacity group-hover:opacity-100">
                 <Eye className="h-3 w-3" />
                 Edit content
@@ -327,30 +339,64 @@ function PageEditor({ slug, onBack }: { slug: PageSlug; onBack: () => void }) {
           </h3>
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="metaTitle">Meta Title</Label>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="metaTitle">Meta Title</Label>
+                {!content.metaTitle && (
+                  <button
+                    type="button"
+                    onClick={() => update("metaTitle", info.defaultMetaTitle)}
+                    className="text-[10px] text-accent hover:underline"
+                  >
+                    Use default
+                  </button>
+                )}
+              </div>
               <Input
                 id="metaTitle"
-                placeholder="SEO title for search engines"
+                placeholder={info.defaultMetaTitle}
                 value={content.metaTitle}
                 onChange={(e) => update("metaTitle", e.target.value)}
                 maxLength={70}
               />
               <p className="text-[10px] text-muted-foreground">
                 {content.metaTitle.length}/70 characters
+                {!content.metaTitle && (
+                  <span className="ml-2 italic">
+                    Default: "{info.defaultMetaTitle.slice(0, 50)}
+                    {info.defaultMetaTitle.length > 50 ? "..." : ""}"
+                  </span>
+                )}
               </p>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="metaDescription">Meta Description</Label>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="metaDescription">Meta Description</Label>
+                {!content.metaDescription && (
+                  <button
+                    type="button"
+                    onClick={() => update("metaDescription", info.defaultMetaDescription)}
+                    className="text-[10px] text-accent hover:underline"
+                  >
+                    Use default
+                  </button>
+                )}
+              </div>
               <Textarea
                 id="metaDescription"
-                placeholder="SEO description for search engines"
+                placeholder={info.defaultMetaDescription}
                 value={content.metaDescription}
                 onChange={(e) => update("metaDescription", e.target.value)}
-                rows={2}
+                rows={3}
                 maxLength={160}
               />
               <p className="text-[10px] text-muted-foreground">
                 {content.metaDescription.length}/160 characters
+                {!content.metaDescription && (
+                  <span className="ml-2 italic">
+                    Default: "{info.defaultMetaDescription.slice(0, 60)}
+                    {info.defaultMetaDescription.length > 60 ? "..." : ""}"
+                  </span>
+                )}
               </p>
             </div>
           </div>
