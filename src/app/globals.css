@@ -73,19 +73,19 @@
   --muted: oklch(0.96 0.005 80);
   --muted-foreground: oklch(0.45 0.01 264);
 
-  /* Accent - Brand yellow (#fedc00) — from logo */
-  --accent: oklch(0.894 0.420 125.0);              /* #fedc00 brand yellow */
-  --accent-foreground: oklch(0.18 0.01 264);     /* Dark charcoal text on yellow */
+  /* Accent - Brand gold (#fedc00) — from logo */
+  --accent: #fedc00;                                /* Brand gold from logo */
+  --accent-foreground: oklch(0.18 0.01 264);     /* Dark charcoal text on gold */
 
   /* Destructive */
   --destructive: oklch(0.55 0.22 27);
   --border: oklch(0.90 0.005 80);
   --input: oklch(0.92 0.005 80);
-  --ring: oklch(0.894 0.420 125.0);               /* Matches accent (#fedc00) */
+  --ring: #fedc00;                                 /* Matches accent */
 
   /* Charts */
   --chart-1: oklch(0.18 0.01 264);                /* Charcoal */
-  --chart-2: oklch(0.894 0.420 125.0);             /* Brand yellow #fedc00 */
+  --chart-2: #fedc00;                               /* Brand gold */
   --chart-3: oklch(0.55 0.22 27);                 /* Terracotta */
   --chart-4: oklch(0.50 0.08 200);                /* Slate blue */
   --chart-5: oklch(0.65 0.15 145);                /* Sage green */
@@ -95,7 +95,7 @@
   --sidebar-foreground: oklch(0.18 0.01 264);
   --sidebar-primary: oklch(0.18 0.01 264);
   --sidebar-primary-foreground: oklch(0.985 0.002 95);
-  --sidebar-accent: oklch(0.96 0.02 125);         /* Light yellow tint */
+  --sidebar-accent: #fef9d4;                        /* Light gold tint */
   --sidebar-accent-foreground: oklch(0.18 0.01 264);
   --sidebar-border: oklch(0.90 0.005 80);
   --sidebar-ring: oklch(0.72 0.13 75);
