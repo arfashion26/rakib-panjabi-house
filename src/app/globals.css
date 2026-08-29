@@ -210,6 +210,13 @@
     to { opacity: 1; transform: translateY(0); }
   }
 
+  /* Scroll-down mouse dot animation */
+  @keyframes scrollDot {
+    0% { transform: translateY(0); opacity: 1; }
+    50% { transform: translateY(8px); opacity: 0.5; }
+    100% { transform: translateY(0); opacity: 1; }
+  }
+
   /* Premium card hover */
   .product-card-hover {
     @apply transition-all duration-500 ease-out;

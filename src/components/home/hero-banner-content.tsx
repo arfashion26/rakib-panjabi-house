@@ -102,7 +102,7 @@ export function HeroBannerContent({ content, announcement }: { content: HeroCont
 
   return (
     <section
-      className="relative h-[60vh] min-h-[400px] w-full overflow-hidden bg-primary md:h-[65vh] md:min-h-[500px] lg:h-[70vh]"
+      className="relative h-[calc(100vh-7rem)] min-h-[500px] w-full overflow-hidden bg-primary md:h-[calc(100vh-8rem)] md:min-h-[600px]"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
@@ -189,23 +189,44 @@ export function HeroBannerContent({ content, announcement }: { content: HeroCont
         </>
       )}
 
-      {/* Dot indicators */}
+      {/* Dot indicators + Scroll down hint */}
       {slides.length > 1 && (
-        <div className="absolute bottom-6 left-1/2 z-30 flex -translate-x-1/2 items-center gap-2">
-          {slides.map((_, idx) => (
-            <button
-              key={idx}
-              onClick={() => goTo(idx)}
-              aria-label={`Go to slide ${idx + 1}`}
-              className={`h-2 rounded-full transition-all ${
-                idx === current
-                  ? "w-8 bg-accent"
-                  : "w-2 bg-white/40 hover:bg-white/60"
-              }`}
-            />
-          ))}
+        <div className="absolute bottom-6 left-1/2 z-30 flex -translate-x-1/2 flex-col items-center gap-3">
+          {/* Dots */}
+          <div className="flex items-center gap-2">
+            {slides.map((_, idx) => (
+              <button
+                key={idx}
+                onClick={() => goTo(idx)}
+                aria-label={`Go to slide ${idx + 1}`}
+                className={`h-2 rounded-full transition-all ${
+                  idx === current
+                    ? "w-8 bg-accent"
+                    : "w-2 bg-white/40 hover:bg-white/60"
+                }`}
+              />
+            ))}
+          </div>
         </div>
       )}
+
+      {/* Scroll-down animation — bottom center */}
+      <button
+        onClick={() => {
+          // Scroll to next section smoothly
+          window.scrollTo({ top: window.innerHeight - 56, behavior: "smooth" });
+        }}
+        aria-label="Scroll down"
+        className="absolute bottom-5 right-5 z-30 hidden flex-col items-center gap-1 text-white/70 transition-colors hover:text-white md:flex"
+      >
+        <span className="text-[10px] font-medium uppercase tracking-[0.2em]">
+          Scroll
+        </span>
+        {/* Mouse icon */}
+        <div className="flex h-7 w-4 items-start justify-center rounded-full border-2 border-white/50 p-1">
+          <div className="h-2 w-1 animate-[scrollDot_1.5s_ease-in-out_infinite] rounded-full bg-white" />
+        </div>
+      </button>
 
       {/* Bottom gradient line */}
       <div className="absolute bottom-0 left-0 right-0 z-20 h-px bg-gradient-to-r from-transparent via-accent/50 to-transparent" />
