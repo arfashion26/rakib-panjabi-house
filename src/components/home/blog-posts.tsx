@@ -41,7 +41,7 @@ export function BlogPosts() {
   ];
 
   return (
-    <section className="bg-primary py-14 text-primary-foreground md:py-20 lg:py-24">
+    <section className="bg-muted py-14 text-foreground md:py-20 lg:py-24">
       <Container>
         <div className="mb-10 md:mb-12 flex flex-col items-end justify-between gap-4 md:flex-row">
           <SectionHeading
@@ -83,13 +83,13 @@ export function BlogPosts() {
 
               {/* Content */}
               <div className="mt-4 flex flex-1 flex-col">
-                <div className="mb-2 flex items-center gap-2 text-xs text-primary-foreground/50">
+                <div className="mb-2 flex items-center gap-2 text-xs text-muted-foreground">
                   <time>{post.date}</time>
                   <span>·</span>
                   <span>{post.readTime}</span>
                 </div>
 
-                <h3 className="font-serif text-xl font-medium leading-snug text-primary-foreground">
+                <h3 className="font-serif text-xl font-medium leading-snug text-foreground">
                   <Link
                     href="/blog"
                     className="transition-colors hover:text-accent"
@@ -98,7 +98,7 @@ export function BlogPosts() {
                   </Link>
                 </h3>
 
-                <p className="mt-2 flex-1 text-sm leading-relaxed text-primary-foreground/60">
+                <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">
                   {post.excerpt}
                 </p>
 
