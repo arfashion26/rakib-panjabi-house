@@ -61,6 +61,10 @@ interface Product {
   is_new_arrival: boolean;
   is_flash_sale: boolean;
   category_id: string;
+  // SEO fields
+  meta_title?: string;
+  meta_description?: string;
+  search_keywords?: string;
   sizes?: ProductSize[];
   colors?: ProductColor[];
   images?: { url: string; is_primary: boolean }[];
@@ -184,6 +188,10 @@ export default function AdminProductsPage() {
             hexValue: c.hex_value,
             stock: c.stock,
           })),
+          // SEO fields
+          metaTitle: product.meta_title || null,
+          metaDescription: product.meta_description || null,
+          searchKeywords: product.search_keywords || null,
         }),
       });
       const data = await res.json();
@@ -235,6 +243,9 @@ export default function AdminProductsPage() {
       is_new_arrival: false,
       is_flash_sale: false,
       category_id: categories[0]?.id || "",
+      meta_title: "",
+      meta_description: "",
+      search_keywords: "",
       sizes: [],
       colors: [],
       images: [],
@@ -921,6 +932,60 @@ function ProductFormDialog({
                   onCheckedChange={(v) => update("is_flash_sale", v)}
                 />
               </label>
+            </div>
+          </div>
+
+          <Separator />
+
+          {/* SEO Settings */}
+          <div className="space-y-3">
+            <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+              SEO Settings (Optional)
+            </h3>
+            <p className="text-xs text-muted-foreground">
+              Custom meta title and description for search engines. Leave blank to
+              auto-generate from product name and description.
+            </p>
+            <div className="space-y-3">
+              <div className="space-y-2">
+                <Label htmlFor="meta_title">Meta Title</Label>
+                <Input
+                  id="meta_title"
+                  placeholder="Auto-generated from product name if empty"
+                  value={form.meta_title || ""}
+                  onChange={(e) => update("meta_title", e.target.value)}
+                  maxLength={70}
+                />
+                <p className="text-[10px] text-muted-foreground">
+                  {(form.meta_title || "").length}/70 characters — shown in search results
+                </p>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="meta_description">Meta Description</Label>
+                <Textarea
+                  id="meta_description"
+                  placeholder="Auto-generated from product description if empty"
+                  value={form.meta_description || ""}
+                  onChange={(e) => update("meta_description", e.target.value)}
+                  rows={2}
+                  maxLength={160}
+                />
+                <p className="text-[10px] text-muted-foreground">
+                  {(form.meta_description || "").length}/160 characters — shown in search results
+                </p>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="search_keywords">Search Keywords</Label>
+                <Input
+                  id="search_keywords"
+                  placeholder="panjabi, cotton, premium, men (comma-separated)"
+                  value={form.search_keywords || ""}
+                  onChange={(e) => update("search_keywords", e.target.value)}
+                />
+                <p className="text-[10px] text-muted-foreground">
+                  Comma-separated keywords for internal search
+                </p>
+              </div>
             </div>
           </div>
         </form>

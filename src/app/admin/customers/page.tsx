@@ -1,13 +1,22 @@
 "use client";
 
 import * as React from "react";
-import { Search, Mail, Phone, ShoppingBag, Eye, Users, Shield, Loader2 } from "lucide-react";
+import { Search, Mail, Phone, ShoppingBag, Eye, Users, Shield, Loader2, Trash2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { formatPrice } from "@/lib/types";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AdminUserManager } from "@/components/admin/user-manager";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { toast } from "sonner";
 
 interface Customer {
   id: string;
@@ -25,23 +34,49 @@ export default function AdminCustomersPage() {
   const [allUsers, setAllUsers] = React.useState<Customer[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [search, setSearch] = React.useState("");
+  const [deleteTarget, setDeleteTarget] = React.useState<Customer | null>(null);
+  const [deleting, setDeleting] = React.useState(false);
+
+  const fetchUsers = React.useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/admin/customers");
+      const data = await res.json();
+      if (data.success) {
+        setAllUsers(data.users || []);
+      }
+    } catch {
+      setAllUsers([]);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   React.useEffect(() => {
-    async function fetchUsers() {
-      try {
-        const res = await fetch("/api/admin/customers");
-        const data = await res.json();
-        if (data.success) {
-          setAllUsers(data.users || []);
-        }
-      } catch {
-        setAllUsers([]);
-      } finally {
-        setLoading(false);
-      }
-    }
     fetchUsers();
-  }, []);
+  }, [fetchUsers]);
+
+  async function confirmDelete() {
+    if (!deleteTarget) return;
+    setDeleting(true);
+    try {
+      const res = await fetch(`/api/admin/customers/${deleteTarget.id}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      if (data.success) {
+        toast.success(data.message || "Customer deleted");
+        setDeleteTarget(null);
+        fetchUsers();
+      } else {
+        toast.error(data.error || "Failed to delete customer");
+      }
+    } catch {
+      toast.error("Failed to delete customer");
+    } finally {
+      setDeleting(false);
+    }
+  }
 
   const filtered = allUsers.filter((c) => {
     const q = search.toLowerCase();
@@ -171,9 +206,20 @@ export default function AdminCustomersPage() {
                           </Badge>
                         </td>
                         <td className="p-3">
-                          <Button variant="ghost" size="icon" className="h-8 w-8">
-                            <Eye className="h-4 w-4" />
-                          </Button>
+                          <div className="flex items-center gap-1">
+                            <Button variant="ghost" size="icon" className="h-8 w-8" title="View details">
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 text-muted-foreground hover:text-red-500"
+                              title="Delete customer"
+                              onClick={() => setDeleteTarget(customer)}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -190,6 +236,74 @@ export default function AdminCustomersPage() {
           </div>
         </TabsContent>
       </Tabs>
+
+      {/* Delete confirmation dialog */}
+      <Dialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-red-500/10">
+                <AlertCircle className="h-4 w-4 text-red-500" />
+              </div>
+              Delete Customer
+            </DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this customer? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+
+          {deleteTarget && (
+            <div className="rounded-lg border border-border bg-muted/30 p-4">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/10 text-sm font-semibold text-accent">
+                  {deleteTarget.name?.split(" ").map((n) => n[0]).join("") || deleteTarget.email[0].toUpperCase()}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-medium">{deleteTarget.name || "Unnamed"}</p>
+                  <p className="truncate text-xs text-muted-foreground">{deleteTarget.email}</p>
+                  {deleteTarget.phone && (
+                    <p className="text-xs text-muted-foreground">{deleteTarget.phone}</p>
+                  )}
+                </div>
+              </div>
+              {deleteTarget.order_count && deleteTarget.order_count > 0 ? (
+                <div className="mt-3 rounded-md bg-yellow-50 p-2 text-xs text-yellow-800">
+                  This customer has {deleteTarget.order_count} order(s). Their orders
+                  will be preserved for record-keeping, but their account will be
+                  permanently deleted.
+                </div>
+              ) : (
+                <div className="mt-3 rounded-md bg-green-50 p-2 text-xs text-green-800">
+                  This customer has no orders. Safe to delete.
+                </div>
+              )}
+            </div>
+          )}
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeleteTarget(null)} disabled={deleting}>
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={confirmDelete}
+              disabled={deleting}
+            >
+              {deleting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Deleting...
+                </>
+              ) : (
+                <>
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  Delete Permanently
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
