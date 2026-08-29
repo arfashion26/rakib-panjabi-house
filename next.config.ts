@@ -1,7 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: "standalone",
+  // Note: 'output: standalone' removed — Vercel handles output automatically.
+  // Standalone mode can cause 'ENOENT: next-server.js.nft.json' errors on Vercel
+  // when the build cache is stale. Vercel's default build output works better.
   reactStrictMode: false,
   typescript: {
     ignoreBuildErrors: false,
