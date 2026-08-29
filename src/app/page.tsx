@@ -17,7 +17,7 @@ export default async function Home() {
 
   return (
     <>
-      <HeroBannerContent content={content.hero} announcement={content.announcement} />
+      <HeroBannerContent content={{ ...content.hero, heroSlides: content.heroSlides } as any} announcement={content.announcement} />
       <FeaturedCategories />
       <NewArrivals />
       <FlashSale />

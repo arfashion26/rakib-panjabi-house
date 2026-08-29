@@ -30,6 +30,15 @@ interface HomepageContent {
     image: string;
     badgeText: string;
   };
+  heroSlides?: Array<{
+    id: string;
+    image: string;
+    title: string;
+    subtitle: string;
+    link: string;
+    buttonText: string;
+    align: string;
+  }>;
   premiumCta: {
     eyebrow: string;
     title: string;
@@ -250,6 +259,135 @@ export default function AdminHomepagePage() {
               hint="Recommended: 800×1000px (portrait)"
             />
             {field("Badge Text (on hero image)", content.hero.badgeText || "", (v) => updateSection("hero", "badgeText", v), "input", "e.g. Handcrafted")}
+          </>
+        ))}
+
+        {/* Hero Slider Slides */}
+        {sectionWrapper("🖼️ Hero Slider Slides", (
+          <>
+            <p className="text-xs text-muted-foreground">
+              These slides appear as a rotating banner on the homepage hero.
+              Upload a banner image, add a short title + subtitle, and link to a
+              category or collection page. Keep text minimal for best visual impact.
+            </p>
+            {(content.heroSlides || []).map((slide, idx) => (
+              <div key={slide.id || idx} className="rounded-md border border-border p-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-semibold">Slide {idx + 1}</span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-red-500 hover:text-red-600"
+                    onClick={() => {
+                      if (!confirm("Delete this slide?")) return;
+                      const slides = [...(content.heroSlides || [])];
+                      slides.splice(idx, 1);
+                      setContent({ ...content, heroSlides: slides });
+                    }}
+                  >
+                    Delete
+                  </Button>
+                </div>
+                <ImageUpload
+                  label="Banner Image"
+                  value={slide.image || ""}
+                  onChange={(v) => {
+                    const slides = [...(content.heroSlides || [])];
+                    slides[idx] = { ...slides[idx], image: v };
+                    setContent({ ...content, heroSlides: slides });
+                  }}
+                  folder="hero"
+                  aspectRatio="aspect-[16/9]"
+                  hint="Recommended: 1920×1080px (landscape)"
+                />
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label>Title</Label>
+                    <Input
+                      value={slide.title || ""}
+                      onChange={(e) => {
+                        const slides = [...(content.heroSlides || [])];
+                        slides[idx] = { ...slides[idx], title: e.target.value };
+                        setContent({ ...content, heroSlides: slides });
+                      }}
+                      placeholder="e.g. Premium Panjabi Collection"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Subtitle (short)</Label>
+                    <Input
+                      value={slide.subtitle || ""}
+                      onChange={(e) => {
+                        const slides = [...(content.heroSlides || [])];
+                        slides[idx] = { ...slides[idx], subtitle: e.target.value };
+                        setContent({ ...content, heroSlides: slides });
+                      }}
+                      placeholder="e.g. Timeless elegance"
+                    />
+                  </div>
+                </div>
+                <div className="grid gap-3 sm:grid-cols-3">
+                  <div className="space-y-2">
+                    <Label>Button Text</Label>
+                    <Input
+                      value={slide.buttonText || ""}
+                      onChange={(e) => {
+                        const slides = [...(content.heroSlides || [])];
+                        slides[idx] = { ...slides[idx], buttonText: e.target.value };
+                        setContent({ ...content, heroSlides: slides });
+                      }}
+                      placeholder="e.g. Shop Now"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Link (URL)</Label>
+                    <Input
+                      value={slide.link || ""}
+                      onChange={(e) => {
+                        const slides = [...(content.heroSlides || [])];
+                        slides[idx] = { ...slides[idx], link: e.target.value };
+                        setContent({ ...content, heroSlides: slides });
+                      }}
+                      placeholder="/shop/panjabi-collection"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Text Position</Label>
+                    <select
+                      value={slide.align || "left"}
+                      onChange={(e) => {
+                        const slides = [...(content.heroSlides || [])];
+                        slides[idx] = { ...slides[idx], align: e.target.value };
+                        setContent({ ...content, heroSlides: slides });
+                      }}
+                      className="h-9 w-full rounded-md border border-border bg-background px-3 text-sm"
+                    >
+                      <option value="left">Left</option>
+                      <option value="center">Center</option>
+                      <option value="right">Right</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            ))}
+            <Button
+              variant="outline"
+              onClick={() => {
+                const slides = [...(content.heroSlides || [])];
+                slides.push({
+                  id: `slide-${Date.now()}`,
+                  image: "",
+                  title: "",
+                  subtitle: "",
+                  link: "/shop",
+                  buttonText: "Shop Now",
+                  align: "left",
+                });
+                setContent({ ...content, heroSlides: slides });
+              }}
+            >
+              + Add Slide
+            </Button>
           </>
         ))}
 
