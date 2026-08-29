@@ -14,28 +14,46 @@ import {
   Settings,
   LogOut,
   Menu,
-  TrendingUp,
-  DollarSign,
-  ShoppingBag,
-  Lock,
   Home,
+  Store,
+  ChevronRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Logo } from "@/components/logo";
 
-const navItems = [
-  { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/admin/homepage", label: "Homepage", icon: Home },
-  { href: "/admin/products", label: "Products", icon: Package },
-  { href: "/admin/orders", label: "Orders", icon: ShoppingCart },
-  { href: "/admin/customers", label: "Customers", icon: Users },
-  { href: "/admin/categories", label: "Categories", icon: Tag },
-  { href: "/admin/coupons", label: "Coupons", icon: Tag },
-  { href: "/admin/banners", label: "Banners", icon: ImageIcon },
-  { href: "/admin/blog", label: "Blog", icon: FileText },
-  { href: "/admin/settings", label: "Settings", icon: Settings },
+interface NavItem {
+  href: string;
+  label: string;
+  icon: typeof LayoutDashboard;
+  group: "main" | "catalog" | "content" | "system";
+}
+
+const navItems: NavItem[] = [
+  { href: "/admin", label: "Dashboard", icon: LayoutDashboard, group: "main" },
+  { href: "/admin/orders", label: "Orders", icon: ShoppingCart, group: "main" },
+  { href: "/admin/customers", label: "Customers", icon: Users, group: "main" },
+
+  { href: "/admin/products", label: "Products", icon: Package, group: "catalog" },
+  { href: "/admin/categories", label: "Categories", icon: Tag, group: "catalog" },
+  { href: "/admin/coupons", label: "Coupons", icon: Tag, group: "catalog" },
+  { href: "/admin/homepage", label: "Homepage", icon: Home, group: "catalog" },
+
+  { href: "/admin/banners", label: "Banners", icon: ImageIcon, group: "content" },
+  { href: "/admin/blog", label: "Blog", icon: FileText, group: "content" },
+
+  { href: "/admin/settings", label: "Settings", icon: Settings, group: "system" },
 ];
+
+const groupLabels: Record<NavItem["group"], string> = {
+  main: "Manage",
+  catalog: "Catalog",
+  content: "Content",
+  system: "System",
+};
+
+const groupOrder: NavItem["group"][] = ["main", "catalog", "content", "system"];
 
 export default function AdminLayout({
   children,
@@ -50,79 +68,110 @@ export default function AdminLayout({
     return <>{children}</>;
   }
 
+  // Find current page label for breadcrumb
+  const currentItem = navItems.find((item) =>
+    item.href === "/admin" ? pathname === "/admin" : pathname.startsWith(item.href)
+  );
+  const pageTitle = currentItem?.label || "Admin";
+
   const sidebarContent = (
     <div className="flex h-full flex-col bg-primary text-primary-foreground">
-      {/* Logo */}
-      <div className="border-b border-primary-foreground/10 p-4">
-        <Link href="/admin" className="flex items-center gap-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-accent bg-accent/10">
-            <span className="font-serif text-lg font-bold text-accent">R</span>
+      {/* Logo / Brand */}
+      <div className="border-b border-primary-foreground/10 p-5">
+        <Link href="/admin" className="flex items-center gap-3">
+          <div className="flex h-11 w-11 items-center justify-center rounded-lg border border-accent/30 bg-accent/10 shadow-sm">
+            <span className="font-serif text-xl font-bold text-accent">R</span>
           </div>
           <div>
-            <p className="font-serif text-base font-medium leading-none">Rakib Admin</p>
-            <p className="text-[10px] uppercase tracking-[0.2em] text-primary-foreground/60">
-              Panjabi House
+            <p className="font-serif text-base font-semibold leading-tight">
+              Rakib Panjabi
+            </p>
+            <p className="text-[10px] uppercase tracking-[0.25em] text-primary-foreground/50">
+              Admin Panel
             </p>
           </div>
         </Link>
       </div>
 
-      {/* Nav */}
-      <nav className="flex-1 space-y-1 overflow-y-auto p-3">
-        {navItems.map((item) => {
-          const isActive =
-            item.href === "/admin"
-              ? pathname === "/admin"
-              : pathname.startsWith(item.href);
+      {/* Nav with grouped sections */}
+      <nav className="flex-1 overflow-y-auto px-3 py-4">
+        {groupOrder.map((group) => {
+          const items = navItems.filter((i) => i.group === group);
+          if (items.length === 0) return null;
           return (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={() => setMobileOpen(false)}
-              className={cn(
-                "flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-colors",
-                isActive
-                  ? "bg-accent text-accent-foreground"
-                  : "text-primary-foreground/80 hover:bg-primary-foreground/10 hover:text-primary-foreground"
-              )}
-            >
-              <item.icon className="h-4 w-4" />
-              {item.label}
-            </Link>
+            <div key={group} className="mb-5">
+              <p className="mb-2 px-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-primary-foreground/40">
+                {groupLabels[group]}
+              </p>
+              <div className="space-y-0.5">
+                {items.map((item) => {
+                  const isActive =
+                    item.href === "/admin"
+                      ? pathname === "/admin"
+                      : pathname.startsWith(item.href);
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={() => setMobileOpen(false)}
+                      className={cn(
+                        "group flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-all",
+                        isActive
+                          ? "bg-accent text-accent-foreground shadow-sm"
+                          : "text-primary-foreground/70 hover:bg-primary-foreground/5 hover:text-primary-foreground"
+                      )}
+                    >
+                      <item.icon
+                        className={cn(
+                          "h-4 w-4 transition-transform",
+                          isActive
+                            ? "text-accent-foreground"
+                            : "text-primary-foreground/50 group-hover:text-primary-foreground"
+                        )}
+                      />
+                      <span className="flex-1">{item.label}</span>
+                      {isActive && (
+                        <ChevronRight className="h-3.5 w-3.5 text-accent-foreground/70" />
+                      )}
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
           );
         })}
       </nav>
 
-      {/* Sign out */}
-      <div className="border-t border-primary-foreground/10 p-3">
+      {/* Footer actions */}
+      <div className="space-y-1 border-t border-primary-foreground/10 p-3">
         <Button
           variant="ghost"
-          className="w-full justify-start text-primary-foreground/80 hover:bg-primary-foreground/10 hover:text-primary-foreground"
-          asChild
-        >
-          <Link href="/admin/login">
-            <Lock className="mr-3 h-4 w-4" />
-            Admin Login
-          </Link>
-        </Button>
-        <Button
-          variant="ghost"
-          className="w-full justify-start text-primary-foreground/80 hover:bg-primary-foreground/10 hover:text-primary-foreground"
+          className="w-full justify-start gap-3 text-primary-foreground/70 hover:bg-primary-foreground/5 hover:text-primary-foreground"
           asChild
         >
           <Link href="/">
-            <LogOut className="mr-3 h-4 w-4" />
-            Back to Site
+            <Store className="h-4 w-4" />
+            View Store
           </Link>
         </Button>
+        <form action="/api/auth/signout" method="post" className="contents">
+          <Button
+            type="submit"
+            variant="ghost"
+            className="w-full justify-start gap-3 text-primary-foreground/70 hover:bg-red-500/10 hover:text-red-300"
+          >
+            <LogOut className="h-4 w-4" />
+            Sign Out
+          </Button>
+        </form>
       </div>
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-muted/20">
+    <div className="min-h-screen bg-muted/30">
       {/* Top bar (mobile) */}
-      <div className="sticky top-0 z-30 flex items-center justify-between border-b border-border bg-background px-4 py-3 lg:hidden">
+      <div className="sticky top-0 z-30 flex items-center justify-between border-b border-border bg-background/95 px-4 py-3 backdrop-blur lg:hidden">
         <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
           <SheetTrigger asChild>
             <Button variant="ghost" size="icon" aria-label="Open menu">
@@ -133,7 +182,12 @@ export default function AdminLayout({
             {sidebarContent}
           </SheetContent>
         </Sheet>
-        <span className="font-serif text-base font-medium">Admin</span>
+        <div className="flex items-center gap-2">
+          <div className="flex h-8 w-8 items-center justify-center rounded-md border border-accent/30 bg-accent/10">
+            <span className="font-serif text-sm font-bold text-accent">R</span>
+          </div>
+          <span className="font-serif text-base font-medium">{pageTitle}</span>
+        </div>
         <div className="w-10" />
       </div>
 
@@ -145,6 +199,20 @@ export default function AdminLayout({
 
         {/* Main content */}
         <main className="min-h-screen flex-1">
+          {/* Desktop breadcrumb header */}
+          <div className="hidden border-b border-border bg-background/80 backdrop-blur lg:block">
+            <div className="mx-auto flex max-w-7xl items-center gap-2 px-8 py-4 text-sm">
+              <Link
+                href="/admin"
+                className="text-muted-foreground hover:text-accent"
+              >
+                Admin
+              </Link>
+              <ChevronRight className="h-4 w-4 text-muted-foreground/40" />
+              <span className="font-medium text-foreground">{pageTitle}</span>
+            </div>
+          </div>
+
           <div className="mx-auto max-w-7xl p-4 md:p-8">{children}</div>
         </main>
       </div>

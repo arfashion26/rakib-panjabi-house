@@ -7,13 +7,16 @@ import {
   ShoppingCart,
   Users,
   Package,
-  TrendingUp,
   ArrowUpRight,
-  ArrowDownRight,
   Loader2,
   AlertCircle,
+  TrendingUp,
+  Tag,
+  Plus,
+  Eye,
 } from "lucide-react";
 import { formatPrice } from "@/lib/types";
+import { cn } from "@/lib/utils";
 
 interface DashboardData {
   totalRevenue: number;
@@ -50,19 +53,25 @@ export default function AdminDashboard() {
 
   if (loading) {
     return (
-      <div className="py-16 text-center">
-        <Loader2 className="mx-auto mb-3 h-8 w-8 animate-spin text-muted-foreground" />
-        <p className="text-sm text-muted-foreground">Loading dashboard...</p>
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="mx-auto mb-3 h-8 w-8 animate-spin text-accent" />
+          <p className="text-sm text-muted-foreground">Loading dashboard...</p>
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="py-16 text-center">
-        <AlertCircle className="mx-auto mb-3 h-10 w-10 text-muted-foreground" />
-        <p className="text-sm font-medium">Dashboard data unavailable</p>
-        <p className="mt-1 text-xs text-muted-foreground">{error}</p>
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <div className="max-w-sm text-center">
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-red-500/10">
+            <AlertCircle className="h-7 w-7 text-red-500" />
+          </div>
+          <p className="text-base font-medium">Dashboard data unavailable</p>
+          <p className="mt-1 text-sm text-muted-foreground">{error}</p>
+        </div>
       </div>
     );
   }
@@ -72,48 +81,82 @@ export default function AdminDashboard() {
       label: "Total Revenue",
       value: formatPrice(data?.totalRevenue || 0),
       icon: DollarSign,
-      color: "bg-green-500/10 text-green-600",
+      gradient: "from-green-500/20 to-green-500/5",
+      iconBg: "bg-green-500/15 text-green-600",
       link: "/admin/orders",
     },
     {
       label: "Total Orders",
       value: String(data?.totalOrders || 0),
       icon: ShoppingCart,
-      color: "bg-blue-500/10 text-blue-600",
+      gradient: "from-blue-500/20 to-blue-500/5",
+      iconBg: "bg-blue-500/15 text-blue-600",
       link: "/admin/orders",
     },
     {
-      label: "Total Customers",
+      label: "Customers",
       value: String(data?.totalCustomers || 0),
       icon: Users,
-      color: "bg-purple-500/10 text-purple-600",
+      gradient: "from-purple-500/20 to-purple-500/5",
+      iconBg: "bg-purple-500/15 text-purple-600",
       link: "/admin/customers",
     },
     {
-      label: "Products in Stock",
+      label: "Products",
       value: String(data?.totalProducts || 0),
       icon: Package,
-      color: "bg-orange-500/10 text-orange-600",
+      gradient: "from-accent/20 to-accent/5",
+      iconBg: "bg-accent/15 text-accent",
       link: "/admin/products",
     },
   ];
 
   const statusColors: Record<string, string> = {
-    PENDING: "bg-orange-100 text-orange-700",
-    CONFIRMED: "bg-blue-100 text-blue-700",
-    SHIPPED: "bg-purple-100 text-purple-700",
-    DELIVERED: "bg-green-100 text-green-700",
-    CANCELLED: "bg-red-100 text-red-700",
+    PENDING: "bg-orange-100 text-orange-700 border-orange-200",
+    CONFIRMED: "bg-blue-100 text-blue-700 border-blue-200",
+    PROCESSING: "bg-blue-100 text-blue-700 border-blue-200",
+    SHIPPED: "bg-purple-100 text-purple-700 border-purple-200",
+    DELIVERED: "bg-green-100 text-green-700 border-green-200",
+    CANCELLED: "bg-red-100 text-red-700 border-red-200",
+    FAILED: "bg-red-100 text-red-700 border-red-200",
   };
+
+  const quickActions = [
+    {
+      label: "Add Product",
+      desc: "Create new product",
+      icon: Plus,
+      href: "/admin/products",
+    },
+    {
+      label: "View Orders",
+      desc: "Process recent orders",
+      icon: Eye,
+      href: "/admin/orders",
+    },
+    {
+      label: "Manage Coupons",
+      desc: "Create discount codes",
+      icon: Tag,
+      href: "/admin/coupons",
+    },
+    {
+      label: "Homepage",
+      desc: "Edit homepage content",
+      icon: TrendingUp,
+      href: "/admin/homepage",
+    },
+  ];
 
   return (
     <div>
+      {/* Page header */}
       <div className="mb-8">
         <h1 className="font-serif text-2xl font-medium tracking-tight md:text-3xl">
           Dashboard
         </h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Welcome back! Here&apos;s your store overview for today.
+        <p className="mt-1.5 text-sm text-muted-foreground">
+          Welcome back! Here&apos;s your store overview.
         </p>
       </div>
 
@@ -123,94 +166,164 @@ export default function AdminDashboard() {
           <Link
             key={stat.label}
             href={stat.link}
-            className="group rounded-lg border border-border/60 bg-background p-4 transition-colors hover:border-accent/40"
+            className="group relative overflow-hidden rounded-xl border border-border/60 bg-background p-5 transition-all hover:border-accent/40 hover:shadow-md"
           >
-            <div className={`mb-3 flex h-10 w-10 items-center justify-center rounded-full ${stat.color}`}>
-              <stat.icon className="h-5 w-5" />
+            {/* Gradient backdrop */}
+            <div
+              className={cn(
+                "absolute inset-0 bg-gradient-to-br opacity-60",
+                stat.gradient
+              )}
+            />
+            <div className="relative">
+              <div className="mb-3 flex items-center justify-between">
+                <div
+                  className={cn(
+                    "flex h-10 w-10 items-center justify-center rounded-lg",
+                    stat.iconBg
+                  )}
+                >
+                  <stat.icon className="h-5 w-5" />
+                </div>
+                <ArrowUpRight className="h-4 w-4 text-muted-foreground/40 transition-colors group-hover:text-accent" />
+              </div>
+              <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                {stat.label}
+              </p>
+              <p className="mt-1 font-serif text-2xl font-semibold tracking-tight">
+                {stat.value}
+              </p>
             </div>
-            <p className="text-xs uppercase tracking-wider text-muted-foreground">
-              {stat.label}
-            </p>
-            <p className="mt-1 font-serif text-2xl font-medium">{stat.value}</p>
           </Link>
         ))}
       </div>
 
-      {/* Recent orders */}
-      <div className="grid gap-6 lg:grid-cols-2">
-        <div className="rounded-lg border border-border/60 bg-background p-6">
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="font-serif text-lg font-medium">Recent Orders</h2>
-            <Link href="/admin/orders" className="text-xs text-accent hover:underline">
-              View all
-            </Link>
+      {/* Main content grid */}
+      <div className="grid gap-6 lg:grid-cols-3">
+        {/* Recent orders — spans 2 columns */}
+        <div className="lg:col-span-2">
+          <div className="rounded-xl border border-border/60 bg-background">
+            <div className="flex items-center justify-between border-b border-border/60 px-6 py-4">
+              <div>
+                <h2 className="font-serif text-lg font-medium">Recent Orders</h2>
+                <p className="mt-0.5 text-xs text-muted-foreground">
+                  Latest customer orders
+                </p>
+              </div>
+              <Link
+                href="/admin/orders"
+                className="flex items-center gap-1 text-xs font-medium text-accent hover:underline"
+              >
+                View all
+                <ArrowUpRight className="h-3 w-3" />
+              </Link>
+            </div>
+            <div className="p-2">
+              {data?.recentOrders && data.recentOrders.length > 0 ? (
+                <div className="space-y-1">
+                  {data.recentOrders.slice(0, 6).map((order) => (
+                    <Link
+                      key={order.id}
+                      href="/admin/orders"
+                      className="flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-muted/40"
+                    >
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-muted">
+                        <ShoppingCart className="h-4 w-4 text-muted-foreground" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-medium text-foreground">
+                          {order.order_number}
+                        </p>
+                        <p className="truncate text-xs text-muted-foreground">
+                          {order.customer_name} · {order.customer_phone}
+                        </p>
+                      </div>
+                      <div className="flex flex-col items-end gap-1">
+                        <p className="text-sm font-semibold text-foreground">
+                          {formatPrice(order.grand_total)}
+                        </p>
+                        <span
+                          className={cn(
+                            "inline-block rounded-full border px-2 py-0.5 text-[10px] font-medium",
+                            statusColors[order.status] ||
+                              "bg-muted text-muted-foreground border-border"
+                          )}
+                        >
+                          {order.status}
+                        </span>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              ) : (
+                <div className="py-12 text-center">
+                  <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-muted">
+                    <ShoppingCart className="h-6 w-6 text-muted-foreground/40" />
+                  </div>
+                  <p className="text-sm font-medium text-foreground">No orders yet</p>
+                  <p className="mt-0.5 text-xs text-muted-foreground">
+                    Orders will appear here once customers start placing them
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
-          {data?.recentOrders && data.recentOrders.length > 0 ? (
-            <div className="space-y-3">
-              {data.recentOrders.map((order) => (
-                <Link
-                  key={order.id}
-                  href={`/admin/orders`}
-                  className="flex items-center gap-3 rounded-md border border-border/40 p-3 transition-colors hover:bg-muted/30"
-                >
-                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-muted text-muted-foreground">
-                    <ShoppingCart className="h-4 w-4" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="truncate text-sm font-medium">{order.order_number}</p>
-                    <p className="truncate text-xs text-muted-foreground">
-                      {order.customer_name} · {order.customer_phone}
-                    </p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-sm font-medium">{formatPrice(order.grand_total)}</p>
-                    <span className={`inline-block rounded px-1.5 py-0.5 text-[10px] font-medium ${statusColors[order.status] || ""}`}>
-                      {order.status}
-                    </span>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          ) : (
-            <div className="py-8 text-center">
-              <ShoppingCart className="mx-auto mb-2 h-8 w-8 text-muted-foreground/40" />
-              <p className="text-sm text-muted-foreground">No orders yet</p>
-            </div>
-          )}
         </div>
 
         {/* Quick actions */}
-        <div className="rounded-lg border border-border/60 bg-background p-6">
-          <h2 className="mb-4 font-serif text-lg font-medium">Quick Actions</h2>
-          <div className="grid grid-cols-2 gap-3">
-            <Link
-              href="/admin/products"
-              className="rounded-lg border border-border/60 p-4 text-center transition-colors hover:border-accent/40"
-            >
-              <Package className="mx-auto mb-2 h-6 w-6 text-accent" />
-              <p className="text-sm font-medium">Manage Products</p>
-            </Link>
-            <Link
-              href="/admin/orders"
-              className="rounded-lg border border-border/60 p-4 text-center transition-colors hover:border-accent/40"
-            >
-              <ShoppingCart className="mx-auto mb-2 h-6 w-6 text-accent" />
-              <p className="text-sm font-medium">View Orders</p>
-            </Link>
-            <Link
-              href="/admin/customers"
-              className="rounded-lg border border-border/60 p-4 text-center transition-colors hover:border-accent/40"
-            >
-              <Users className="mx-auto mb-2 h-6 w-6 text-accent" />
-              <p className="text-sm font-medium">Customers</p>
-            </Link>
-            <Link
-              href="/admin/categories"
-              className="rounded-lg border border-border/60 p-4 text-center transition-colors hover:border-accent/40"
-            >
-              <TrendingUp className="mx-auto mb-2 h-6 w-6 text-accent" />
-              <p className="text-sm font-medium">Categories</p>
-            </Link>
+        <div>
+          <div className="rounded-xl border border-border/60 bg-background">
+            <div className="border-b border-border/60 px-6 py-4">
+              <h2 className="font-serif text-lg font-medium">Quick Actions</h2>
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                Common tasks
+              </p>
+            </div>
+            <div className="space-y-1 p-2">
+              {quickActions.map((action) => (
+                <Link
+                  key={action.label}
+                  href={action.href}
+                  className="group flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-muted/40"
+                >
+                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent/10 text-accent transition-colors group-hover:bg-accent group-hover:text-accent-foreground">
+                    <action.icon className="h-4 w-4" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-foreground">
+                      {action.label}
+                    </p>
+                    <p className="text-xs text-muted-foreground">{action.desc}</p>
+                  </div>
+                  <ArrowUpRight className="h-3.5 w-3.5 text-muted-foreground/40 transition-colors group-hover:text-accent" />
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          {/* Store status card */}
+          <div className="mt-4 overflow-hidden rounded-xl border border-accent/30 bg-gradient-to-br from-accent/10 to-accent/5 p-5">
+            <div className="flex items-start gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-accent/20 text-accent">
+                <TrendingUp className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-foreground">
+                  Store is Live
+                </p>
+                <p className="mt-0.5 text-xs text-muted-foreground">
+                  Your store is accepting orders at alrakib.com
+                </p>
+                <Link
+                  href="/"
+                  target="_blank"
+                  className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-accent hover:underline"
+                >
+                  Visit store
+                  <ArrowUpRight className="h-3 w-3" />
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
       </div>
