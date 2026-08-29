@@ -84,21 +84,22 @@ export function ProductCard({
   return (
     <div
       className={cn(
-        "group relative flex flex-col",
+        "group relative flex flex-col overflow-hidden rounded-xl border border-border/50 bg-card transition-all duration-300 hover:border-accent/40 hover:shadow-xl",
         variant === "compact" && "gap-3",
         className
       )}
     >
+      {/* Image section */}
       <Link
         href={`/product/${product.slug}`}
-        className="relative block aspect-[3/4] overflow-hidden rounded-lg bg-muted"
+        className="relative block aspect-[3/4] overflow-hidden bg-muted"
         aria-label={product.name}
       >
         {hasImageUrl ? (
           <img
             src={images[0]}
             alt={product.name}
-            className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+            className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
           />
         ) : (
           <>
@@ -112,112 +113,117 @@ export function ProductCard({
           </>
         )}
 
-        {/* Badges */}
-        <div className="absolute left-3 top-3 flex flex-col gap-2">
+        {/* Gradient overlay on hover */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+
+        {/* Badges — top left */}
+        <div className="absolute left-2.5 top-2.5 flex flex-col gap-1.5">
           {product.is_new_arrival && (
-            <span className="rounded-full bg-primary px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-primary-foreground">
+            <span className="rounded-full bg-primary px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider text-primary-foreground shadow-sm">
               {t("productDetail.newBadge")}
             </span>
           )}
           {product.is_best_seller && (
-            <span className="rounded-full bg-accent px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-accent-foreground">
+            <span className="rounded-full bg-accent px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider text-accent-foreground shadow-sm">
               {t("productDetail.bestsellerBadge")}
             </span>
           )}
           {product.is_flash_sale && (
-            <span className="flex items-center gap-1 rounded-full bg-red-600 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-white">
+            <span className="flex items-center gap-1 rounded-full bg-red-600 px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider text-white shadow-sm">
               <Zap className="h-2.5 w-2.5" />
               {t("flashSale.eyebrow")}
             </span>
           )}
           {discount > 0 && (
-            <span className="rounded-full bg-red-500 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-white">
+            <span className="rounded-full bg-red-500 px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider text-white shadow-sm">
               -{discount}%
             </span>
           )}
         </div>
 
-        {/* Hover actions */}
-        <div className="absolute right-3 top-3 flex flex-col gap-2 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-          <Button
-            size="icon"
-            variant="secondary"
-            className="h-9 w-9 rounded-full bg-background/90 shadow-sm hover:bg-background"
+        {/* Hover actions — top right */}
+        <div className="absolute right-2.5 top-2.5 flex flex-col gap-1.5 opacity-0 transition-all duration-300 group-hover:opacity-100">
+          <button
             onClick={handleWishlist}
             aria-label={t("productCard.addToWishlist")}
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-white/90 shadow-sm backdrop-blur-sm transition-all hover:bg-white hover:scale-110"
           >
-            <Heart className={cn("h-4 w-4", hasInWishlist && "fill-red-500 text-red-500")} />
-          </Button>
-          <Button
-            size="icon"
-            variant="secondary"
-            className="h-9 w-9 rounded-full bg-background/90 shadow-sm hover:bg-background"
+            <Heart className={cn("h-3.5 w-3.5", hasInWishlist ? "fill-red-500 text-red-500" : "text-foreground")} />
+          </button>
+          <Link
+            href={`/product/${product.slug}`}
             aria-label={t("productCard.quickView")}
-            asChild
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-white/90 shadow-sm backdrop-blur-sm transition-all hover:bg-white hover:scale-110"
           >
-            <Link href={`/product/${product.slug}`}>
-              <Eye className="h-4 w-4" />
-            </Link>
-          </Button>
+            <Eye className="h-3.5 w-3.5 text-foreground" />
+          </Link>
         </div>
 
-        {/* Bottom add-to-cart button on hover */}
-        <div className="absolute inset-x-3 bottom-3 translate-y-2 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
-          <Button
-            size="sm"
-            className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
+        {/* Bottom add-to-cart — slides up on hover */}
+        <div className="absolute inset-x-2.5 bottom-2.5 translate-y-4 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
+          <button
             onClick={handleAddToCart}
+            className="flex h-9 w-full items-center justify-center gap-2 rounded-lg bg-accent text-[11px] font-bold uppercase tracking-wider text-accent-foreground shadow-lg transition-all hover:bg-accent/90 active:scale-95"
           >
-            <ShoppingBag className="mr-2 h-4 w-4" />
+            <ShoppingBag className="h-3.5 w-3.5" />
             {t("productCard.addToCart")}
-          </Button>
+          </button>
         </div>
       </Link>
 
-      {/* Info */}
-      <div className="mt-4 flex flex-1 flex-col">
+      {/* Info section */}
+      <div className="flex flex-1 flex-col p-3">
+        {/* Rating */}
         {rating !== undefined && (
-          <div className="mb-1 flex items-center gap-1 text-xs text-muted-foreground">
-            <Star className="h-3.5 w-3.5 fill-accent text-accent" />
-            <span className="font-medium">{rating}</span>
+          <div className="mb-1.5 flex items-center gap-1 text-xs">
+            <Star className="h-3 w-3 fill-accent text-accent" />
+            <span className="font-semibold text-foreground">{rating}</span>
             {reviewCount !== undefined && (
-              <span className="text-muted-foreground/60">({reviewCount})</span>
+              <span className="text-muted-foreground">({reviewCount})</span>
             )}
           </div>
         )}
 
+        {/* Name */}
         <Link
           href={`/product/${product.slug}`}
-          className="line-clamp-2 text-sm font-medium leading-snug text-foreground hover:text-accent"
+          className="line-clamp-2 text-sm font-medium leading-snug text-foreground transition-colors hover:text-accent"
         >
           {product.name}
         </Link>
 
+        {/* Colors */}
         {colors && colors.length > 0 && (
-          <div className="mt-2 flex gap-1.5">
+          <div className="mt-2 flex items-center gap-1.5">
             {colors.slice(0, 4).map((color, i) => (
               <span
                 key={i}
-                className="h-3.5 w-3.5 rounded-full border border-border"
+                className="h-3 w-3 rounded-full border border-border/60 ring-1 ring-white/50"
                 style={{ backgroundColor: color.hex_value }}
                 title={color.name}
               />
             ))}
             {colors.length > 4 && (
-              <span className="text-[10px] text-muted-foreground">
+              <span className="text-[10px] font-medium text-muted-foreground">
                 +{colors.length - 4}
               </span>
             )}
           </div>
         )}
 
-        <div className="mt-2 flex items-center gap-2">
-          <span className="text-base font-semibold text-foreground">
+        {/* Price */}
+        <div className="mt-2.5 flex items-baseline gap-2">
+          <span className="text-base font-bold text-foreground">
             {formatPrice(finalPrice)}
           </span>
           {product.discount_price && (
-            <span className="text-sm text-muted-foreground line-through">
+            <span className="text-xs text-muted-foreground line-through">
               {formatPrice(product.price)}
+            </span>
+          )}
+          {discount > 0 && (
+            <span className="ml-auto rounded bg-red-50 px-1.5 py-0.5 text-[10px] font-bold text-red-600">
+              -{discount}%
             </span>
           )}
         </div>
