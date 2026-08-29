@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import Link from "next/link";
 import {
   Facebook,
@@ -9,213 +8,147 @@ import {
   Mail,
   Phone,
   MapPin,
-  Send,
 } from "lucide-react";
-import { Logo } from "@/components/logo";
-import { siteConfig, footerNav, paymentMethods } from "@/lib/brand";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { siteConfig, footerNav } from "@/lib/brand";
 import { useLanguage } from "@/i18n/language-context";
 
-/**
- * Newsletter subscription
- */
-function Newsletter() {
-  const { t } = useLanguage();
-  const [email, setEmail] = React.useState("");
-  const [submitted, setSubmitted] = React.useState(false);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (email.trim()) {
-      setSubmitted(true);
-      setEmail("");
-      setTimeout(() => setSubmitted(false), 4000);
-    }
-  };
-
-  return (
-    <div className="border-b border-border/60 bg-primary text-primary-foreground">
-      <div className="mx-auto max-w-7xl px-4 py-12">
-        <div className="mx-auto max-w-2xl text-center">
-          <h2 className="font-serif text-2xl font-medium md:text-3xl">
-            {t("newsletter.title")}
-          </h2>
-          <p className="mt-2 text-sm text-primary-foreground/80">
-            {t("newsletter.description")}
-          </p>
-          <form
-            onSubmit={handleSubmit}
-            className="mx-auto mt-6 flex max-w-md flex-col gap-2 sm:flex-row"
-          >
-            <Input
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder={t("newsletter.placeholder")}
-              className="h-11 border-primary-foreground/20 bg-primary-foreground/5 text-primary-foreground placeholder:text-primary-foreground/50"
-            />
-            <Button
-              type="submit"
-              size="lg"
-              className="h-11 bg-accent text-accent-foreground hover:bg-accent/90"
-            >
-              <Send className="mr-2 h-4 w-4" />
-              Subscribe
-            </Button>
-          </form>
-          {submitted && (
-            <p className="mt-3 text-sm text-accent">
-              ✓ Thank you for subscribing! Check your inbox for a welcome message.
-            </p>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
+const socials = [
+  { icon: Facebook, href: siteConfig.social.facebook, label: "Facebook" },
+  { icon: Instagram, href: siteConfig.social.instagram, label: "Instagram" },
+  { icon: Youtube, href: siteConfig.social.youtube, label: "YouTube" },
+].filter((s) => s.href);
 
 /**
- * Footer link column
- */
-function FooterColumn({
-  title,
-  links,
-}: {
-  title: string;
-  links: readonly { title: string; href: string }[];
-}) {
-  return (
-    <div>
-      <h3 className="mb-4 text-xs font-semibold uppercase tracking-wider text-foreground">
-        {title}
-      </h3>
-      <ul className="space-y-2.5">
-        {links.map((link) => (
-          <li key={link.href}>
-            <Link
-              href={link.href}
-              className="text-sm text-muted-foreground transition-colors hover:text-accent"
-            >
-              {link.title}
-            </Link>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
-
-/**
- * Main footer
+ * Premium footer — 4 columns on black bg
  */
 export function SiteFooter() {
   const { t } = useLanguage();
-  const socials = [
-    { icon: Facebook, href: siteConfig.social.facebook, label: "Facebook" },
-    { icon: Instagram, href: siteConfig.social.instagram, label: "Instagram" },
-    { icon: Youtube, href: siteConfig.social.youtube, label: "YouTube" },
-  ].filter((s) => s.href);
 
   return (
-    <footer className="mt-auto bg-background">
-      <Newsletter />
-
-      {/* Brand section — BLACK background, 3-column layout with logo CENTER */}
-      <div className="bg-primary text-primary-foreground">
-        <div className="mx-auto max-w-7xl px-4 py-10">
-          <div className="grid grid-cols-1 items-center gap-6 md:grid-cols-3">
-            {/* Left: Contact info */}
-            <div className="order-2 text-center md:order-1 md:text-left">
-              <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-accent">
-                {t("footer.contactUs")}
-              </p>
-              <a
-                href={`mailto:${siteConfig.email}`}
-                className="flex items-center justify-center gap-2 text-sm text-primary-foreground/80 hover:text-accent md:justify-start"
-              >
-                <Mail className="h-4 w-4" />
+    <footer className="mt-auto bg-primary text-primary-foreground">
+      <div className="mx-auto max-w-7xl px-4 py-12 md:py-16">
+        {/* 4-column grid */}
+        <div className="grid grid-cols-2 gap-8 md:grid-cols-4 lg:gap-12">
+          {/* Column 1: Brand + Contact */}
+          <div className="col-span-2 md:col-span-1">
+            <Link href="/" aria-label="Al-Rakib Panjabi House - Home" className="mb-4 block">
+              <div className="flex items-center gap-2.5">
+                <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-full ring-2 ring-accent/40">
+                  <img
+                    src="/logo.jpg"
+                    alt="Al-Rakib Panjabi House"
+                    className="h-full w-full object-cover"
+                    width={44}
+                    height={44}
+                  />
+                </div>
+                <div className="leading-none">
+                  <p className="font-serif text-sm font-semibold">Al-Rakib</p>
+                  <p className="text-[9px] uppercase tracking-[0.2em] text-accent">Panjabi House</p>
+                </div>
+              </div>
+            </Link>
+            <div className="space-y-2 text-xs text-primary-foreground/60">
+              <a href={`mailto:${siteConfig.email}`} className="flex items-center gap-2 transition-colors hover:text-accent">
+                <Mail className="h-3.5 w-3.5 shrink-0" />
                 {siteConfig.email}
               </a>
-              <a
-                href={`tel:${siteConfig.phone}`}
-                className="mt-1 flex items-center justify-center gap-2 text-sm text-primary-foreground/80 hover:text-accent md:justify-start"
-              >
-                <Phone className="h-4 w-4" />
+              <a href={`tel:${siteConfig.phone}`} className="flex items-center gap-2 transition-colors hover:text-accent">
+                <Phone className="h-3.5 w-3.5 shrink-0" />
                 {siteConfig.phone}
               </a>
-              <p className="mt-1 flex items-start justify-center gap-2 text-sm text-primary-foreground/80 md:justify-start">
-                <MapPin className="mt-0.5 h-4 w-4 shrink-0" />
+              <p className="flex items-start gap-2">
+                <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0" />
                 <span>{siteConfig.address}</span>
               </p>
             </div>
+          </div>
 
-            {/* Center: Logo */}
-            <div className="order-1 flex justify-center md:order-2">
-              <Link href="/" aria-label="Al-Rakib Panjabi House - Home">
-                <Logo size="md" variant="light" />
-              </Link>
-            </div>
+          {/* Column 2: Shop */}
+          <div>
+            <h3 className="mb-4 text-xs font-bold uppercase tracking-[0.15em] text-accent">
+              {footerNav.shop.title}
+            </h3>
+            <ul className="space-y-2.5">
+              {footerNav.shop.links.map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className="text-sm text-primary-foreground/60 transition-colors hover:text-accent"
+                  >
+                    {link.title}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
 
-            {/* Right: Social + Description */}
-            <div className="order-3 text-center md:text-right">
-              <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-accent">
-                {t("footer.followUs")}
-              </p>
-              {socials.length > 0 && (
-                <div className="flex justify-center gap-3 md:justify-end">
-                  {socials.map((social) => (
-                    <a
-                      key={social.label}
-                      href={social.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label={social.label}
-                      className="flex h-9 w-9 items-center justify-center rounded-full border border-primary-foreground/20 text-primary-foreground transition-colors hover:border-accent hover:bg-accent hover:text-accent-foreground"
-                    >
-                      <social.icon className="h-4 w-4" />
-                    </a>
-                  ))}
-                </div>
-              )}
-              <p className="mt-3 text-xs leading-relaxed text-primary-foreground/60">
-                {siteConfig.description}
-              </p>
-            </div>
+          {/* Column 3: Customer Service */}
+          <div>
+            <h3 className="mb-4 text-xs font-bold uppercase tracking-[0.15em] text-accent">
+              {footerNav.customer.title}
+            </h3>
+            <ul className="space-y-2.5">
+              {footerNav.customer.links.map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className="text-sm text-primary-foreground/60 transition-colors hover:text-accent"
+                  >
+                    {link.title}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Column 4: Policies + Social */}
+          <div>
+            <h3 className="mb-4 text-xs font-bold uppercase tracking-[0.15em] text-accent">
+              {footerNav.policies.title}
+            </h3>
+            <ul className="space-y-2.5">
+              {footerNav.policies.links.slice(0, 5).map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className="text-sm text-primary-foreground/60 transition-colors hover:text-accent"
+                  >
+                    {link.title}
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
-      </div>
 
-      {/* Link columns */}
-      <div className="border-b border-border/60 bg-muted/20">
-        <div className="mx-auto max-w-7xl px-4 py-10">
-          <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
-            <FooterColumn
-              title={footerNav.shop.title}
-              links={footerNav.shop.links}
-            />
-            <FooterColumn
-              title={footerNav.categories.title}
-              links={footerNav.categories.links}
-            />
-            <FooterColumn
-              title={footerNav.customer.title}
-              links={footerNav.customer.links}
-            />
-            <FooterColumn
-              title={footerNav.policies.title}
-              links={footerNav.policies.links}
-            />
+        {/* Social icons row — centered, prominent */}
+        <div className="mt-10 flex flex-col items-center gap-4 border-t border-primary-foreground/10 pt-8">
+          <p className="text-xs font-bold uppercase tracking-[0.2em] text-accent">
+            {t("footer.followUs")}
+          </p>
+          <div className="flex items-center gap-3">
+            {socials.map((social) => (
+              <a
+                key={social.label}
+                href={social.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={social.label}
+                className="group flex h-11 w-11 items-center justify-center rounded-full border border-primary-foreground/20 text-primary-foreground/70 transition-all hover:border-accent hover:bg-accent hover:text-accent-foreground hover:scale-110 active:scale-95"
+              >
+                <social.icon className="h-5 w-5 transition-transform group-hover:scale-110" />
+              </a>
+            ))}
           </div>
         </div>
       </div>
 
       {/* Bottom bar */}
-      <div className="bg-muted/40">
-        <div className="mx-auto max-w-7xl px-4 py-6">
-          <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-            <p className="text-xs text-muted-foreground">
+      <div className="border-t border-primary-foreground/10">
+        <div className="mx-auto max-w-7xl px-4 py-5">
+          <div className="flex flex-col items-center justify-between gap-2 md:flex-row">
+            <p className="text-xs text-primary-foreground/50">
               © {new Date().getFullYear()} {siteConfig.name}. {t("footer.rights")}{" "}
               <a
                 href="https://cynlex.com/"
@@ -226,19 +159,9 @@ export function SiteFooter() {
                 Managed by Cynlex Digital
               </a>
             </p>
-
-            {/* Payment methods */}
-            <div className="flex flex-wrap items-center justify-center gap-2">
-              {paymentMethods.map((method) => (
-                <div
-                  key={method.id}
-                  className="rounded border border-border bg-background px-2 py-1 text-[10px] font-medium text-muted-foreground"
-                  title={method.name}
-                >
-                  {method.name}
-                </div>
-              ))}
-            </div>
+            <p className="text-[10px] uppercase tracking-wider text-primary-foreground/30">
+              Cash on Delivery · Inside Dhaka ৳70 · Outside ৳120
+            </p>
           </div>
         </div>
       </div>
