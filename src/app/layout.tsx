@@ -5,6 +5,12 @@ import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AppShell } from "@/components/layout/app-shell";
 import { LanguageProvider } from "@/i18n/language-context";
+import { getCustomCode } from "@/lib/services/custom-code";
+
+// Force dynamic rendering so custom code changes appear immediately.
+// Without this, the layout would be statically rendered at build time
+// and custom code updates would not show until the next deploy.
+export const dynamic = "force-dynamic";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -108,11 +114,15 @@ export const viewport = {
   maximumScale: 5,
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Fetch custom tracking code from the database (admin-configurable).
+  // Falls back to empty strings if DB is unreachable.
+  const customCode = await getCustomCode();
+
   const orgJsonLd = {
     "@context": "https://schema.org",
     "@type": "Organization",
@@ -163,10 +173,18 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
         />
+        {/* Custom tracking code for <head> (Google Analytics, FB Pixel, GTM, etc.) */}
+        {customCode.head && (
+          <div dangerouslySetInnerHTML={{ __html: customCode.head }} />
+        )}
       </head>
       <body
         className={`${inter.variable} ${playfair.variable} antialiased bg-background text-foreground`}
       >
+        {/* Custom tracking code for top of <body> (GTM noscript, early pixels) */}
+        {customCode.body_top && (
+          <div dangerouslySetInnerHTML={{ __html: customCode.body_top }} />
+        )}
         <ThemeProvider
           attribute="class"
           defaultTheme="light"
@@ -178,6 +196,10 @@ export default function RootLayout({
             <Toaster />
           </LanguageProvider>
         </ThemeProvider>
+        {/* Custom tracking code for bottom of <body> (chat widgets, conversion pixels) */}
+        {customCode.body_bottom && (
+          <div dangerouslySetInnerHTML={{ __html: customCode.body_bottom }} />
+        )}
       </body>
     </html>
   );
