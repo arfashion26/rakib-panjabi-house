@@ -26,17 +26,21 @@ export function FeaturedCategoriesClient({ featured }: { featured: FeaturedCateg
   if (featured.length === 0) return null;
 
   return (
-    <section className="bg-background py-14 md:py-20 lg:py-24">
+    <section className="bg-accent py-14 md:py-20 lg:py-24">
       <Container>
         <div className="mb-10 md:mb-12 flex flex-col items-end justify-between gap-4 md:flex-row">
-          <SectionHeading
-            eyebrow={t("categories.eyebrow")}
-            title={t("categories.title")}
-            subtitle={t("categories.subtitle")}
-            align="left"
-            className="mb-0 md:max-w-xl"
-          />
-          <ButtonLink href="/shop" variant="ghost" className="shrink-0">
+          <div className="max-w-2xl text-left">
+            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-accent-foreground/60">
+              {t("categories.eyebrow")}
+            </p>
+            <h2 className="font-serif text-3xl font-medium tracking-tight text-accent-foreground md:text-4xl lg:text-5xl">
+              {t("categories.title")}
+            </h2>
+            <p className="mt-4 text-base leading-relaxed text-accent-foreground/70 md:text-lg">
+              {t("categories.subtitle")}
+            </p>
+          </div>
+          <ButtonLink href="/shop" variant="ghost" className="shrink-0 text-accent-foreground hover:bg-accent-foreground/10">
             {t("categories.viewAll")}
             <ArrowRight className="ml-2 h-4 w-4" />
           </ButtonLink>
@@ -75,7 +79,7 @@ export function FeaturedCategoriesClient({ featured }: { featured: FeaturedCateg
                     {cat.description}
                   </p>
                 )}
-                <div className="mt-4 inline-flex items-center gap-2 text-sm font-medium uppercase tracking-wider text-accent">
+                <div className="mt-4 inline-flex items-center gap-2 text-sm font-medium uppercase tracking-wider text-accent-foreground">
                   {t("categories.shopNow")}
                   <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </div>
