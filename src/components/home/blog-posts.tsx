@@ -75,7 +75,7 @@ export function BlogPosts() {
                   </span>
                 </div>
                 <div className="absolute left-3 top-3">
-                  <span className="rounded-full bg-background/90 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-foreground">
+                  <span className="rounded-full bg-background px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-foreground">
                     {post.category}
                   </span>
                 </div>

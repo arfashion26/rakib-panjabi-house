@@ -96,7 +96,7 @@ export function FlashSaleContent({ products }: { products: Product[] }) {
 
         <div className="grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-4 lg:gap-x-6">
           {products.map((product) => (
-            <div key={product.id} className="rounded-lg bg-primary-foreground/5 p-3 backdrop-blur">
+            <div key={product.id} className="rounded-lg bg-primary-foreground p-3">
               <ProductCard
                 product={product}
                 images={product.images?.map((img) => img.url) || []}
