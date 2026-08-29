@@ -259,8 +259,15 @@ export function SiteFooter() {
         <div className="mx-auto max-w-7xl px-4 py-6">
           <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
             <p className="text-xs text-muted-foreground">
-              © {new Date().getFullYear()} {siteConfig.name}. {t("footer.rights")}
-              {t("footer.craftedIn")}
+              © {new Date().getFullYear()} {siteConfig.name}. {t("footer.rights")}{" "}
+              <a
+                href="https://cynlex.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium text-accent hover:underline"
+              >
+                Managed by Cynlex Digital
+              </a>
             </p>
 
             {/* Payment methods */}
