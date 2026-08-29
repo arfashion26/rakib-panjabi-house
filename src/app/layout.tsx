@@ -7,11 +7,9 @@ import { AppShell } from "@/components/layout/app-shell";
 import { LanguageProvider } from "@/i18n/language-context";
 import { getCustomCode } from "@/lib/services/custom-code";
 
-// Force dynamic rendering so custom code changes appear immediately.
-// Without this, the layout would be statically rendered at build time
-// and custom code updates would not show until the next deploy.
-export const dynamic = "force-dynamic";
-
+// The layout is async (it fetches custom code from the DB), so Next.js
+// automatically renders it dynamically. No need for force-dynamic here —
+// that can interfere with auth cookie handling in some cases.
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
