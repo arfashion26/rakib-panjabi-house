@@ -83,12 +83,19 @@ export default function AdminLayout({
       {/* Logo / Brand */}
       <div className="border-b border-primary-foreground/10 p-5">
         <Link href="/admin" className="flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-lg border border-accent/30 bg-accent/10 shadow-sm">
-            <span className="font-serif text-xl font-bold text-accent">R</span>
+          {/* Logo image */}
+          <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full ring-2 ring-accent/30">
+            <img
+              src="/logo.jpg"
+              alt="Al-Rakib Panjabi House"
+              className="h-full w-full object-cover"
+              width={48}
+              height={48}
+            />
           </div>
           <div>
-            <p className="font-serif text-base font-semibold leading-tight">
-              Rakib Panjabi
+            <p className="font-serif text-sm font-semibold leading-tight">
+              Al-Rakib Panjabi
             </p>
             <p className="text-[10px] uppercase tracking-[0.25em] text-primary-foreground/50">
               Admin Panel
@@ -187,8 +194,14 @@ export default function AdminLayout({
           </SheetContent>
         </Sheet>
         <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-md border border-accent/30 bg-accent/10">
-            <span className="font-serif text-sm font-bold text-accent">R</span>
+          <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-full ring-1 ring-accent/30">
+            <img
+              src="/logo.jpg"
+              alt="Al-Rakib Panjabi House"
+              className="h-full w-full object-cover"
+              width={32}
+              height={32}
+            />
           </div>
           <span className="font-serif text-base font-medium">{pageTitle}</span>
         </div>

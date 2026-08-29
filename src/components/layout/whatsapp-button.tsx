@@ -82,14 +82,14 @@ export function WhatsAppButton() {
         <button
           onClick={openMessenger}
           aria-label="Chat on Messenger"
-          className="group relative flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-[#0084FF] to-[#0066CC] text-white shadow-lg transition-all hover:scale-110 hover:shadow-xl active:scale-95"
+          className="group relative flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-[#0084FF] to-[#0066CC] text-white shadow-lg transition-all hover:scale-110 hover:shadow-xl active:scale-95"
         >
           {/* Pulse ring */}
           <span className="absolute inset-0 animate-ping rounded-full bg-[#0084FF] opacity-20 group-hover:opacity-0" />
 
           {/* Messenger (Facebook) icon — lightning bolt speech bubble */}
           <svg
-            className="relative h-6 w-6"
+            className="relative h-7 w-7"
             viewBox="0 0 24 24"
             fill="currentColor"
             aria-hidden="true"
@@ -98,7 +98,7 @@ export function WhatsAppButton() {
           </svg>
         </button>
 
-        {/* WhatsApp button (slightly larger to stand out) */}
+        {/* WhatsApp button */}
         <button
           onClick={openWhatsApp}
           aria-label="Chat on WhatsApp"
