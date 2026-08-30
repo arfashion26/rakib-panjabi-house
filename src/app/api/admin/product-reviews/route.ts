@@ -42,6 +42,7 @@ export async function GET(req: NextRequest) {
         status,
         is_verified,
         created_at,
+        reviewer_name,
         product:products(name, slug)
       `)
       .order("created_at", { ascending: false });
@@ -53,21 +54,53 @@ export async function GET(req: NextRequest) {
     const { data, error } = await query;
 
     if (error) {
+      // If reviewer_name column doesn't exist, retry without it
+      if (error.message.includes("reviewer_name")) {
+        const { data: data2 } = await admin
+          .from("reviews")
+          .select(`
+            id, product_id, user_id, rating, title, content, status, is_verified, created_at,
+            product:products(name, slug)
+          `)
+          .order("created_at", { ascending: false });
+
+        const reviewsFallback = await Promise.all(
+          (data2 || []).map(async (review: any) => {
+            let reviewerName = "Guest Customer";
+            if (review.user_id) {
+              const { data: profile } = await admin
+                .from("profiles")
+                .select("name, email, phone")
+                .eq("id", review.user_id)
+                .maybeSingle();
+              if (profile) {
+                reviewerName = profile.name || profile.email || profile.phone || "Customer";
+              }
+            }
+            return { ...review, reviewer_name: reviewerName };
+          })
+        );
+
+        return NextResponse.json({ success: true, reviews: reviewsFallback });
+      }
       return NextResponse.json({ success: false, error: error.message }, { status: 500 });
     }
 
-    // Fetch reviewer names from profiles
+    // Use reviewer_name column if available, otherwise fetch from profiles
     const reviewsWithName = await Promise.all(
       (data || []).map(async (review: any) => {
-        let reviewerName = "Anonymous";
-        if (review.user_id) {
-          const { data: profile } = await admin
-            .from("profiles")
-            .select("name, email, phone")
-            .eq("id", review.user_id)
-            .maybeSingle();
-          if (profile) {
-            reviewerName = profile.name || profile.email || profile.phone || "Customer";
+        let reviewerName = review.reviewer_name;
+        if (!reviewerName) {
+          reviewerName = "Guest Customer";
+          if (review.user_id) {
+            const { data: profile } = await admin
+              .from("profiles")
+              .select("name, email, phone")
+              .eq("id", review.user_id)
+              .maybeSingle();
+            if (profile) {
+              reviewerName = profile.name || profile.email || profile.phone || "Customer";
+            }
           }
         }
         return { ...review, reviewer_name: reviewerName };

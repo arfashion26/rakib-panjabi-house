@@ -30,8 +30,11 @@ export async function POST(req: NextRequest) {
 
     const admin = createAdminClient();
 
-    // Find or create user by phone (for userId field)
-    let userId: string | null = null;
+    // Find user by phone (for userId field)
+    // If not found, use the guest user ID (reviews table requires user_id NOT NULL)
+    const GUEST_USER_ID = "ae195301-694b-4893-a5f5-dae705ac1508";
+    let userId: string = GUEST_USER_ID;
+
     if (phone) {
       const cleanPhone = phone.replace(/[^0-9]/g, "");
       let normalizedPhone = cleanPhone;
@@ -52,7 +55,9 @@ export async function POST(req: NextRequest) {
     }
 
     // Insert review with PENDING status
-    const { data, error } = await admin.from("reviews").insert({
+    // Store reviewer name in 'reviewer_name' column (added via SQL)
+    // Falls back to not sending it if column doesn't exist
+    const insertData: any = {
       product_id: productId,
       user_id: userId,
       rating: Number(rating),
@@ -60,7 +65,30 @@ export async function POST(req: NextRequest) {
       content: content || null,
       status: "PENDING",
       is_verified: false,
+    };
+
+    // Try with reviewer_name column (added via SQL migration)
+    const { data, error } = await admin.from("reviews").insert({
+      ...insertData,
+      reviewer_name: name,
     }).select().single();
+
+    // If reviewer_name column doesn't exist, retry without it
+    if (error && error.message.includes("reviewer_name")) {
+      const { data: data2, error: error2 } = await admin.from("reviews").insert(insertData).select().single();
+      if (error2) {
+        console.error("Review insert error:", error2.message);
+        return NextResponse.json(
+          { success: false, error: "Failed to submit review: " + error2.message },
+          { status: 500 }
+        );
+      }
+      return NextResponse.json({
+        success: true,
+        message: "Review submitted! It will appear after admin approval.",
+        reviewId: data2.id,
+      });
+    }
 
     if (error) {
       console.error("Review insert error:", error.message);
