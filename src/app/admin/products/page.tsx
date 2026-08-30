@@ -65,6 +65,8 @@ interface Product {
   meta_title?: string;
   meta_description?: string;
   search_keywords?: string;
+  // Custom specifications (key-value pairs)
+  specifications?: Array<{ key: string; value: string }>;
   sizes?: ProductSize[];
   colors?: ProductColor[];
   images?: { url: string; is_primary: boolean }[];
@@ -192,6 +194,8 @@ export default function AdminProductsPage() {
           metaTitle: product.meta_title || null,
           metaDescription: product.meta_description || null,
           searchKeywords: product.search_keywords || null,
+          // Custom specifications
+          specifications: product.specifications || [],
         }),
       });
       const data = await res.json();
@@ -246,6 +250,7 @@ export default function AdminProductsPage() {
       meta_title: "",
       meta_description: "",
       search_keywords: "",
+      specifications: [],
       sizes: [],
       colors: [],
       images: [],
@@ -875,6 +880,69 @@ function ProductFormDialog({
                 />
               </div>
             </div>
+          </div>
+
+          <Separator />
+
+          {/* Custom Specifications */}
+          <div className="space-y-3">
+            <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+              Custom Specifications
+            </h3>
+            <p className="text-xs text-muted-foreground">
+              Add custom key-value specs (e.g. Weight: 500g, Material: 100% Cotton).
+              These appear in the Specifications tab on the product page.
+            </p>
+            {(form.specifications || []).map((spec, idx) => (
+              <div key={idx} className="flex items-center gap-2">
+                <Input
+                  placeholder="Spec name (e.g. Weight)"
+                  value={spec.key}
+                  onChange={(e) => {
+                    const specs = [...(form.specifications || [])];
+                    specs[idx] = { ...specs[idx], key: e.target.value };
+                    update("specifications", specs);
+                  }}
+                  className="flex-1"
+                />
+                <Input
+                  placeholder="Value (e.g. 500g)"
+                  value={spec.value}
+                  onChange={(e) => {
+                    const specs = [...(form.specifications || [])];
+                    specs[idx] = { ...specs[idx], value: e.target.value };
+                    update("specifications", specs);
+                  }}
+                  className="flex-1"
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="h-9 w-9 text-muted-foreground hover:text-red-500"
+                  onClick={() => {
+                    const specs = [...(form.specifications || [])];
+                    specs.splice(idx, 1);
+                    update("specifications", specs);
+                  }}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+            ))}
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                const specs = [...(form.specifications || [])];
+                specs.push({ key: "", value: "" });
+                update("specifications", specs);
+              }}
+            >
+              <Plus className="mr-2 h-3 w-3" />
+              Add Specification
+            </Button>
           </div>
 
           <Separator />
