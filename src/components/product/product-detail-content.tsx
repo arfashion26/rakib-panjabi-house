@@ -505,13 +505,13 @@ export function ProductDetailContent({
       </div>
 
       {/* ===== Tabs Section ===== */}
-      <div className="mt-10">
+      <div className="mt-10 overflow-x-hidden">
         <Tabs defaultValue="description">
-          <TabsList className="w-full justify-start gap-6 border-b border-border">
-            <TabsTrigger value="description">{t("productDetail.description")}</TabsTrigger>
-            <TabsTrigger value="specifications">{t("productDetail.specifications")}</TabsTrigger>
-            <TabsTrigger value="reviews">{t("productDetail.reviews")} ({reviews.length})</TabsTrigger>
-            <TabsTrigger value="shipping">{t("productDetail.shippingReturns")}</TabsTrigger>
+          <TabsList className="flex w-full flex-wrap justify-start gap-2 border-b border-border sm:gap-6">
+            <TabsTrigger value="description" className="text-xs sm:text-sm">{t("productDetail.description")}</TabsTrigger>
+            <TabsTrigger value="specifications" className="text-xs sm:text-sm">{t("productDetail.specifications")}</TabsTrigger>
+            <TabsTrigger value="reviews" className="text-xs sm:text-sm">{t("productDetail.reviews")} ({reviews.length})</TabsTrigger>
+            <TabsTrigger value="shipping" className="text-xs sm:text-sm">{t("productDetail.shippingReturns")}</TabsTrigger>
           </TabsList>
 
           {/* Description */}
