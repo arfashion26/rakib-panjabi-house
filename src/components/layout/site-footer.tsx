@@ -31,20 +31,20 @@ export function SiteFooter() {
         <div className="grid grid-cols-2 gap-8 md:grid-cols-4 lg:gap-12">
           {/* Column 1: Brand + Contact */}
           <div className="col-span-2 md:col-span-1">
-            <Link href="/" aria-label="Al-Rakib Panjabi House - Home" className="mb-4 block">
-              <div className="flex items-center gap-2.5">
-                <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-full ring-2 ring-accent/40">
+            <Link href="/" aria-label="Al-Rakib Panjabi House - Home" className="mb-5 block">
+              <div className="flex items-center gap-3">
+                <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-full ring-2 ring-accent/40 md:h-20 md:w-20">
                   <img
                     src="/logo.jpg"
                     alt="Al-Rakib Panjabi House"
                     className="h-full w-full object-cover"
-                    width={44}
-                    height={44}
+                    width={80}
+                    height={80}
                   />
                 </div>
                 <div className="leading-none">
-                  <p className="font-serif text-sm font-semibold">Al-Rakib</p>
-                  <p className="text-[9px] uppercase tracking-[0.2em] text-accent">Panjabi House</p>
+                  <p className="font-serif text-lg font-semibold md:text-xl">Al-Rakib</p>
+                  <p className="text-[10px] uppercase tracking-[0.2em] text-accent md:text-xs">Panjabi House</p>
                 </div>
               </div>
             </Link>
