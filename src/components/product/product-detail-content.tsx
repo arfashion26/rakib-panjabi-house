@@ -13,7 +13,8 @@ import {
   Plus,
   ChevronRight,
   Share2,
-  ZoomIn,
+  Home,
+  Package,
 } from "lucide-react";
 import { useLanguage } from "@/i18n/language-context";
 import { Button } from "@/components/ui/button";
@@ -167,7 +168,6 @@ export function ProductDetailContent({
     (product.sizes.length === 0 || (selectedSizeData && selectedSizeData.stock > 0)) &&
     (product.colors.length === 0 || (selectedColorData && selectedColorData.stock > 0));
 
-  // Parse specifications (could be array or JSON string)
   const customSpecs: Array<{ key: string; value: string }> = React.useMemo(() => {
     if (!product.specifications) return [];
     if (Array.isArray(product.specifications)) return product.specifications;
@@ -180,21 +180,29 @@ export function ProductDetailContent({
   }, [product.specifications]);
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-      {/* Breadcrumb */}
-      <nav className="mb-4 flex items-center gap-1 text-xs text-muted-foreground">
-        <Link href="/" className="hover:text-accent">{t("common.home")}</Link>
-        <ChevronRight className="h-3 w-3" />
-        <Link href="/shop" className="hover:text-accent">{t("common.shop")}</Link>
-        <ChevronRight className="h-3 w-3" />
-        <span className="line-clamp-1 text-foreground">{product.name}</span>
+    <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
+      {/* ===== Premium Breadcrumb ===== */}
+      <nav className="mb-5 flex items-center gap-1.5 rounded-lg border border-border/60 bg-card px-4 py-2.5 text-xs">
+        <Link href="/" className="flex items-center gap-1 text-muted-foreground transition-colors hover:text-accent">
+          <Home className="h-3 w-3" />
+          {t("common.home")}
+        </Link>
+        <ChevronRight className="h-3 w-3 text-muted-foreground/40" />
+        <Link href="/shop" className="text-muted-foreground transition-colors hover:text-accent">
+          {t("common.shop")}
+        </Link>
+        <ChevronRight className="h-3 w-3 text-muted-foreground/40" />
+        <span className="flex items-center gap-1 font-medium text-foreground">
+          <Package className="h-3 w-3 text-accent" />
+          <span className="line-clamp-1">{product.name}</span>
+        </span>
       </nav>
 
-      {/* Main layout — 2 columns on desktop */}
+      {/* ===== Main Layout ===== */}
       <div className="grid gap-6 lg:grid-cols-2 lg:gap-10">
-        {/* ===== LEFT: Compact Image Gallery ===== */}
+        {/* ===== LEFT: Image Gallery ===== */}
         <div className="flex gap-3">
-          {/* Thumbnails — vertical strip */}
+          {/* Thumbnails */}
           {allImages.length > 1 && (
             <div className="flex shrink-0 flex-col gap-2">
               {allImages.map((img, idx) => (
@@ -222,7 +230,7 @@ export function ProductDetailContent({
             </div>
           )}
 
-          {/* Main image — compact aspect ratio */}
+          {/* Main image */}
           <div className="relative aspect-[4/5] flex-1 overflow-hidden rounded-xl border border-border/60 bg-muted">
             {allImages[selectedImageIdx] !== "placeholder" && allImages[selectedImageIdx].startsWith("#") ? (
               <div className="absolute inset-0" style={{ backgroundColor: allImages[selectedImageIdx] }} />
@@ -261,45 +269,52 @@ export function ProductDetailContent({
 
         {/* ===== RIGHT: Product Info ===== */}
         <div className="flex flex-col">
-          {/* Title + SKU */}
+          {/* Featured label */}
           {product.is_featured && (
             <span className="mb-1.5 text-xs font-bold uppercase tracking-wider text-accent">
               {t("productDetail.featuredProduct")}
             </span>
           )}
+
+          {/* Title */}
           <h1 className="text-xl font-bold leading-tight tracking-tight md:text-2xl lg:text-3xl">
             {product.name}
           </h1>
-          <p className="mt-1.5 text-xs uppercase tracking-wider text-muted-foreground">
-            {t("products.sku")}: {product.sku}
-          </p>
 
-          {/* Rating */}
-          <div className="mt-3 flex items-center gap-2">
-            <div className="flex gap-0.5">
-              {[1, 2, 3, 4, 5].map((n) => (
-                <Star key={n} className="h-4 w-4 fill-accent text-accent" />
-              ))}
+          {/* SKU + Rating row */}
+          <div className="mt-2 flex items-center gap-3">
+            <span className="text-xs uppercase tracking-wider text-muted-foreground">
+              {t("products.sku")}: {product.sku}
+            </span>
+            <span className="h-3 w-px bg-border" />
+            <div className="flex items-center gap-1">
+              <div className="flex gap-0.5">
+                {[1, 2, 3, 4, 5].map((n) => (
+                  <Star key={n} className="h-3.5 w-3.5 fill-accent text-accent" />
+                ))}
+              </div>
+              <span className="text-xs font-medium">{reviews.length > 0 ? "5.0" : "—"}</span>
+              <span className="text-xs text-muted-foreground">({reviews.length})</span>
             </div>
-            <span className="text-sm font-medium">{reviews.length > 0 ? "5.0" : "—"}</span>
-            <span className="text-xs text-muted-foreground">({reviews.length} reviews)</span>
           </div>
 
-          {/* Price */}
-          <div className="mt-4 flex items-center gap-3">
-            <span className="text-2xl font-bold text-foreground md:text-3xl">
-              {formatPrice(finalPrice)}
-            </span>
-            {product.discount_price && (
-              <span className="text-lg text-muted-foreground line-through">
-                {formatPrice(product.price)}
+          {/* Price card */}
+          <div className="mt-4 rounded-xl border border-border/60 bg-muted/30 p-4">
+            <div className="flex items-center gap-3">
+              <span className="text-2xl font-bold text-foreground md:text-3xl">
+                {formatPrice(finalPrice)}
               </span>
-            )}
-            {discount > 0 && (
-              <span className="rounded bg-red-50 px-2 py-0.5 text-xs font-bold text-red-600">
-                {t("productDetail.saveAmount")} {formatPrice(product.price - finalPrice)}
-              </span>
-            )}
+              {product.discount_price && (
+                <span className="text-lg text-muted-foreground line-through">
+                  {formatPrice(product.price)}
+                </span>
+              )}
+              {discount > 0 && (
+                <span className="ml-auto rounded-lg bg-red-50 px-3 py-1 text-xs font-bold text-red-600">
+                  {t("productDetail.saveAmount")} {formatPrice(product.price - finalPrice)}
+                </span>
+              )}
+            </div>
           </div>
 
           {/* Short description */}
@@ -309,14 +324,14 @@ export function ProductDetailContent({
             </p>
           )}
 
-          <Separator className="my-5" />
+          <Separator className="my-4" />
 
           {/* Color selection */}
           {product.colors.length > 0 && (
             <div className="mb-4">
               <label className="mb-2 block text-sm font-medium">
                 {t("productDetail.color")}:{" "}
-                <span className="text-muted-foreground">{selectedColor ?? t("productDetail.selectPlaceholder")}</span>
+                <span className="text-accent">{selectedColor ?? t("productDetail.selectPlaceholder")}</span>
               </label>
               <div className="flex gap-2">
                 {product.colors.map((color) => (
@@ -344,7 +359,7 @@ export function ProductDetailContent({
               <div className="mb-2 flex items-center justify-between">
                 <label className="text-sm font-medium">
                   {t("productDetail.size")}:{" "}
-                  <span className="text-muted-foreground">{selectedSize ?? t("productDetail.selectPlaceholder")}</span>
+                  <span className="text-accent">{selectedSize ?? t("productDetail.selectPlaceholder")}</span>
                 </label>
                 <Link href="/size-guide" className="text-xs text-accent hover:underline">
                   {t("productDetail.sizeGuide")}
@@ -376,7 +391,7 @@ export function ProductDetailContent({
           )}
 
           {/* Quantity + Actions */}
-          <div className="mt-5 flex items-center gap-3">
+          <div className="mt-5 flex items-center gap-2">
             {/* Quantity */}
             <div className="flex items-center rounded-lg border border-border">
               <Button
@@ -440,37 +455,49 @@ export function ProductDetailContent({
           {/* Trust badges */}
           <div className="mt-5 grid grid-cols-3 gap-2 border-t border-border pt-4">
             <div className="flex flex-col items-center gap-1 text-center">
-              <Truck className="h-4 w-4 text-accent" />
-              <span className="text-[10px] text-muted-foreground">{t("productDetail.shippingInfo")}</span>
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-accent/10">
+                <Truck className="h-4 w-4 text-accent" />
+              </div>
+              <span className="text-[10px] font-medium text-muted-foreground">{t("productDetail.shippingInfo")}</span>
             </div>
             <div className="flex flex-col items-center gap-1 text-center">
-              <RefreshCw className="h-4 w-4 text-accent" />
-              <span className="text-[10px] text-muted-foreground">{t("productDetail.returnsInfo")}</span>
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-accent/10">
+                <RefreshCw className="h-4 w-4 text-accent" />
+              </div>
+              <span className="text-[10px] font-medium text-muted-foreground">{t("productDetail.returnsInfo")}</span>
             </div>
             <div className="flex flex-col items-center gap-1 text-center">
-              <ShieldCheck className="h-4 w-4 text-accent" />
-              <span className="text-[10px] text-muted-foreground">{t("productDetail.paymentOptions")}</span>
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-accent/10">
+                <ShieldCheck className="h-4 w-4 text-accent" />
+              </div>
+              <span className="text-[10px] font-medium text-muted-foreground">{t("productDetail.paymentOptions")}</span>
             </div>
           </div>
 
           {/* Quick specs */}
-          <div className="mt-4 space-y-1 border-t border-border pt-4 text-xs">
+          <div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-1.5 border-t border-border pt-4 text-xs">
             {product.fabric && (
-              <div className="flex gap-2">
+              <div className="flex gap-1.5">
                 <span className="font-medium text-muted-foreground">{t("productDetail.fabric")}:</span>
-                <span>{product.fabric}</span>
+                <span className="text-foreground">{product.fabric}</span>
               </div>
             )}
             {product.fit && (
-              <div className="flex gap-2">
+              <div className="flex gap-1.5">
                 <span className="font-medium text-muted-foreground">{t("productDetail.fit")}:</span>
-                <span>{product.fit}</span>
+                <span className="text-foreground">{product.fit}</span>
               </div>
             )}
             {product.origin && (
-              <div className="flex gap-2">
+              <div className="flex gap-1.5">
                 <span className="font-medium text-muted-foreground">{t("productDetail.origin")}:</span>
-                <span>{product.origin}</span>
+                <span className="text-foreground">{product.origin}</span>
+              </div>
+            )}
+            {product.care && (
+              <div className="flex gap-1.5">
+                <span className="font-medium text-muted-foreground">{t("productDetail.care")}:</span>
+                <span className="text-foreground">{product.care}</span>
               </div>
             )}
           </div>
@@ -491,7 +518,7 @@ export function ProductDetailContent({
           <TabsContent value="description" className="mt-5">
             <p className="text-sm leading-relaxed text-muted-foreground">{product.description}</p>
             {product.care && (
-              <div className="mt-4">
+              <div className="mt-4 rounded-lg bg-muted/30 p-3">
                 <h4 className="text-xs font-semibold uppercase tracking-wider text-foreground">
                   {t("productDetail.careInstructions")}
                 </h4>
@@ -500,7 +527,7 @@ export function ProductDetailContent({
             )}
           </TabsContent>
 
-          {/* Specifications — includes custom specs */}
+          {/* Specifications */}
           <TabsContent value="specifications" className="mt-5">
             <div className="overflow-hidden rounded-lg border border-border">
               <table className="w-full text-sm">
@@ -529,7 +556,6 @@ export function ProductDetailContent({
                       <td className="px-4 py-2.5">{product.origin}</td>
                     </tr>
                   )}
-                  {/* Custom specifications */}
                   {customSpecs.map((spec, idx) => (
                     <tr key={idx} className="border-b border-border">
                       <td className="bg-muted/50 px-4 py-2.5 font-medium">{spec.key}</td>
@@ -585,15 +611,15 @@ export function ProductDetailContent({
           {/* Shipping */}
           <TabsContent value="shipping" className="mt-5">
             <div className="space-y-3 text-sm text-muted-foreground">
-              <div>
+              <div className="rounded-lg border border-border/60 p-3">
                 <h4 className="mb-1 font-medium text-foreground">{t("productDetail.shippingInfo")}</h4>
                 <p>{t("productDetail.shippingDesc")}</p>
               </div>
-              <div>
+              <div className="rounded-lg border border-border/60 p-3">
                 <h4 className="mb-1 font-medium text-foreground">{t("productDetail.returnsInfo")}</h4>
                 <p>{t("productDetail.returnsDesc")}</p>
               </div>
-              <div>
+              <div className="rounded-lg border border-border/60 p-3">
                 <h4 className="mb-1 font-medium text-foreground">{t("productDetail.paymentOptions")}</h4>
                 <p>{t("productDetail.paymentDesc")}</p>
               </div>
