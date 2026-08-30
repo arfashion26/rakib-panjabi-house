@@ -102,11 +102,32 @@ function AnnouncementBar() {
 }
 
 /**
- * Mega menu for Shop dropdown
+ * Mega menu for Shop dropdown — DB-driven categories
  */
 function ShopMegaMenu() {
-  const featuredCategories = categories.filter((c) => c.featured).slice(0, 4);
   const { t } = useLanguage();
+  const [cats, setCats] = React.useState<Array<{
+    id: string;
+    name: string;
+    slug: string;
+    description: string | null;
+    is_featured: boolean;
+  }>>([]);
+
+  React.useEffect(() => {
+    fetch("/api/categories")
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.success && data.categories) {
+          setCats(data.categories);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const featuredCats = cats.filter((c) => c.is_featured).slice(0, 4);
+  const allCats = cats.slice(0, 12);
+
   return (
     <NavigationMenuContent>
       <div className="grid w-[600px] gap-3 p-6 md:grid-cols-[1.5fr_1fr]">
@@ -115,16 +136,18 @@ function ShopMegaMenu() {
             {t("products.categories")}
           </h3>
           <ul className="grid grid-cols-2 gap-1">
-            {categories.slice(0, 12).map((cat) => (
-              <li key={cat.slug}>
+            {allCats.map((cat) => (
+              <li key={cat.id}>
                 <Link
-                  href={cat.href}
+                  href={`/shop/${cat.slug}`}
                   className="block rounded-md px-3 py-2 text-sm leading-none no-underline transition-colors hover:bg-accent/10 hover:text-accent"
                 >
                   <div className="font-medium text-foreground">{cat.name}</div>
-                  <div className="line-clamp-1 text-xs text-muted-foreground">
-                    {cat.description}
-                  </div>
+                  {cat.description && (
+                    <div className="line-clamp-1 text-xs text-muted-foreground">
+                      {cat.description}
+                    </div>
+                  )}
                 </Link>
               </li>
             ))}
@@ -135,16 +158,18 @@ function ShopMegaMenu() {
             {t("categories.title")}
           </h3>
           <div className="space-y-1">
-            {featuredCategories.map((cat) => (
+            {featuredCats.map((cat) => (
               <Link
-                key={cat.slug}
-                href={cat.href}
+                key={cat.id}
+                href={`/shop/${cat.slug}`}
                 className="block rounded-md p-2 text-sm no-underline transition-colors hover:bg-white/40"
               >
                 <div className="font-medium">{cat.name}</div>
-                <div className="text-xs text-muted-foreground line-clamp-1">
-                  {cat.description}
-                </div>
+                {cat.description && (
+                  <div className="text-xs text-muted-foreground line-clamp-1">
+                    {cat.description}
+                  </div>
+                )}
               </Link>
             ))}
           </div>
