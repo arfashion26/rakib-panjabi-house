@@ -62,3 +62,37 @@ Stage Summary:
   orders/page.tsx, orders/[id]/page.tsx, wishlist/page.tsx,
   addresses/page.tsx, notifications/page.tsx, settings/page.tsx)
 
+
+---
+Task ID: 11
+Agent: main
+Task: Add delete loading animation to all admin dashboard delete buttons
+
+Work Log:
+- Audited all admin pages for delete flows
+- Pages that already had proper dialog + spinner: media, blog, customers
+- Pages with dialog but missing `deleting` state — fixed by adding:
+  - `deleting` state via useState
+  - setDeleting(true) before fetch, setDeleting(false) in finally
+  - Cancel and Delete buttons get `disabled={deleting}`
+  - Delete button swaps to Loader2 spinner + "Deleting..." text
+  - Added AlertCircle icon + red icon background to dialog title for visual consistency
+  - Files updated:
+    - src/app/admin/orders/page.tsx
+    - src/app/admin/product-reviews/page.tsx
+    - src/app/admin/categories/page.tsx
+    - src/app/admin/products/page.tsx
+- Pages that used native confirm() — converted to proper Dialog with spinner:
+  - src/app/admin/coupons/page.tsx (added deleteTarget state, dialog with coupon info preview)
+  - src/app/admin/menu/page.tsx (added deleteTarget state, dialog)
+  - src/app/admin/reviews/page.tsx (added deleteTarget state, dialog)
+- Verified no remaining native confirm() calls in admin pages
+- TypeScript type check passed (npx tsc --noEmit)
+
+Stage Summary:
+- All admin delete actions now show a spinner + "Deleting..." text in the
+  confirm dialog button during the 2-3 second API call, with both buttons
+  disabled to prevent double-clicks
+- Native browser confirm() popups fully replaced with branded Dialogs that
+  match the rest of the admin UI (media/blog/customer delete dialogs)
+- Consistent visual pattern: red AlertCircle icon + Loader2 spinner during deletion

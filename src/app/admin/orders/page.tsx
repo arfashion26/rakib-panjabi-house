@@ -73,6 +73,7 @@ export default function AdminOrdersPage() {
   const [statusFilter, setStatusFilter] = React.useState("ALL");
   const [viewOrder, setViewOrder] = React.useState<Order | null>(null);
   const [deleteConfirm, setDeleteConfirm] = React.useState<Order | null>(null);
+  const [deleting, setDeleting] = React.useState(false);
 
   const loadOrders = React.useCallback(async () => {
     setLoading(true);
@@ -124,6 +125,7 @@ export default function AdminOrdersPage() {
   }
 
   async function deleteOrder(order: Order) {
+    setDeleting(true);
     try {
       const res = await fetch(`/api/admin/orders?id=${order.id}`, { method: "DELETE" });
       const data = await res.json();
@@ -136,6 +138,8 @@ export default function AdminOrdersPage() {
       }
     } catch {
       toast.error("Failed to delete order");
+    } finally {
+      setDeleting(false);
     }
   }
 
@@ -405,11 +409,21 @@ export default function AdminOrdersPage() {
               This action cannot be undone.
             </p>
             <DialogFooter>
-              <Button variant="outline" onClick={() => setDeleteConfirm(null)}>
+              <Button variant="outline" onClick={() => setDeleteConfirm(null)} disabled={deleting}>
                 Cancel
               </Button>
-              <Button variant="destructive" onClick={() => deleteOrder(deleteConfirm)}>
-                Delete Order
+              <Button variant="destructive" onClick={() => deleteOrder(deleteConfirm)} disabled={deleting}>
+                {deleting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Deleting...
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    Delete Order
+                  </>
+                )}
               </Button>
             </DialogFooter>
           </DialogContent>

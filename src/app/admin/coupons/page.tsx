@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Plus, Trash2, Tag, Loader2, X, Copy, Check } from "lucide-react";
+import { Plus, Trash2, Tag, Loader2, X, Copy, Check, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -13,6 +13,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
   DialogTrigger,
 } from "@/components/ui/dialog";
 
@@ -39,6 +40,8 @@ export default function AdminCouponsPage() {
   const [loading, setLoading] = React.useState(true);
   const [showCreate, setShowCreate] = React.useState(false);
   const [copiedCode, setCopiedCode] = React.useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = React.useState<Coupon | null>(null);
+  const [deleting, setDeleting] = React.useState(false);
 
   async function fetchCoupons() {
     setLoading(true);
@@ -77,18 +80,25 @@ export default function AdminCouponsPage() {
   }
 
   async function deleteCoupon(coupon: Coupon) {
-    if (!confirm(`Delete coupon "${coupon.code}"? This cannot be undone.`)) return;
-    const res = await fetch(`/api/admin/coupons/${coupon.id}`, { method: "DELETE" });
-    const data = await res.json();
-    if (data.success) {
-      if (data.deactivated) {
-        toast.success(data.message);
+    setDeleting(true);
+    try {
+      const res = await fetch(`/api/admin/coupons/${coupon.id}`, { method: "DELETE" });
+      const data = await res.json();
+      if (data.success) {
+        if (data.deactivated) {
+          toast.success(data.message);
+        } else {
+          toast.success("Coupon deleted");
+        }
+        setDeleteTarget(null);
+        fetchCoupons();
       } else {
-        toast.success("Coupon deleted");
+        toast.error(data.error || "Failed to delete coupon");
       }
-      fetchCoupons();
-    } else {
-      toast.error(data.error || "Failed to delete coupon");
+    } catch {
+      toast.error("Failed to delete coupon");
+    } finally {
+      setDeleting(false);
     }
   }
 
@@ -246,7 +256,7 @@ export default function AdminCouponsPage() {
                   variant="ghost"
                   size="sm"
                   className="text-muted-foreground hover:text-red-500"
-                  onClick={() => deleteCoupon(coupon)}
+                  onClick={() => setDeleteTarget(coupon)}
                 >
                   <Trash2 className="h-3 w-3" />
                 </Button>
@@ -265,6 +275,60 @@ export default function AdminCouponsPage() {
           fetchCoupons();
         }}
       />
+
+      {/* Delete confirmation */}
+      {deleteTarget && (
+        <Dialog open onOpenChange={() => setDeleteTarget(null)}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-red-500/10">
+                  <AlertCircle className="h-4 w-4 text-red-500" />
+                </div>
+                Delete Coupon?
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-3">
+              <div className="flex items-center gap-3 rounded-lg border border-border bg-muted/30 p-3">
+                <Tag className="h-5 w-5 text-accent" />
+                <div>
+                  <p className="font-mono text-sm font-bold">{deleteTarget.code}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {deleteTarget.type === "PERCENTAGE"
+                      ? `${deleteTarget.value}% off`
+                      : deleteTarget.type === "FIXED_AMOUNT"
+                      ? `${formatPrice(deleteTarget.value)} off`
+                      : "Free shipping"}
+                  </p>
+                </div>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                {deleteTarget.used_count > 0
+                  ? `This coupon has been used ${deleteTarget.used_count} time(s). It will be deactivated instead of being permanently removed, to preserve order history.`
+                  : "This coupon has not been used yet and will be permanently deleted. This action cannot be undone."}
+              </p>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setDeleteTarget(null)} disabled={deleting}>
+                Cancel
+              </Button>
+              <Button variant="destructive" onClick={() => deleteCoupon(deleteTarget)} disabled={deleting}>
+                {deleting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Deleting...
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    Delete Permanently
+                  </>
+                )}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 }

@@ -104,6 +104,7 @@ export default function AdminProductsPage() {
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
   const [saving, setSaving] = React.useState(false);
   const [deleteConfirm, setDeleteConfirm] = React.useState<Product | null>(null);
+  const [deleting, setDeleting] = React.useState(false);
 
   // Load products from API
   const loadProducts = React.useCallback(async () => {
@@ -216,6 +217,7 @@ export default function AdminProductsPage() {
   }
 
   async function handleDelete(product: Product) {
+    setDeleting(true);
     try {
       const res = await fetch(`/api/admin/products?id=${product.id}`, { method: "DELETE" });
       const data = await res.json();
@@ -225,11 +227,11 @@ export default function AdminProductsPage() {
         loadProducts();
       } else {
         toast.error(data.error || "Failed to delete product");
-        setDeleteConfirm(null);
       }
     } catch (e: any) {
       toast.error("Network error — failed to delete product");
-      setDeleteConfirm(null);
+    } finally {
+      setDeleting(false);
     }
   }
 
@@ -442,14 +444,25 @@ export default function AdminProductsPage() {
               </p>
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={() => setDeleteConfirm(null)}>
+              <Button variant="outline" onClick={() => setDeleteConfirm(null)} disabled={deleting}>
                 Cancel
               </Button>
               <Button
                 variant="destructive"
                 onClick={() => handleDelete(deleteConfirm)}
+                disabled={deleting}
               >
-                Delete Product
+                {deleting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Deleting...
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    Delete Product
+                  </>
+                )}
               </Button>
             </DialogFooter>
           </DialogContent>

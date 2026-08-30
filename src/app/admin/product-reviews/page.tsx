@@ -9,6 +9,7 @@ import {
   Loader2,
   MessageSquare,
   ChevronDown,
+  AlertCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -41,6 +42,7 @@ export default function AdminProductReviewsPage() {
   const [loading, setLoading] = React.useState(true);
   const [filter, setFilter] = React.useState("all");
   const [deleteTarget, setDeleteTarget] = React.useState<Review | null>(null);
+  const [deleting, setDeleting] = React.useState(false);
   const [expanded, setExpanded] = React.useState<string | null>(null);
 
   const fetchReviews = React.useCallback(async () => {
@@ -79,14 +81,21 @@ export default function AdminProductReviewsPage() {
 
   async function confirmDelete() {
     if (!deleteTarget) return;
-    const res = await fetch(`/api/admin/product-reviews/${deleteTarget.id}`, { method: "DELETE" });
-    const data = await res.json();
-    if (data.success) {
-      toast.success("Review deleted");
-      setDeleteTarget(null);
-      fetchReviews();
-    } else {
-      toast.error(data.error || "Failed");
+    setDeleting(true);
+    try {
+      const res = await fetch(`/api/admin/product-reviews/${deleteTarget.id}`, { method: "DELETE" });
+      const data = await res.json();
+      if (data.success) {
+        toast.success("Review deleted");
+        setDeleteTarget(null);
+        fetchReviews();
+      } else {
+        toast.error(data.error || "Failed");
+      }
+    } catch {
+      toast.error("Failed to delete review");
+    } finally {
+      setDeleting(false);
     }
   }
 
@@ -256,7 +265,12 @@ export default function AdminProductReviewsPage() {
         <Dialog open onOpenChange={() => setDeleteTarget(null)}>
           <DialogContent className="max-w-md">
             <DialogHeader>
-              <DialogTitle>Delete Review?</DialogTitle>
+              <DialogTitle className="flex items-center gap-2">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-red-500/10">
+                  <AlertCircle className="h-4 w-4 text-red-500" />
+                </div>
+                Delete Review?
+              </DialogTitle>
             </DialogHeader>
             <p className="text-sm text-muted-foreground">
               Review by <strong>{deleteTarget.reviewer_name}</strong>
@@ -264,10 +278,19 @@ export default function AdminProductReviewsPage() {
               <br />This action cannot be undone.
             </p>
             <DialogFooter>
-              <Button variant="outline" onClick={() => setDeleteTarget(null)}>Cancel</Button>
-              <Button variant="destructive" onClick={confirmDelete}>
-                <Trash2 className="mr-2 h-4 w-4" />
-                Delete
+              <Button variant="outline" onClick={() => setDeleteTarget(null)} disabled={deleting}>Cancel</Button>
+              <Button variant="destructive" onClick={confirmDelete} disabled={deleting}>
+                {deleting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Deleting...
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    Delete Permanently
+                  </>
+                )}
               </Button>
             </DialogFooter>
           </DialogContent>

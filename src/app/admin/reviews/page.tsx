@@ -12,6 +12,7 @@ import {
   Quote,
   ArrowUp,
   ArrowDown,
+  AlertCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -46,6 +47,8 @@ export default function AdminReviewsPage() {
   const [loading, setLoading] = React.useState(true);
   const [showEditor, setShowEditor] = React.useState(false);
   const [editingReview, setEditingReview] = React.useState<Review | null>(null);
+  const [deleteTarget, setDeleteTarget] = React.useState<Review | null>(null);
+  const [deleting, setDeleting] = React.useState(false);
 
   const fetchReviews = React.useCallback(async () => {
     setLoading(true);
@@ -103,15 +106,23 @@ export default function AdminReviewsPage() {
     fetchReviews();
   }
 
-  async function deleteReview(review: Review) {
-    if (!confirm(`Delete review from "${review.customer_name}"? This cannot be undone.`)) return;
-    const res = await fetch(`/api/admin/reviews/${review.id}`, { method: "DELETE" });
-    const data = await res.json();
-    if (data.success) {
-      toast.success("Review deleted");
-      fetchReviews();
-    } else {
-      toast.error(data.error || "Failed to delete");
+  async function confirmDelete() {
+    if (!deleteTarget) return;
+    setDeleting(true);
+    try {
+      const res = await fetch(`/api/admin/reviews/${deleteTarget.id}`, { method: "DELETE" });
+      const data = await res.json();
+      if (data.success) {
+        toast.success("Review deleted");
+        setDeleteTarget(null);
+        fetchReviews();
+      } else {
+        toast.error(data.error || "Failed to delete");
+      }
+    } catch {
+      toast.error("Failed to delete review");
+    } finally {
+      setDeleting(false);
     }
   }
 
@@ -267,7 +278,7 @@ export default function AdminReviewsPage() {
                     variant="ghost"
                     size="icon"
                     className="h-8 w-8 text-muted-foreground hover:text-red-500"
-                    onClick={() => deleteReview(review)}
+                    onClick={() => setDeleteTarget(review)}
                     title="Delete"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
@@ -289,6 +300,44 @@ export default function AdminReviewsPage() {
             fetchReviews();
           }}
         />
+      )}
+
+      {/* Delete confirmation */}
+      {deleteTarget && (
+        <Dialog open onOpenChange={() => setDeleteTarget(null)}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-red-500/10">
+                  <AlertCircle className="h-4 w-4 text-red-500" />
+                </div>
+                Delete Review?
+              </DialogTitle>
+            </DialogHeader>
+            <p className="text-sm text-muted-foreground">
+              Are you sure you want to delete the review from <strong>{deleteTarget.customer_name}</strong>?
+              <br />This action cannot be undone.
+            </p>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setDeleteTarget(null)} disabled={deleting}>
+                Cancel
+              </Button>
+              <Button variant="destructive" onClick={confirmDelete} disabled={deleting}>
+                {deleting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Deleting...
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    Delete Permanently
+                  </>
+                )}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       )}
     </div>
   );

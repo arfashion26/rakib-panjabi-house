@@ -36,6 +36,7 @@ export default function AdminCategoriesPage() {
   const [isOpen, setIsOpen] = React.useState(false);
   const [saving, setSaving] = React.useState(false);
   const [deleteConfirm, setDeleteConfirm] = React.useState<Category | null>(null);
+  const [deleting, setDeleting] = React.useState(false);
 
   const loadCategories = React.useCallback(async () => {
     setLoading(true);
@@ -116,6 +117,7 @@ export default function AdminCategoriesPage() {
   }
 
   async function handleDelete(category: Category) {
+    setDeleting(true);
     try {
       const res = await fetch(`/api/admin/categories?id=${category.id}`, {
         method: "DELETE",
@@ -130,6 +132,8 @@ export default function AdminCategoriesPage() {
       }
     } catch {
       toast.error("Failed to delete category");
+    } finally {
+      setDeleting(false);
     }
   }
 
@@ -334,9 +338,19 @@ export default function AdminCategoriesPage() {
               </p>
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={() => setDeleteConfirm(null)}>Cancel</Button>
-              <Button variant="destructive" onClick={() => handleDelete(deleteConfirm)}>
-                Delete Category
+              <Button variant="outline" onClick={() => setDeleteConfirm(null)} disabled={deleting}>Cancel</Button>
+              <Button variant="destructive" onClick={() => handleDelete(deleteConfirm)} disabled={deleting}>
+                {deleting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Deleting...
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    Delete Category
+                  </>
+                )}
               </Button>
             </DialogFooter>
           </DialogContent>

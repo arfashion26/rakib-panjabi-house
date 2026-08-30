@@ -1,0 +1,1080 @@
+     1→"use client";
+     2→
+     3→import * as React from "react";
+     4→import Link from "next/link";
+     5→import { Plus, Search, Edit, Trash2, Eye, Package, X, Loader2, AlertCircle, Upload } from "lucide-react";
+     6→import { Button } from "@/components/ui/button";
+     7→import { Input } from "@/components/ui/input";
+     8→import { Label } from "@/components/ui/label";
+     9→import { Textarea } from "@/components/ui/textarea";
+    10→import { Badge } from "@/components/ui/badge";
+    11→import { ImageUpload } from "@/components/admin/image-upload";
+    12→import {
+    13→  Select,
+    14→  SelectContent,
+    15→  SelectItem,
+    16→  SelectTrigger,
+    17→  SelectValue,
+    18→} from "@/components/ui/select";
+    19→import {
+    20→  Dialog,
+    21→  DialogContent,
+    22→  DialogHeader,
+    23→  DialogTitle,
+    24→  DialogFooter,
+    25→} from "@/components/ui/dialog";
+    26→import { Separator } from "@/components/ui/separator";
+    27→import { Switch } from "@/components/ui/switch";
+    28→import { formatPrice } from "@/lib/types";
+    29→import { toast } from "sonner";
+    30→
+    31→interface ProductSize {
+    32→  id?: string;
+    33→  size: string;
+    34→  stock: number;
+    35→  sort_order?: number;
+    36→}
+    37→
+    38→interface ProductColor {
+    39→  id?: string;
+    40→  name: string;
+    41→  hex_value: string;
+    42→  stock: number;
+    43→}
+    44→
+    45→interface Product {
+    46→  id: string;
+    47→  name: string;
+    48→  slug: string;
+    49→  sku: string;
+    50→  description: string;
+    51→  short_description?: string;
+    52→  fabric?: string;
+    53→  fit?: string;
+    54→  care?: string;
+    55→  origin?: string;
+    56→  price: number;
+    57→  discount_price?: number;
+    58→  status: string;
+    59→  is_featured: boolean;
+    60→  is_best_seller: boolean;
+    61→  is_new_arrival: boolean;
+    62→  is_flash_sale: boolean;
+    63→  category_id: string;
+    64→  // SEO fields
+    65→  meta_title?: string;
+    66→  meta_description?: string;
+    67→  search_keywords?: string;
+    68→  // Custom specifications (key-value pairs)
+    69→  specifications?: Array<{ key: string; value: string }>;
+    70→  sizes?: ProductSize[];
+    71→  colors?: ProductColor[];
+    72→  images?: { url: string; is_primary: boolean }[];
+    73→}
+    74→
+    75→interface Category {
+    76→  id: string;
+    77→  name: string;
+    78→  slug: string;
+    79→}
+    80→
+    81→const PRESET_COLORS = [
+    82→  { name: "Black", hex: "#1a1a1f" },
+    83→  { name: "White", hex: "#ffffff" },
+    84→  { name: "Navy", hex: "#1a237e" },
+    85→  { name: "Maroon", hex: "#800020" },
+    86→  { name: "Olive", hex: "#556b2f" },
+    87→  { name: "Brown", hex: "#8b6f47" },
+    88→  { name: "Sand", hex: "#d2b48c" },
+    89→  { name: "Grey", hex: "#8b8b8b" },
+    90→  { name: "Emerald", hex: "#0f5132" },
+    91→  { name: "Ivory", hex: "#f5f1e8" },
+    92→  { name: "Gold", hex: "#b8860b" },
+    93→  { name: "Indigo", hex: "#1a237e" },
+    94→];
+    95→
+    96→const PRESET_SIZES = ["XS", "S", "M", "L", "XL", "XXL", "3XL", "38", "40", "42", "44", "46", "30", "32", "34", "36", "38"];
+    97→
+    98→export default function AdminProductsPage() {
+    99→  const [products, setProducts] = React.useState<Product[]>([]);
+   100→  const [categories, setCategories] = React.useState<Category[]>([]);
+   101→  const [loading, setLoading] = React.useState(true);
+   102→  const [search, setSearch] = React.useState("");
+   103→  const [editingProduct, setEditingProduct] = React.useState<Product | null>(null);
+   104→  const [isDialogOpen, setIsDialogOpen] = React.useState(false);
+   105→  const [saving, setSaving] = React.useState(false);
+   106→  const [deleteConfirm, setDeleteConfirm] = React.useState<Product | null>(null);
+   107→
+   108→  // Load products from API
+   109→  const loadProducts = React.useCallback(async () => {
+   110→    setLoading(true);
+   111→    try {
+   112→      const res = await fetch("/api/admin/products");
+   113→      const data = await res.json();
+   114→      if (data.success) {
+   115→        setProducts(data.products);
+   116→      } else {
+   117→        // If DB not set up, use sample data
+   118→        setProducts([]);
+   119→      }
+   120→    } catch {
+   121→      setProducts([]);
+   122→    } finally {
+   123→      setLoading(false);
+   124→    }
+   125→  }, []);
+   126→
+   127→  // Load categories
+   128→  const loadCategories = React.useCallback(async () => {
+   129→    try {
+   130→      const res = await fetch("/api/admin/categories");
+   131→      const data = await res.json();
+   132→      if (data.success) {
+   133→        setCategories(data.categories);
+   134→      }
+   135→    } catch {
+   136→      // Categories not available
+   137→    }
+   138→  }, []);
+   139→
+   140→  React.useEffect(() => {
+   141→    loadProducts();
+   142→    loadCategories();
+   143→  }, [loadProducts, loadCategories]);
+   144→
+   145→  const filtered = products.filter((p) =>
+   146→    p.name.toLowerCase().includes(search.toLowerCase()) ||
+   147→    p.sku.toLowerCase().includes(search.toLowerCase())
+   148→  );
+   149→
+   150→  async function handleSave(product: Product) {
+   151→    setSaving(true);
+   152→    try {
+   153→      // If product has a real ID (not empty), it's an edit (PUT)
+   154→      // Otherwise it's a new product (POST)
+   155→      const isEditing = product.id && product.id.length > 0;
+   156→      const method = isEditing ? "PUT" : "POST";
+   157→      const url = isEditing
+   158→        ? `/api/admin/products?id=${product.id}`
+   159→        : "/api/admin/products";
+   160→
+   161→      const res = await fetch(url, {
+   162→        method,
+   163→        headers: { "Content-Type": "application/json" },
+   164→        body: JSON.stringify({
+   165→          ...product,
+   166→          brandId: null,
+   167→          categoryId: product.category_id,
+   168→          shortDescription: product.short_description,
+   169→          // Explicitly map discount_price (DB snake_case) → discountPrice (API camelCase)
+   170→          discountPrice: product.discount_price ?? null,
+   171→          costPrice: (product as any).cost_price ?? null,
+   172→          isFeatured: product.is_featured,
+   173→          isBestSeller: product.is_best_seller,
+   174→          isNewArrival: product.is_new_arrival,
+   175→          isFlashSale: product.is_flash_sale,
+   176→          // Convert images from { url, is_primary } to { url, isPrimary, altText }
+   177→          images: (product.images || []).map((img: any) => ({
+   178→            url: img.url,
+   179→            isPrimary: img.is_primary,
+   180→            altText: product.name,
+   181→          })),
+   182→          // Convert sizes/colors to the camelCase shape the API expects
+   183→          sizes: (product.sizes || []).map((s: any) => ({
+   184→            size: s.size,
+   185→            stock: s.stock,
+   186→            sortOrder: s.sort_order ?? 0,
+   187→          })),
+   188→          colors: (product.colors || []).map((c: any) => ({
+   189→            name: c.name,
+   190→            hexValue: c.hex_value,
+   191→            stock: c.stock,
+   192→          })),
+   193→          // SEO fields
+   194→          metaTitle: product.meta_title || null,
+   195→          metaDescription: product.meta_description || null,
+   196→          searchKeywords: product.search_keywords || null,
+   197→          // Custom specifications
+   198→          specifications: product.specifications || [],
+   199→        }),
+   200→      });
+   201→      const data = await res.json();
+   202→
+   203→      if (data.success) {
+   204→        toast.success(isEditing ? "Product updated" : "Product created");
+   205→        setIsDialogOpen(false);
+   206→        setEditingProduct(null);
+   207→        loadProducts();
+   208→      } else {
+   209→        toast.error(data.error || "Failed to save product");
+   210→      }
+   211→    } catch (e: any) {
+   212→      toast.error("Network error: " + (e?.message || "Failed to save product"));
+   213→    } finally {
+   214→      setSaving(false);
+   215→    }
+   216→  }
+   217→
+   218→  async function handleDelete(product: Product) {
+   219→    try {
+   220→      const res = await fetch(`/api/admin/products?id=${product.id}`, { method: "DELETE" });
+   221→      const data = await res.json();
+   222→      if (data.success) {
+   223→        toast.success("Product deleted successfully");
+   224→        setDeleteConfirm(null);
+   225→        loadProducts();
+   226→      } else {
+   227→        toast.error(data.error || "Failed to delete product");
+   228→        setDeleteConfirm(null);
+   229→      }
+   230→    } catch (e: any) {
+   231→      toast.error("Network error — failed to delete product");
+   232→      setDeleteConfirm(null);
+   233→    }
+   234→  }
+   235→
+   236→  function openNew() {
+   237→    setEditingProduct({
+   238→      id: "",
+   239→      name: "",
+   240→      slug: "",
+   241→      sku: "",
+   242→      description: "",
+   243→      price: 0,
+   244→      status: "ACTIVE",
+   245→      is_featured: false,
+   246→      is_best_seller: false,
+   247→      is_new_arrival: false,
+   248→      is_flash_sale: false,
+   249→      category_id: categories[0]?.id || "",
+   250→      meta_title: "",
+   251→      meta_description: "",
+   252→      search_keywords: "",
+   253→      specifications: [],
+   254→      sizes: [],
+   255→      colors: [],
+   256→      images: [],
+   257→    });
+   258→    setIsDialogOpen(true);
+   259→  }
+   260→
+   261→  function openEdit(product: Product) {
+   262→    setEditingProduct({ ...product });
+   263→    setIsDialogOpen(true);
+   264→  }
+   265→
+   266→  return (
+   267→    <div>
+   268→      <div className="mb-8 flex items-center justify-between">
+   269→        <div>
+   270→          <h1 className="font-serif text-2xl font-medium tracking-tight md:text-3xl">
+   271→            Products
+   272→          </h1>
+   273→          <p className="mt-2 text-sm text-muted-foreground">
+   274→            {products.length} products total · {products.filter(p => p.status === "ACTIVE").length} active
+   275→          </p>
+   276→        </div>
+   277→        <Button onClick={openNew}>
+   278→          <Plus className="mr-2 h-4 w-4" />
+   279→          Add Product
+   280→        </Button>
+   281→      </div>
+   282→
+   283→      {/* Search */}
+   284→      <div className="mb-6">
+   285→        <div className="relative max-w-md">
+   286→          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+   287→          <Input
+   288→            placeholder="Search products by name or SKU..."
+   289→            value={search}
+   290→            onChange={(e) => setSearch(e.target.value)}
+   291→            className="pl-10"
+   292→          />
+   293→        </div>
+   294→      </div>
+   295→
+   296→      {/* Products */}
+   297→      {loading ? (
+   298→        <div className="py-16 text-center">
+   299→          <Loader2 className="mx-auto mb-3 h-8 w-8 animate-spin text-muted-foreground" />
+   300→          <p className="text-sm text-muted-foreground">Loading products...</p>
+   301→        </div>
+   302→      ) : filtered.length === 0 ? (
+   303→        <div className="rounded-lg border border-dashed border-border p-12 text-center">
+   304→          <Package className="mx-auto mb-3 h-12 w-12 text-muted-foreground/40" />
+   305→          <p className="text-sm font-medium">
+   306→            {search ? "No products match your search" : "No products yet"}
+   307→          </p>
+   308→          <p className="mt-1 text-xs text-muted-foreground">
+   309→            {search ? "Try a different search term" : "Click 'Add Product' to create your first product"}
+   310→          </p>
+   311→          {!search && (
+   312→            <Button onClick={openNew} className="mt-4">
+   313→              <Plus className="mr-2 h-4 w-4" />
+   314→              Add Your First Product
+   315→            </Button>
+   316→          )}
+   317→        </div>
+   318→      ) : (
+   319→        <div className="overflow-hidden rounded-lg border border-border/60 bg-background">
+   320→          <div className="overflow-x-auto">
+   321→            <table className="w-full min-w-[700px]">
+   322→              <thead className="border-b border-border bg-muted/30">
+   323→                <tr>
+   324→                  <th className="p-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Product</th>
+   325→                  <th className="p-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">SKU</th>
+   326→                  <th className="p-3 text-right text-xs font-semibold uppercase tracking-wider text-muted-foreground">Price</th>
+   327→                  <th className="p-3 text-center text-xs font-semibold uppercase tracking-wider text-muted-foreground">Stock</th>
+   328→                  <th className="p-3 text-center text-xs font-semibold uppercase tracking-wider text-muted-foreground">Status</th>
+   329→                  <th className="p-3 text-right text-xs font-semibold uppercase tracking-wider text-muted-foreground">Actions</th>
+   330→                </tr>
+   331→              </thead>
+   332→              <tbody className="divide-y divide-border/40">
+   333→                {filtered.map((product) => {
+   334→                  const totalStock = (product.sizes || []).reduce((sum, s) => sum + s.stock, 0) +
+   335→                    (product.colors || []).reduce((sum, c) => sum + c.stock, 0);
+   336→                  return (
+   337→                    <tr key={product.id} className="hover:bg-muted/20">
+   338→                      <td className="p-3">
+   339→                        <div className="flex items-center gap-3">
+   340→                          <div className="h-10 w-10 shrink-0 rounded-md bg-muted" />
+   341→                          <div className="min-w-0">
+   342→                            <p className="line-clamp-1 text-sm font-medium">{product.name}</p>
+   343→                            <div className="mt-0.5 flex items-center gap-1">
+   344→                              {product.is_featured && <Badge variant="secondary" className="h-4 text-[10px]">Featured</Badge>}
+   345→                              {product.is_best_seller && <Badge variant="secondary" className="h-4 bg-accent/10 text-accent text-[10px]">Best</Badge>}
+   346→                              {product.is_new_arrival && <Badge variant="secondary" className="h-4 text-[10px]">New</Badge>}
+   347→                            </div>
+   348→                          </div>
+   349→                        </div>
+   350→                      </td>
+   351→                      <td className="p-3 text-sm text-muted-foreground">{product.sku}</td>
+   352→                      <td className="p-3 text-right text-sm font-medium">
+   353→                        {formatPrice(product.discount_price || product.price)}
+   354→                        {product.discount_price && (
+   355→                          <div className="text-xs text-muted-foreground line-through">
+   356→                            {formatPrice(product.price)}
+   357→                          </div>
+   358→                        )}
+   359→                      </td>
+   360→                      <td className="p-3 text-center text-sm">
+   361→                        {totalStock > 0 ? (
+   362→                          <span className={totalStock < 10 ? "text-orange-600 font-medium" : ""}>
+   363→                            {totalStock}
+   364→                          </span>
+   365→                        ) : (
+   366→                          <Badge variant="secondary" className="bg-red-100 text-red-700">Out</Badge>
+   367→                        )}
+   368→                      </td>
+   369→                      <td className="p-3 text-center">
+   370→                        <Badge variant="secondary" className={
+   371→                          product.status === "ACTIVE" ? "bg-green-100 text-green-700" :
+   372→                          product.status === "DRAFT" ? "bg-yellow-100 text-yellow-700" :
+   373→                          "bg-muted text-muted-foreground"
+   374→                        }>
+   375→                          {product.status}
+   376→                        </Badge>
+   377→                      </td>
+   378→                      <td className="p-3">
+   379→                        <div className="flex justify-end gap-1">
+   380→                          <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
+   381→                            <Link href={`/product/${product.slug}`} target="_blank">
+   382→                              <Eye className="h-4 w-4" />
+   383→                            </Link>
+   384→                          </Button>
+   385→                          <Button
+   386→                            variant="ghost"
+   387→                            size="icon"
+   388→                            className="h-8 w-8"
+   389→                            onClick={() => openEdit(product)}
+   390→                          >
+   391→                            <Edit className="h-4 w-4" />
+   392→                          </Button>
+   393→                          <Button
+   394→                            variant="ghost"
+   395→                            size="icon"
+   396→                            className="h-8 w-8 text-muted-foreground hover:text-red-500"
+   397→                            onClick={() => setDeleteConfirm(product)}
+   398→                          >
+   399→                            <Trash2 className="h-4 w-4" />
+   400→                          </Button>
+   401→                        </div>
+   402→                      </td>
+   403→                    </tr>
+   404→                  );
+   405→                })}
+   406→              </tbody>
+   407→            </table>
+   408→          </div>
+   409→        </div>
+   410→      )}
+   411→
+   412→      {/* Add/Edit Dialog */}
+   413→      {editingProduct && (
+   414→        <ProductFormDialog
+   415→          product={editingProduct}
+   416→          categories={categories}
+   417→          open={isDialogOpen}
+   418→          onOpenChange={setIsDialogOpen}
+   419→          onSave={handleSave}
+   420→          saving={saving}
+   421→          isEditing={!!editingProduct.id}
+   422→        />
+   423→      )}
+   424→
+   425→      {/* Delete Confirmation */}
+   426→      {deleteConfirm && (
+   427→        <Dialog open={!!deleteConfirm} onOpenChange={() => setDeleteConfirm(null)}>
+   428→          <DialogContent>
+   429→            <DialogHeader>
+   430→              <DialogTitle className="flex items-center gap-2">
+   431→                <AlertCircle className="h-5 w-5 text-red-500" />
+   432→                Delete Product?
+   433→              </DialogTitle>
+   434→            </DialogHeader>
+   435→            <div className="py-4">
+   436→              <p className="text-sm text-muted-foreground">
+   437→                Are you sure you want to delete <strong className="text-foreground">{deleteConfirm.name}</strong>?
+   438→              </p>
+   439→              <p className="mt-2 text-xs text-muted-foreground">
+   440→                This will permanently remove the product along with its sizes, colors, and images.
+   441→                This action cannot be undone.
+   442→              </p>
+   443→            </div>
+   444→            <DialogFooter>
+   445→              <Button variant="outline" onClick={() => setDeleteConfirm(null)}>
+   446→                Cancel
+   447→              </Button>
+   448→              <Button
+   449→                variant="destructive"
+   450→                onClick={() => handleDelete(deleteConfirm)}
+   451→              >
+   452→                Delete Product
+   453→              </Button>
+   454→            </DialogFooter>
+   455→          </DialogContent>
+   456→        </Dialog>
+   457→      )}
+   458→    </div>
+   459→  );
+   460→}
+   461→
+   462→/**
+   463→ * Product Form Dialog — full form with sizes, colors, stock management
+   464→ */
+   465→function ProductFormDialog({
+   466→  product,
+   467→  categories,
+   468→  open,
+   469→  onOpenChange,
+   470→  onSave,
+   471→  saving,
+   472→  isEditing,
+   473→}: {
+   474→  product: Product;
+   475→  categories: Category[];
+   476→  open: boolean;
+   477→  onOpenChange: (open: boolean) => void;
+   478→  onSave: (product: Product) => void;
+   479→  saving: boolean;
+   480→  isEditing: boolean;
+   481→}) {
+   482→  const [form, setForm] = React.useState<Product>(product);
+   483→
+   484→  React.useEffect(() => {
+   485→    setForm(product);
+   486→  }, [product]);
+   487→
+   488→  function update<K extends keyof Product>(key: K, value: Product[K]) {
+   489→    setForm((prev) => ({ ...prev, [key]: value }));
+   490→  }
+   491→
+   492→  // Size management
+   493→  function addSize(size: string) {
+   494→    if (!size) return;
+   495→    if (form.sizes?.some((s) => s.size === size)) {
+   496→      toast.error("Size already added");
+   497→      return;
+   498→    }
+   499→    update("sizes", [...(form.sizes || []), { size, stock: 0 }]);
+   500→  }
+   501→
+   502→  function updateSizeStock(idx: number, stock: number) {
+   503→    const sizes = [...(form.sizes || [])];
+   504→    sizes[idx] = { ...sizes[idx], stock };
+   505→    update("sizes", sizes);
+   506→  }
+   507→
+   508→  function removeSize(idx: number) {
+   509→    const sizes = (form.sizes || []).filter((_, i) => i !== idx);
+   510→    update("sizes", sizes);
+   511→  }
+   512→
+   513→  // Color management
+   514→  function addColor(name: string, hex: string) {
+   515→    if (!name || !hex) return;
+   516→    if (form.colors?.some((c) => c.name === name)) {
+   517→      toast.error("Color already added");
+   518→      return;
+   519→    }
+   520→    update("colors", [...(form.colors || []), { name, hex_value: hex, stock: 0 }]);
+   521→  }
+   522→
+   523→  function updateColorStock(idx: number, stock: number) {
+   524→    const colors = [...(form.colors || [])];
+   525→    colors[idx] = { ...colors[idx], stock };
+   526→    update("colors", colors);
+   527→  }
+   528→
+   529→  function removeColor(idx: number) {
+   530→    const colors = (form.colors || []).filter((_, i) => i !== idx);
+   531→    update("colors", colors);
+   532→  }
+   533→
+   534→  function handleSubmit(e: React.FormEvent) {
+   535→    e.preventDefault();
+   536→    onSave(form);
+   537→  }
+   538→
+   539→  return (
+   540→    <Dialog open={open} onOpenChange={onOpenChange}>
+   541→      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
+   542→        <DialogHeader>
+   543→          <DialogTitle>{isEditing ? "Edit Product" : "Add New Product"}</DialogTitle>
+   544→        </DialogHeader>
+   545→
+   546→        <form id="product-form" onSubmit={handleSubmit} className="space-y-4">
+   547→          {/* Basic Info */}
+   548→          <div className="space-y-3">
+   549→            <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+   550→              Basic Information
+   551→            </h3>
+   552→            <div className="space-y-2">
+   553→              <Label htmlFor="name">Product Name *</Label>
+   554→              <Input
+   555→                id="name"
+   556→                required
+   557→                value={form.name}
+   558→                onChange={(e) => update("name", e.target.value)}
+   559→              />
+   560→            </div>
+   561→            <div className="grid grid-cols-2 gap-3">
+   562→              <div className="space-y-2">
+   563→                <Label htmlFor="sku">SKU *</Label>
+   564→                <Input
+   565→                  id="sku"
+   566→                  required
+   567→                  value={form.sku}
+   568→                  onChange={(e) => update("sku", e.target.value)}
+   569→                />
+   570→              </div>
+   571→              <div className="space-y-2">
+   572→                <Label htmlFor="slug">Slug (URL)</Label>
+   573→                <Input
+   574→                  id="slug"
+   575→                  placeholder="auto-generated if empty"
+   576→                  value={form.slug}
+   577→                  onChange={(e) => update("slug", e.target.value)}
+   578→                />
+   579→              </div>
+   580→            </div>
+   581→            <div className="space-y-2">
+   582→              <Label htmlFor="description">Description *</Label>
+   583→              <Textarea
+   584→                id="description"
+   585→                required
+   586→                rows={4}
+   587→                value={form.description}
+   588→                onChange={(e) => update("description", e.target.value)}
+   589→              />
+   590→            </div>
+   591→          </div>
+   592→
+   593→          <Separator />
+   594→
+   595→          {/* Pricing & Category */}
+   596→          <div className="space-y-3">
+   597→            <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+   598→              Pricing & Category
+   599→            </h3>
+   600→            <div className="grid grid-cols-3 gap-3">
+   601→              <div className="space-y-2">
+   602→                <Label htmlFor="price">Price (৳) *</Label>
+   603→                <Input
+   604→                  id="price"
+   605→                  type="number"
+   606→                  required
+   607→                  value={form.price}
+   608→                  onChange={(e) => update("price", parseFloat(e.target.value) || 0)}
+   609→                />
+   610→              </div>
+   611→              <div className="space-y-2">
+   612→                <Label htmlFor="discount">Discount Price</Label>
+   613→                <Input
+   614→                  id="discount"
+   615→                  type="number"
+   616→                  value={form.discount_price || ""}
+   617→                  onChange={(e) => update("discount_price", e.target.value ? parseFloat(e.target.value) : undefined)}
+   618→                />
+   619→              </div>
+   620→              <div className="space-y-2">
+   621→                <Label htmlFor="category">Category *</Label>
+   622→                <Select
+   623→                  value={form.category_id}
+   624→                  onValueChange={(v) => update("category_id", v)}
+   625→                >
+   626→                  <SelectTrigger id="category">
+   627→                    <SelectValue placeholder="Select category" />
+   628→                  </SelectTrigger>
+   629→                  <SelectContent>
+   630→                    {categories.map((cat) => (
+   631→                      <SelectItem key={cat.id} value={cat.id}>
+   632→                        {cat.name}
+   633→                      </SelectItem>
+   634→                    ))}
+   635→                  </SelectContent>
+   636→                </Select>
+   637→              </div>
+   638→            </div>
+   639→          </div>
+   640→
+   641→          <Separator />
+   642→
+   643→          {/* SIZES with Stock */}
+   644→          <div className="space-y-3">
+   645→            <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+   646→              Sizes & Stock
+   647→            </h3>
+   648→            <p className="text-xs text-muted-foreground">
+   649→              Add available sizes for this product. Set stock for each size.
+   650→              If a size is out of stock, it will show as &quot;Out of Stock&quot; on the product page.
+   651→            </p>
+   652→
+   653→            {/* Existing sizes */}
+   654→            {form.sizes && form.sizes.length > 0 && (
+   655→              <div className="space-y-2">
+   656→                {form.sizes.map((size, idx) => (
+   657→                  <div key={idx} className="flex items-center gap-2">
+   658→                    <div className="flex h-9 w-12 items-center justify-center rounded-md border border-border bg-muted/50 text-sm font-medium">
+   659→                      {size.size}
+   660→                    </div>
+   661→                    <Input
+   662→                      type="number"
+   663→                      placeholder="Stock"
+   664→                      value={size.stock}
+   665→                      onChange={(e) => updateSizeStock(idx, parseInt(e.target.value) || 0)}
+   666→                      className="w-24"
+   667→                    />
+   668→                    <span className="text-xs text-muted-foreground">in stock</span>
+   669→                    <Button
+   670→                      type="button"
+   671→                      variant="ghost"
+   672→                      size="icon"
+   673→                      className="ml-auto h-8 w-8 text-muted-foreground hover:text-red-500"
+   674→                      onClick={() => removeSize(idx)}
+   675→                    >
+   676→                      <X className="h-4 w-4" />
+   677→                    </Button>
+   678→                  </div>
+   679→                ))}
+   680→              </div>
+   681→            )}
+   682→
+   683→            {/* Quick add sizes */}
+   684→            <div className="flex flex-wrap gap-1.5">
+   685→              {PRESET_SIZES.filter((s) => !form.sizes?.some((fs) => fs.size === s)).map((size) => (
+   686→                <Button
+   687→                  key={size}
+   688→                  type="button"
+   689→                  variant="outline"
+   690→                  size="sm"
+   691→                  className="h-8"
+   692→                  onClick={() => addSize(size)}
+   693→                >
+   694→                  <Plus className="mr-1 h-3 w-3" />
+   695→                  {size}
+   696→                </Button>
+   697→              ))}
+   698→            </div>
+   699→
+   700→            {/* Custom size input */}
+   701→            <div className="flex gap-2">
+   702→              <Input
+   703→                id="custom-size"
+   704→                placeholder="Custom size (e.g. 42)"
+   705→                onKeyDown={(e) => {
+   706→                  if (e.key === "Enter") {
+   707→                    e.preventDefault();
+   708→                    const input = e.target as HTMLInputElement;
+   709→                    addSize(input.value);
+   710→                    input.value = "";
+   711→                  }
+   712→                }}
+   713→              />
+   714→            </div>
+   715→          </div>
+   716→
+   717→          <Separator />
+   718→
+   719→          {/* COLORS with Stock */}
+   720→          <div className="space-y-3">
+   721→            <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+   722→              Colors & Stock
+   723→            </h3>
+   724→            <p className="text-xs text-muted-foreground">
+   725→              Add available colors. Set stock for each color. Customers will see
+   726→              only the colors that are in stock.
+   727→            </p>
+   728→
+   729→            {/* Existing colors */}
+   730→            {form.colors && form.colors.length > 0 && (
+   731→              <div className="space-y-2">
+   732→                {form.colors.map((color, idx) => (
+   733→                  <div key={idx} className="flex items-center gap-2">
+   734→                    <div
+   735→                      className="h-9 w-9 rounded-full border border-border"
+   736→                      style={{ backgroundColor: color.hex_value }}
+   737→                    />
+   738→                    <Input
+   739→                      value={color.name}
+   740→                      onChange={(e) => {
+   741→                        const colors = [...(form.colors || [])];
+   742→                        colors[idx] = { ...colors[idx], name: e.target.value };
+   743→                        update("colors", colors);
+   744→                      }}
+   745→                      className="w-32"
+   746→                    />
+   747→                    <Input
+   748→                      type="color"
+   749→                      value={color.hex_value}
+   750→                      onChange={(e) => {
+   751→                        const colors = [...(form.colors || [])];
+   752→                        colors[idx] = { ...colors[idx], hex_value: e.target.value };
+   753→                        update("colors", colors);
+   754→                      }}
+   755→                      className="h-9 w-12 cursor-pointer p-1"
+   756→                    />
+   757→                    <Input
+   758→                      type="number"
+   759→                      placeholder="Stock"
+   760→                      value={color.stock}
+   761→                      onChange={(e) => updateColorStock(idx, parseInt(e.target.value) || 0)}
+   762→                      className="w-24"
+   763→                    />
+   764→                    <Button
+   765→                      type="button"
+   766→                      variant="ghost"
+   767→                      size="icon"
+   768→                      className="ml-auto h-8 w-8 text-muted-foreground hover:text-red-500"
+   769→                      onClick={() => removeColor(idx)}
+   770→                    >
+   771→                      <X className="h-4 w-4" />
+   772→                    </Button>
+   773→                  </div>
+   774→                ))}
+   775→              </div>
+   776→            )}
+   777→
+   778→            {/* Quick add colors */}
+   779→            <div className="flex flex-wrap gap-1.5">
+   780→              {PRESET_COLORS.filter((c) => !form.colors?.some((fc) => fc.name === c.name)).map((color) => (
+   781→                <Button
+   782→                  key={color.name}
+   783→                  type="button"
+   784→                  variant="outline"
+   785→                  size="sm"
+   786→                  className="h-8 gap-1.5"
+   787→                  onClick={() => addColor(color.name, color.hex)}
+   788→                >
+   789→                  <span
+   790→                    className="h-3 w-3 rounded-full border border-border"
+   791→                    style={{ backgroundColor: color.hex }}
+   792→                  />
+   793→                  {color.name}
+   794→                </Button>
+   795→              ))}
+   796→            </div>
+   797→          </div>
+   798→
+   799→          <Separator />
+   800→
+   801→          {/* Product Images */}
+   802→          <div className="space-y-3">
+   803→            <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+   804→              Product Images
+   805→            </h3>
+   806→            <p className="text-xs text-muted-foreground">
+   807→              Upload a main product image and additional gallery images. The first image will be used as the main product image.
+   808→            </p>
+   809→
+   810→            {/* Image gallery management */}
+   811→            <div className="space-y-3">
+   812→              {/* Main/Featured image */}
+   813→              <ImageUpload
+   814→                label="Main Product Image"
+   815→                value={form.images?.[0]?.url || ""}
+   816→                onChange={(url) => {
+   817→                  const newImages = [...(form.images || [])];
+   818→                  if (url) {
+   819→                    if (newImages.length > 0) {
+   820→                      newImages[0] = { url, is_primary: true };
+   821→                    } else {
+   822→                      newImages.push({ url, is_primary: true });
+   823→                    }
+   824→                  } else {
+   825→                    newImages.shift();
+   826→                  }
+   827→                  setForm({ ...form, images: newImages });
+   828→                }}
+   829→                folder={`products/${form.sku || "general"}`}
+   830→                aspectRatio="aspect-[3/4]"
+   831→                hint="Recommended: 600×800px (portrait)"
+   832→              />
+   833→
+   834→              {/* Additional gallery images */}
+   835→              {[1, 2, 3].map((idx) => (
+   836→                <ImageUpload
+   837→                  key={idx}
+   838→                  label={`Gallery Image ${idx}`}
+   839→                  value={form.images?.[idx]?.url || ""}
+   840→                  onChange={(url) => {
+   841→                    const newImages = [...(form.images || [])];
+   842→                    if (url) {
+   843→                      newImages[idx] = { url, is_primary: false };
+   844→                    } else {
+   845→                      newImages.splice(idx, 1);
+   846→                    }
+   847→                    setForm({ ...form, images: newImages });
+   848→                  }}
+   849→                  folder={`products/${form.sku || "general"}`}
+   850→                  aspectRatio="aspect-[3/4]"
+   851→                />
+   852→              ))}
+   853→            </div>
+   854→          </div>
+   855→
+   856→          <Separator />
+   857→
+   858→          {/* Attributes */}
+   859→          <div className="space-y-3">
+   860→            <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+   861→              Attributes (Optional)
+   862→            </h3>
+   863→            <div className="grid grid-cols-2 gap-3">
+   864→              <div className="space-y-2">
+   865→                <Label htmlFor="fabric">Fabric</Label>
+   866→                <Input
+   867→                  id="fabric"
+   868→                  placeholder="e.g. 100% Cotton"
+   869→                  value={form.fabric || ""}
+   870→                  onChange={(e) => update("fabric", e.target.value)}
+   871→                />
+   872→              </div>
+   873→              <div className="space-y-2">
+   874→                <Label htmlFor="fit">Fit</Label>
+   875→                <Input
+   876→                  id="fit"
+   877→                  placeholder="e.g. Regular Fit"
+   878→                  value={form.fit || ""}
+   879→                  onChange={(e) => update("fit", e.target.value)}
+   880→                />
+   881→              </div>
+   882→            </div>
+   883→          </div>
+   884→
+   885→          <Separator />
+   886→
+   887→          {/* Custom Specifications */}
+   888→          <div className="space-y-3">
+   889→            <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+   890→              Custom Specifications
+   891→            </h3>
+   892→            <p className="text-xs text-muted-foreground">
+   893→              Add custom key-value specs (e.g. Weight: 500g, Material: 100% Cotton).
+   894→              These appear in the Specifications tab on the product page.
+   895→            </p>
+   896→            {(form.specifications || []).map((spec, idx) => (
+   897→              <div key={idx} className="flex items-center gap-2">
+   898→                <Input
+   899→                  placeholder="Spec name (e.g. Weight)"
+   900→                  value={spec.key}
+   901→                  onChange={(e) => {
+   902→                    const specs = [...(form.specifications || [])];
+   903→                    specs[idx] = { ...specs[idx], key: e.target.value };
+   904→                    update("specifications", specs);
+   905→                  }}
+   906→                  className="flex-1"
+   907→                />
+   908→                <Input
+   909→                  placeholder="Value (e.g. 500g)"
+   910→                  value={spec.value}
+   911→                  onChange={(e) => {
+   912→                    const specs = [...(form.specifications || [])];
+   913→                    specs[idx] = { ...specs[idx], value: e.target.value };
+   914→                    update("specifications", specs);
+   915→                  }}
+   916→                  className="flex-1"
+   917→                />
+   918→                <Button
+   919→                  type="button"
+   920→                  variant="ghost"
+   921→                  size="icon"
+   922→                  className="h-9 w-9 text-muted-foreground hover:text-red-500"
+   923→                  onClick={() => {
+   924→                    const specs = [...(form.specifications || [])];
+   925→                    specs.splice(idx, 1);
+   926→                    update("specifications", specs);
+   927→                  }}
+   928→                >
+   929→                  <Trash2 className="h-4 w-4" />
+   930→                </Button>
+   931→              </div>
+   932→            ))}
+   933→            <Button
+   934→              type="button"
+   935→              variant="outline"
+   936→              size="sm"
+   937→              onClick={() => {
+   938→                const specs = [...(form.specifications || [])];
+   939→                specs.push({ key: "", value: "" });
+   940→                update("specifications", specs);
+   941→              }}
+   942→            >
+   943→              <Plus className="mr-2 h-3 w-3" />
+   944→              Add Specification
+   945→            </Button>
+   946→          </div>
+   947→
+   948→          <Separator />
+   949→
+   950→          {/* Status & Flags */}
+   951→          <div className="space-y-3">
+   952→            <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+   953→              Status & Visibility
+   954→            </h3>
+   955→            <div className="space-y-2">
+   956→              <Label htmlFor="status">Product Status</Label>
+   957→              <Select
+   958→                value={form.status}
+   959→                onValueChange={(v) => update("status", v)}
+   960→              >
+   961→                <SelectTrigger id="status">
+   962→                  <SelectValue />
+   963→                </SelectTrigger>
+   964→                <SelectContent>
+   965→                  <SelectItem value="DRAFT">Draft (not visible)</SelectItem>
+   966→                  <SelectItem value="ACTIVE">Active (visible on site)</SelectItem>
+   967→                  <SelectItem value="ARCHIVED">Archived</SelectItem>
+   968→                  <SelectItem value="OUT_OF_STOCK">Out of Stock</SelectItem>
+   969→                  <SelectItem value="DISCONTINUED">Discontinued</SelectItem>
+   970→                </SelectContent>
+   971→              </Select>
+   972→            </div>
+   973→
+   974→            <div className="grid grid-cols-2 gap-3">
+   975→              <label className="flex items-center justify-between rounded-md border border-border p-3">
+   976→                <span className="text-sm">Featured</span>
+   977→                <Switch
+   978→                  checked={form.is_featured}
+   979→                  onCheckedChange={(v) => update("is_featured", v)}
+   980→                />
+   981→              </label>
+   982→              <label className="flex items-center justify-between rounded-md border border-border p-3">
+   983→                <span className="text-sm">Best Seller</span>
+   984→                <Switch
+   985→                  checked={form.is_best_seller}
+   986→                  onCheckedChange={(v) => update("is_best_seller", v)}
+   987→                />
+   988→              </label>
+   989→              <label className="flex items-center justify-between rounded-md border border-border p-3">
+   990→                <span className="text-sm">New Arrival</span>
+   991→                <Switch
+   992→                  checked={form.is_new_arrival}
+   993→                  onCheckedChange={(v) => update("is_new_arrival", v)}
+   994→                />
+   995→              </label>
+   996→              <label className="flex items-center justify-between rounded-md border border-border p-3">
+   997→                <span className="text-sm">Flash Sale</span>
+   998→                <Switch
+   999→                  checked={form.is_flash_sale}
+  1000→                  onCheckedChange={(v) => update("is_flash_sale", v)}
+  1001→                />
+  1002→              </label>
+  1003→            </div>
+  1004→          </div>
+  1005→
+  1006→          <Separator />
+  1007→
+  1008→          {/* SEO Settings */}
+  1009→          <div className="space-y-3">
+  1010→            <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+  1011→              SEO Settings (Optional)
+  1012→            </h3>
+  1013→            <p className="text-xs text-muted-foreground">
+  1014→              Custom meta title and description for search engines. Leave blank to
+  1015→              auto-generate from product name and description.
+  1016→            </p>
+  1017→            <div className="space-y-3">
+  1018→              <div className="space-y-2">
+  1019→                <Label htmlFor="meta_title">Meta Title</Label>
+  1020→                <Input
+  1021→                  id="meta_title"
+  1022→                  placeholder="Auto-generated from product name if empty"
+  1023→                  value={form.meta_title || ""}
+  1024→                  onChange={(e) => update("meta_title", e.target.value)}
+  1025→                  maxLength={70}
+  1026→                />
+  1027→                <p className="text-[10px] text-muted-foreground">
+  1028→                  {(form.meta_title || "").length}/70 characters — shown in search results
+  1029→                </p>
+  1030→              </div>
+  1031→              <div className="space-y-2">
+  1032→                <Label htmlFor="meta_description">Meta Description</Label>
+  1033→                <Textarea
+  1034→                  id="meta_description"
+  1035→                  placeholder="Auto-generated from product description if empty"
+  1036→                  value={form.meta_description || ""}
+  1037→                  onChange={(e) => update("meta_description", e.target.value)}
+  1038→                  rows={2}
+  1039→                  maxLength={160}
+  1040→                />
+  1041→                <p className="text-[10px] text-muted-foreground">
+  1042→                  {(form.meta_description || "").length}/160 characters — shown in search results
+  1043→                </p>
+  1044→              </div>
+  1045→              <div className="space-y-2">
+  1046→                <Label htmlFor="search_keywords">Search Keywords</Label>
+  1047→                <Input
+  1048→                  id="search_keywords"
+  1049→                  placeholder="panjabi, cotton, premium, men (comma-separated)"
+  1050→                  value={form.search_keywords || ""}
+  1051→                  onChange={(e) => update("search_keywords", e.target.value)}
+  1052→                />
+  1053→                <p className="text-[10px] text-muted-foreground">
+  1054→                  Comma-separated keywords for internal search
+  1055→                </p>
+  1056→              </div>
+  1057→            </div>
+  1058→          </div>
+  1059→        </form>
+  1060→
+  1061→        <DialogFooter>
+  1062→          <Button variant="outline" onClick={() => onOpenChange(false)}>
+  1063→            Cancel
+  1064→          </Button>
+  1065→          <Button onClick={() => { handleSubmit({ preventDefault: () => {} } as any); }} disabled={saving}>
+  1066→            {saving ? (
+  1067→              <>
+  1068→                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+  1069→                Saving...
+  1070→              </>
+  1071→            ) : (
+  1072→              isEditing ? "Save Changes" : "Create Product"
+  1073→            )}
+  1074→          </Button>
+  1075→        </DialogFooter>
+  1076→      </DialogContent>
+  1077→    </Dialog>
+  1078→  );
+  1079→}
+  1080→
