@@ -50,10 +50,10 @@ export async function GET() {
       return NextResponse.json({ success: false, error: error.message }, { status: 500 });
     }
 
-    // For each product, fetch its sizes and colors
+    // For each product, fetch its sizes, colors, images, and specifications
     const productsWithVariants = await Promise.all(
       (products || []).map(async (product) => {
-        const [sizesRes, colorsRes, imagesRes] = await Promise.all([
+        const [sizesRes, colorsRes, imagesRes, specsRes] = await Promise.all([
           admin
             .from("product_sizes")
             .select("*")
@@ -68,6 +68,10 @@ export async function GET() {
             .select("*")
             .eq("product_id", product.id)
             .order("position", { ascending: true }),
+          admin
+            .from("product_specifications")
+            .select("name, value")
+            .eq("product_id", product.id),
         ]);
 
         return {
@@ -75,6 +79,7 @@ export async function GET() {
           sizes: sizesRes.data || [],
           colors: colorsRes.data || [],
           images: imagesRes.data || [],
+          specifications: (specsRes.data || []).map((s: any) => ({ key: s.name, value: s.value })),
         };
       })
     );
@@ -138,6 +143,7 @@ export async function POST(request: NextRequest) {
       sizes, // Array of { size, stock, sortOrder }
       colors, // Array of { name, hexValue, stock }
       images, // Array of { url, altText, isPrimary }
+      specifications, // Array of { key, value }
     } = body;
 
     // Validate required fields
@@ -228,6 +234,20 @@ export async function POST(request: NextRequest) {
         position: idx,
       }));
       await admin.from("product_images").insert(imagesToInsert);
+    }
+
+    // Insert specifications (if provided)
+    if (specifications && specifications.length > 0) {
+      const specsToInsert = specifications
+        .filter((s: any) => s.key && s.value)
+        .map((s: any) => ({
+          product_id: product.id,
+          name: s.key,
+          value: s.value,
+        }));
+      if (specsToInsert.length > 0) {
+        await admin.from("product_specifications").insert(specsToInsert);
+      }
     }
 
     return NextResponse.json({
@@ -426,6 +446,23 @@ export async function PUT(request: NextRequest) {
           }));
         if (imagesToInsert.length > 0) {
           await admin.from("product_images").insert(imagesToInsert);
+        }
+      }
+    }
+
+    // Update specifications (replace all)
+    if (body.specifications !== undefined) {
+      await admin.from("product_specifications").delete().eq("product_id", productId);
+      if (body.specifications.length > 0) {
+        const specsToInsert = body.specifications
+          .filter((s: any) => s.key && s.value)
+          .map((s: any) => ({
+            product_id: productId,
+            name: s.key,
+            value: s.value,
+          }));
+        if (specsToInsert.length > 0) {
+          await admin.from("product_specifications").insert(specsToInsert);
         }
       }
     }

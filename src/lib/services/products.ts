@@ -176,12 +176,13 @@ export async function getProductBySlug(slug: string): Promise<{
   }
 
   const admin = createAdminClient();
-  const [sizesRes, colorsRes, imagesRes, reviewsRes, relatedRes] = await Promise.all([
+  const [sizesRes, colorsRes, imagesRes, reviewsRes, relatedRes, specsRes] = await Promise.all([
     admin.from("product_sizes").select("*").eq("product_id", product.id).order("sort_order", { ascending: true }),
     admin.from("product_colors").select("*").eq("product_id", product.id),
     admin.from("product_images").select("*").eq("product_id", product.id).order("position", { ascending: true }),
     admin.from("reviews").select(`*, user:profiles(name, image)`).eq("product_id", product.id).eq("status", "APPROVED").order("created_at", { ascending: false }).limit(20),
     admin.from("products").select("*").eq("category_id", product.category_id).eq("status", "ACTIVE").neq("id", product.id).limit(4),
+    admin.from("product_specifications").select("name, value").eq("product_id", product.id),
   ]);
 
   // Fetch specs for related products
@@ -208,6 +209,7 @@ export async function getProductBySlug(slug: string): Promise<{
       ...product,
       sizes: sizesRes.data || [],
       colors: colorsRes.data || [],
+      specifications: (specsRes.data || []).map((s: any) => ({ key: s.name, value: s.value })),
     },
     images: (imagesRes.data as ProductImage[]) || [],
     reviews: (reviewsRes.data as Review[]) || [],
