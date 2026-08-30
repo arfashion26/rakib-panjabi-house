@@ -33,6 +33,7 @@ interface HomepageContent {
   heroSlides?: Array<{
     id: string;
     image: string;
+    mobileImage: string;
     title: string;
     subtitle: string;
     link: string;
@@ -289,7 +290,7 @@ export default function AdminHomepagePage() {
                   </Button>
                 </div>
                 <ImageUpload
-                  label="Banner Image"
+                  label="Desktop Banner Image"
                   value={slide.image || ""}
                   onChange={(v) => {
                     const slides = [...(content.heroSlides || [])];
@@ -298,7 +299,19 @@ export default function AdminHomepagePage() {
                   }}
                   folder="hero"
                   aspectRatio="aspect-[16/9]"
-                  hint="Recommended: 1920×1080px (landscape)"
+                  hint="Desktop: 1920×1080px (landscape)"
+                />
+                <ImageUpload
+                  label="Mobile Banner Image (optional)"
+                  value={slide.mobileImage || ""}
+                  onChange={(v) => {
+                    const slides = [...(content.heroSlides || [])];
+                    slides[idx] = { ...slides[idx], mobileImage: v };
+                    setContent({ ...content, heroSlides: slides });
+                  }}
+                  folder="hero"
+                  aspectRatio="aspect-[9/16]"
+                  hint="Mobile: 1080×1920px (portrait). If empty, desktop image is used."
                 />
                 <div className="grid gap-3 sm:grid-cols-2">
                   <div className="space-y-2">
@@ -377,6 +390,7 @@ export default function AdminHomepagePage() {
                 slides.push({
                   id: `slide-${Date.now()}`,
                   image: "",
+                  mobileImage: "",
                   title: "",
                   subtitle: "",
                   link: "/shop",

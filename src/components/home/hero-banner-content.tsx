@@ -7,6 +7,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 export interface HeroSlide {
   id: string;
   image: string;
+  mobileImage: string;
   title: string;
   subtitle: string;
   link: string;
@@ -34,6 +35,7 @@ const DEFAULT_SLIDES: HeroSlide[] = [
   {
     id: "default-1",
     image: "",
+    mobileImage: "",
     title: "Premium Panjabi Collection",
     subtitle: "Timeless elegance for the modern gentleman",
     link: "/shop/panjabi-collection",
@@ -43,6 +45,7 @@ const DEFAULT_SLIDES: HeroSlide[] = [
   {
     id: "default-2",
     image: "",
+    mobileImage: "",
     title: "New Arrivals 2026",
     subtitle: "Fresh designs, premium fabrics",
     link: "/new-arrivals",
@@ -52,6 +55,7 @@ const DEFAULT_SLIDES: HeroSlide[] = [
   {
     id: "default-3",
     image: "",
+    mobileImage: "",
     title: "Royal Sherwani",
     subtitle: "For your special day",
     link: "/shop/sherwani",
@@ -114,13 +118,24 @@ export function HeroBannerContent({ content, announcement }: { content: HeroCont
             idx === current ? "opacity-100 z-10" : "opacity-0 z-0"
           }`}
         >
-          {/* Background image */}
-          {slide.image ? (
-            <img
-              src={slide.image}
-              alt={slide.title}
-              className="h-full w-full object-cover"
-            />
+          {/* Background image — desktop image + mobile image */}
+          {slide.image || slide.mobileImage ? (
+            <>
+              {/* Desktop image (hidden on mobile) */}
+              {slide.image && (
+                <img
+                  src={slide.image}
+                  alt={slide.title}
+                  className="hidden h-full w-full object-cover md:block"
+                />
+              )}
+              {/* Mobile image (hidden on desktop) — falls back to desktop image if not set */}
+              <img
+                src={slide.mobileImage || slide.image}
+                alt={slide.title}
+                className={`h-full w-full object-cover ${slide.image ? "md:hidden" : ""}`}
+              />
+            </>
           ) : (
             <div className="h-full w-full bg-gradient-to-br from-primary via-primary to-primary/80" />
           )}

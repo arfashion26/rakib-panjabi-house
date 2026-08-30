@@ -25,6 +25,7 @@ const DEFAULT_CONTENT = {
     {
       id: "slide-1",
       image: "",
+      mobileImage: "",
       title: "Premium Panjabi Collection",
       subtitle: "Timeless elegance for the modern gentleman",
       link: "/shop/panjabi-collection",
@@ -34,6 +35,7 @@ const DEFAULT_CONTENT = {
     {
       id: "slide-2",
       image: "",
+      mobileImage: "",
       title: "New Arrivals 2026",
       subtitle: "Fresh designs, premium fabrics",
       link: "/new-arrivals",
@@ -43,6 +45,7 @@ const DEFAULT_CONTENT = {
     {
       id: "slide-3",
       image: "",
+      mobileImage: "",
       title: "Royal Sherwani",
       subtitle: "For your special day",
       link: "/shop/sherwani",
