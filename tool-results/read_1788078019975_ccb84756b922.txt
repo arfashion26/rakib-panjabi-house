@@ -1,0 +1,742 @@
+     1→     1→"use client";
+     2→     2→
+     3→     3→import * as React from "react";
+     4→     4→import Link from "next/link";
+     5→     5→import { useRouter } from "next/navigation";
+     6→     6→import {
+     7→     7→  Truck,
+     8→     8→  CreditCard,
+     9→     9→  Lock,
+    10→    10→  Loader2,
+    11→    11→  ShoppingBag,
+    12→    12→  ArrowRight,
+    13→    13→  MapPin,
+    14→    14→  User,
+    15→    15→  Phone,
+    16→    16→  CheckCircle2,
+    17→    17→  Tag,
+    18→    18→  X,
+    19→    19→  Gift,
+    20→    20→} from "lucide-react";
+    21→    21→import { useCart } from "@/lib/store";
+    22→    22→import { placeOrder } from "@/lib/services/orders";
+    23→    23→import { Button } from "@/components/ui/button";
+    24→    24→import { Input } from "@/components/ui/input";
+    25→    25→import { Label } from "@/components/ui/label";
+    26→    26→import { Separator } from "@/components/ui/separator";
+    27→    27→import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+    28→    28→import { Container } from "@/components/layout/container";
+    29→    29→import { formatPrice } from "@/lib/types";
+    30→    30→import { cn } from "@/lib/utils";
+    31→    31→import { useLanguage } from "@/i18n/language-context";
+    32→    32→import { toast } from "sonner";
+    33→    33→
+    34→    34→// COD charge based on delivery area
+    35→    35→const COD_CHARGES = {
+    36→    36→  inside_dhaka: 70,
+    37→    37→  outside_dhaka: 120,
+    38→    38→};
+    39→    39→
+    40→    40→interface PaymentMethod {
+    41→    41→  id: string;
+    42→    42→  name: string;
+    43→    43→  nameBn: string;
+    44→    44→  desc: string;
+    45→    45→  descBn: string;
+    46→    46→  icon: string;
+    47→    47→  recommended?: boolean;
+    48→    48→  alwaysShow?: boolean;
+    49→    49→  enabled: boolean;
+    50→    50→}
+    51→    51→
+    52→    52→interface CouponData {
+    53→    53→  id: string;
+    54→    54→  code: string;
+    55→    55→  type: string;
+    56→    56→  value: number;
+    57→    57→  description: string | null;
+    58→    58→  discount: number;
+    59→    59→  freeShipping: boolean;
+    60→    60→}
+    61→    61→
+    62→    62→interface GiftCardOrder {
+    63→    63→  type: "gift_card";
+    64→    64→  amount: number;
+    65→    65→  recipientName: string;
+    66→    66→  recipientEmail: string;
+    67→    67→  senderName: string;
+    68→    68→  message: string;
+    69→    69→}
+    70→    70→
+    71→    71→export default function CheckoutPage() {
+    72→    72→  const router = useRouter();
+    73→    73→  const { items, getSubtotal, clearCart } = useCart();
+    74→    74→  const { t, locale } = useLanguage();
+    75→    75→  const [processing, setProcessing] = React.useState(false);
+    76→    76→  const [orderPlaced, setOrderPlaced] = React.useState(false);
+    77→    77→
+    78→    78→  // Payment methods from API
+    79→    79→  const [paymentMethods, setPaymentMethods] = React.useState<PaymentMethod[]>([
+    80→    80→    {
+    81→    81→      id: "cod",
+    82→    82→      name: "Cash on Delivery",
+    83→    83→      nameBn: "ক্যাশ অন ডেলিভারি",
+    84→    84→      desc: "Pay with cash when you receive your order",
+    85→    85→      descBn: "অর্ডার পেয়ে টাকা দিন",
+    86→    86→      icon: "💵",
+    87→    87→      recommended: true,
+    88→    88→      alwaysShow: true,
+    89→    89→      enabled: true,
+    90→    90→    },
+    91→    91→  ]);
+    92→    92→
+    93→    93→  // Gift card order (if redirected from /gift-cards)
+    94→    94→  const [giftCardOrder, setGiftCardOrder] = React.useState<GiftCardOrder | null>(null);
+    95→    95→
+    96→    96→  // Coupon state
+    97→    97→  const [couponCode, setCouponCode] = React.useState("");
+    98→    98→  const [couponData, setCouponData] = React.useState<CouponData | null>(null);
+    99→    99→  const [couponLoading, setCouponLoading] = React.useState(false);
+   100→   100→
+   101→   101→  // Form state
+   102→   102→  const [form, setForm] = React.useState({
+   103→   103→    name: "",
+   104→   104→    phone: "",
+   105→   105→    address: "",
+   106→   106→    area: "inside_dhaka" as "inside_dhaka" | "outside_dhaka",
+   107→   107→    payment: "cod",
+   108→   108→    note: "",
+   109→   109→  });
+   110→   110→
+   111→   111→  // Load payment methods + gift card order on mount
+   112→   112→  React.useEffect(() => {
+   113→   113→    // Load gift card order from sessionStorage
+   114→   114→    const gc = sessionStorage.getItem("giftCardOrder");
+   115→   115→    if (gc) {
+   116→   116→      try {
+   117→   117→        const parsed = JSON.parse(gc) as GiftCardOrder;
+   118→   118→        setGiftCardOrder(parsed);
+   119→   119→        // Pre-fill sender name if available
+   120→   120→        if (parsed.senderName && parsed.senderName !== "Anonymous") {
+   121→   121→          setForm((f) => ({ ...f, name: parsed.senderName }));
+   122→   122→        }
+   123→   123→      } catch {}
+   124→   124→    }
+   125→   125→
+   126→   126→    // Load payment methods from API
+   127→   127→    fetch("/api/payment-methods")
+   128→   128→      .then((r) => r.json())
+   129→   129→      .then((data) => {
+   130→   130→        if (data.success && data.methods?.length > 0) {
+   131→   131→          setPaymentMethods(data.methods);
+   132→   132→          // If the default payment is not enabled, switch to first enabled
+   133→   133→          const enabled = data.methods.filter((m: PaymentMethod) => m.enabled);
+   134→   134→          if (enabled.length > 0 && !enabled.find((m: PaymentMethod) => m.id === form.payment)) {
+   135→   135→            setForm((f) => ({ ...f, payment: enabled[0].id }));
+   136→   136→          }
+   137→   137→        }
+   138→   138→      })
+   139→   139→      .catch(() => {
+   140→   140→        // Keep default (COD only)
+   141→   141→      });
+   142→   142→  }, []);
+   143→   143→
+   144→   144→  const subtotal = giftCardOrder ? giftCardOrder.amount : getSubtotal();
+   145→   145→  const couponDiscount = couponData?.discount || 0;
+   146→   146→  const codCharge = form.payment === "cod" && !giftCardOrder ? COD_CHARGES[form.area] : 0;
+   147→   147→  const total = Math.max(0, subtotal - couponDiscount) + codCharge;
+   148→   148→
+   149→   149→  // Redirect to cart if empty AND no gift card order AND no order was placed
+   150→   150→  React.useEffect(() => {
+   151→   151→    if (items.length === 0 && !orderPlaced && !giftCardOrder) {
+   152→   152→      router.push("/cart");
+   153→   153→    }
+   154→   154→  }, [items.length, orderPlaced, giftCardOrder, router]);
+   155→   155→
+   156→   156→  function updateField<K extends keyof typeof form>(key: K, value: (typeof form)[K]) {
+   157→   157→    setForm((prev) => ({ ...prev, [key]: value }));
+   158→   158→  }
+   159→   159→
+   160→   160→  async function applyCoupon() {
+   161→   161→    if (!couponCode.trim()) {
+   162→   162→      toast.error(locale === "bn" ? "কুপন কোড লিখুন" : "Please enter a coupon code");
+   163→   163→      return;
+   164→   164→    }
+   165→   165→    setCouponLoading(true);
+   166→   166→    setCouponData(null);
+   167→   167→    try {
+   168→   168→      const res = await fetch("/api/coupons/validate", {
+   169→   169→        method: "POST",
+   170→   170→        headers: { "Content-Type": "application/json" },
+   171→   171→        body: JSON.stringify({ code: couponCode.trim(), subtotal }),
+   172→   172→      });
+   173→   173→      const data = await res.json();
+   174→   174→      if (data.success) {
+   175→   175→        // Merge coupon object + discount + freeShipping into one state object
+   176→   176→        setCouponData({
+   177→   177→          ...data.coupon,
+   178→   178→          discount: data.discount,
+   179→   179→          freeShipping: data.freeShipping,
+   180→   180→        });
+   181→   181→        toast.success(
+   182→   182→          locale === "bn"
+   183→   183→            ? `কুপন প্রয়োগ হয়েছে! আপনি ${formatPrice(data.discount)} সাশ্রয় করেছেন`
+   184→   184→            : `Coupon applied! You saved ${formatPrice(data.discount)}`
+   185→   185→        );
+   186→   186→      } else {
+   187→   187→        toast.error(data.error || "Invalid coupon code");
+   188→   188→      }
+   189→   189→    } catch {
+   190→   190→      toast.error("Failed to validate coupon");
+   191→   191→    } finally {
+   192→   192→      setCouponLoading(false);
+   193→   193→    }
+   194→   194→  }
+   195→   195→
+   196→   196→  function removeCoupon() {
+   197→   197→    setCouponData(null);
+   198→   198→    setCouponCode("");
+   199→   199→    toast.success(locale === "bn" ? "কুপন সরানো হয়েছে" : "Coupon removed");
+   200→   200→  }
+   201→   201→
+   202→   202→  function validate() {
+   203→   203→    if (!form.name.trim()) {
+   204→   204→      toast.error(locale === "bn" ? "আপনার নাম লিখুন" : "Please enter your name");
+   205→   205→      return false;
+   206→   206→    }
+   207→   207→    if (!form.phone.trim()) {
+   208→   208→      toast.error(locale === "bn" ? "ফোন নাম্বার লিখুন" : "Please enter your phone number");
+   209→   209→      return false;
+   210→   210→    }
+   211→   211→    if (!giftCardOrder && !form.address.trim()) {
+   212→   212→      toast.error(locale === "bn" ? "ডেলিভারি ঠিকানা লিখুন" : "Please enter your delivery address");
+   213→   213→      return false;
+   214→   214→    }
+   215→   215→    return true;
+   216→   216→  }
+   217→   217→
+   218→   218→  async function placeOrderHandler() {
+   219→   219→    if (!validate()) return;
+   220→   220→
+   221→   221→    setProcessing(true);
+   222→   222→    try {
+   223→   223→      // For gift card orders, items is empty — the order represents the gift card purchase
+   224→   224→      const orderItems = giftCardOrder
+   225→   225→        ? [
+   226→   226→            {
+   227→   227→              productId: "gift-card",
+   228→   228→              name: `Gift Card (৳${giftCardOrder.amount}) — ${giftCardOrder.recipientName}`,
+   229→   229→              slug: "gift-card",
+   230→   230→              sku: `GIFT-${giftCardOrder.amount}`,
+   231→   231→              price: giftCardOrder.amount,
+   232→   232→              discountPrice: null,
+   233→   233→              quantity: 1,
+   234→   234→              selectedSize: null,
+   235→   235→              selectedColor: null,
+   236→   236→            },
+   237→   237→          ]
+   238→   238→        : items.map((item) => ({
+   239→   239→            productId: item.productId,
+   240→   240→            name: item.name,
+   241→   241→            slug: item.slug,
+   242→   242→            sku: item.sku,
+   243→   243→            price: item.price,
+   244→   244→            discountPrice: item.discountPrice,
+   245→   245→            quantity: item.quantity,
+   246→   246→            selectedSize: item.selectedSize,
+   247→   247→            selectedColor: item.selectedColor,
+   248→   248→          }));
+   249→   249→
+   250→   250→      const result = await placeOrder({
+   251→   251→        name: form.name,
+   252→   252→        phone: form.phone,
+   253→   253→        address: giftCardOrder ? `Digital delivery to ${giftCardOrder.recipientEmail}` : form.address,
+   254→   254→        area: form.area,
+   255→   255→        payment: form.payment,
+   256→   256→        note: form.note,
+   257→   257→        items: orderItems,
+   258→   258→        subtotal,
+   259→   259→        shippingCost: 0,
+   260→   260→        codCharge,
+   261→   261→        total,
+   262→   262→        coupon: couponData
+   263→   263→          ? {
+   264→   264→              id: couponData.id,
+   265→   265→              code: couponData.code,
+   266→   266→              discount: couponData.discount,
+   267→   267→            }
+   268→   268→          : null,
+   269→   269→        giftCard: giftCardOrder,
+   270→   270→      });
+   271→   271→
+   272→   272→      if (result.success) {
+   273→   273→        setOrderPlaced(true);
+   274→   274→        clearCart();
+   275→   275→        // Clear gift card order from sessionStorage
+   276→   276→        if (giftCardOrder) {
+   277→   277→          sessionStorage.removeItem("giftCardOrder");
+   278→   278→        }
+   279→   279→        sessionStorage.setItem("lastOrderNumber", result.orderNumber || "");
+   280→   280→        sessionStorage.setItem("lastOrderPhone", form.phone);
+   281→   281→        sessionStorage.setItem("lastOrderNewUser", String(result.isNewUser || false));
+   282→   282→        router.replace("/thank-you");
+   283→   283→        return;
+   284→   284→      } else {
+   285→   285→        setProcessing(false);
+   286→   286→        toast.error(result.error || "Failed to place order. Please try again.");
+   287→   287→      }
+   288→   288→    } catch (error: any) {
+   289→   289→      setProcessing(false);
+   290→   290→      toast.error("An unexpected error occurred. Please try again.");
+   291→   291→    }
+   292→   292→  }
+   293→   293→
+   294→   294→  // Hide page if cart empty AND no gift card AND no order placed
+   295→   295→  if (items.length === 0 && !orderPlaced && !giftCardOrder) {
+   296→   296→    return null;
+   297→   297→  }
+   298→   298→
+   299→   299→  const isGiftCard = !!giftCardOrder;
+   300→   300→
+   301→   301→  return (
+   302→   302→    <Container className="py-8">
+   303→   303→      {/* Breadcrumb */}
+   304→   304→      <nav className="mb-6 text-xs text-muted-foreground">
+   305→   305→        <Link href="/" className="hover:text-accent">
+   306→   306→          {t("common.home")}
+   307→   307→        </Link>
+   308→   308→        <span className="mx-1">/</span>
+   309→   309→        {isGiftCard ? (
+   310→   310→          <Link href="/gift-cards" className="hover:text-accent">
+   311→   311→            {t("giftCards.title")}
+   312→   312→          </Link>
+   313→   313→        ) : (
+   314→   314→          <Link href="/cart" className="hover:text-accent">
+   315→   315→            {t("common.cart")}
+   316→   316→          </Link>
+   317→   317→        )}
+   318→   318→        <span className="mx-1">/</span>
+   319→   319→        <span className="text-foreground">{t("checkout.title")}</span>
+   320→   320→      </nav>
+   321→   321→
+   322→   322→      {/* Gift card banner */}
+   323→   323→      {isGiftCard && (
+   324→   324→        <div className="mb-6 rounded-lg border border-accent/30 bg-accent/5 p-4">
+   325→   325→          <div className="flex items-start gap-3">
+   326→   326→            <Gift className="h-5 w-5 shrink-0 text-accent" />
+   327→   327→            <div className="flex-1">
+   328→   328→              <p className="text-sm font-medium text-accent">
+   329→   329→                {locale === "bn" ? "গিফট কার্ড অর্ডার" : "Gift Card Order"}
+   330→   330→              </p>
+   331→   331→              <p className="mt-1 text-xs text-muted-foreground">
+   332→   332→                {locale === "bn"
+   333→   333→                  ? `প্রাপক: ${giftCardOrder!.recipientName} (${giftCardOrder!.recipientEmail}) · পরিমাণ: ৳${giftCardOrder!.amount}`
+   334→   334→                  : `Recipient: ${giftCardOrder!.recipientName} (${giftCardOrder!.recipientEmail}) · Amount: ৳${giftCardOrder!.amount}`}
+   335→   335→              </p>
+   336→   336→            </div>
+   337→   337→            <button
+   338→   338→              onClick={() => {
+   339→   339→                if (confirm(locale === "bn" ? "গিফট কার্ড অর্ডার বাতিল করবেন?" : "Cancel gift card order?")) {
+   340→   340→                  sessionStorage.removeItem("giftCardOrder");
+   341→   341→                  setGiftCardOrder(null);
+   342→   342→                  router.push("/gift-cards");
+   343→   343→                }
+   344→   344→              }}
+   345→   345→              className="text-xs text-muted-foreground hover:text-red-500"
+   346→   346→            >
+   347→   347→              {locale === "bn" ? "বাতিল" : "Cancel"}
+   348→   348→            </button>
+   349→   349→          </div>
+   350→   350→        </div>
+   351→   351→      )}
+   352→   352→
+   353→   353→      <h1 className="mb-8 font-serif text-3xl font-medium tracking-tight md:text-4xl">
+   354→   354→        {t("checkout.title")}
+   355→   355→      </h1>
+   356→   356→
+   357→   357→      <div className="grid gap-8 lg:grid-cols-[1fr_400px]">
+   358→   358→        {/* Form */}
+   359→   359→        <div className="space-y-6">
+   360→   360→          {/* Delivery Information */}
+   361→   361→          <div className="rounded-lg border border-border/60 bg-card p-6">
+   362→   362→            <h2 className="mb-4 flex items-center gap-2 font-serif text-xl font-medium">
+   363→   363→              <MapPin className="h-5 w-5" />
+   364→   364→              {t("checkout.deliveryInfo")}
+   365→   365→            </h2>
+   366→   366→            <div className="space-y-4">
+   367→   367→              <div className="space-y-2">
+   368→   368→                <Label htmlFor="name">{t("checkout.fullName")} *</Label>
+   369→   369→                <div className="relative">
+   370→   370→                  <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+   371→   371→                  <Input
+   372→   372→                    id="name"
+   373→   373→                    placeholder={locale === "bn" ? "আপনার পুরো নাম" : "Your full name"}
+   374→   374→                    value={form.name}
+   375→   375→                    onChange={(e) => updateField("name", e.target.value)}
+   376→   376→                    className="pl-10"
+   377→   377→                    required
+   378→   378→                  />
+   379→   379→                </div>
+   380→   380→              </div>
+   381→   381→
+   382→   382→              <div className="space-y-2">
+   383→   383→                <Label htmlFor="phone">{t("checkout.phoneNumber")} *</Label>
+   384→   384→                <div className="relative">
+   385→   385→                  <Phone className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+   386→   386→                  <Input
+   387→   387→                    id="phone"
+   388→   388→                    type="tel"
+   389→   389→                    placeholder="+880 1716-243949"
+   390→   390→                    value={form.phone}
+   391→   391→                    onChange={(e) => updateField("phone", e.target.value)}
+   392→   392→                    className="pl-10"
+   393→   393→                    required
+   394→   394→                  />
+   395→   395→                </div>
+   396→   396→              </div>
+   397→   397→
+   398→   398→              {/* Hide address for gift card orders (digital delivery) */}
+   399→   399→              {!isGiftCard && (
+   400→   400→                <>
+   401→   401→                  <div className="space-y-2">
+   402→   402→                    <Label htmlFor="address">{t("checkout.deliveryAddress")} *</Label>
+   403→   403→                    <textarea
+   404→   404→                      id="address"
+   405→   405→                      placeholder={
+   406→   406→                        locale === "bn"
+   407→   407→                          ? "বাড়ি #, রোড #, ব্লক, এরিয়া, থানা"
+   408→   408→                          : "House #, Road #, Block, Area, Thana"
+   409→   409→                      }
+   410→   410→                      value={form.address}
+   411→   411→                      onChange={(e) => updateField("address", e.target.value)}
+   412→   412→                      rows={3}
+   413→   413→                      required
+   414→   414→                      className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/30"
+   415→   415→                    />
+   416→   416→                  </div>
+   417→   417→
+   418→   418→                  <div className="space-y-2">
+   419→   419→                    <Label>{t("checkout.deliveryArea")} *</Label>
+   420→   420→                    <RadioGroup
+   421→   421→                      value={form.area}
+   422→   422→                      onValueChange={(v) => updateField("area", v as "inside_dhaka" | "outside_dhaka")}
+   423→   423→                      className="grid grid-cols-2 gap-3"
+   424→   424→                    >
+   425→   425→                      <label
+   426→   426→                        className={cn(
+   427→   427→                          "flex cursor-pointer items-center gap-3 rounded-lg border p-3 transition-colors",
+   428→   428→                          form.area === "inside_dhaka"
+   429→   429→                            ? "border-accent bg-accent/5"
+   430→   430→                            : "border-border hover:border-accent/50"
+   431→   431→                        )}
+   432→   432→                      >
+   433→   433→                        <RadioGroupItem value="inside_dhaka" id="inside_dhaka" />
+   434→   434→                        <div>
+   435→   435→                          <div className="text-sm font-medium">{t("checkout.insideDhaka")}</div>
+   436→   436→                          <div className="text-xs text-muted-foreground">
+   437→   437→                            COD: ৳{COD_CHARGES.inside_dhaka} · {t("checkout.deliveryInsideDhaka")}
+   438→   438→                          </div>
+   439→   439→                        </div>
+   440→   440→                      </label>
+   441→   441→                      <label
+   442→   442→                        className={cn(
+   443→   443→                          "flex cursor-pointer items-center gap-3 rounded-lg border p-3 transition-colors",
+   444→   444→                          form.area === "outside_dhaka"
+   445→   445→                            ? "border-accent bg-accent/5"
+   446→   446→                            : "border-border hover:border-accent/50"
+   447→   447→                        )}
+   448→   448→                      >
+   449→   449→                        <RadioGroupItem value="outside_dhaka" id="outside_dhaka" />
+   450→   450→                        <div>
+   451→   451→                          <div className="text-sm font-medium">{t("checkout.outsideDhaka")}</div>
+   452→   452→                          <div className="text-xs text-muted-foreground">
+   453→   453→                            COD: ৳{COD_CHARGES.outside_dhaka} · {t("checkout.deliveryOutsideDhaka")}
+   454→   454→                          </div>
+   455→   455→                        </div>
+   456→   456→                      </label>
+   457→   457→                    </RadioGroup>
+   458→   458→                  </div>
+   459→   459→                </>
+   460→   460→              )}
+   461→   461→
+   462→   462→              <div className="space-y-2">
+   463→   463→                <Label htmlFor="note">{t("checkout.orderNote")}</Label>
+   464→   464→                <textarea
+   465→   465→                  id="note"
+   466→   466→                  placeholder={t("checkout.orderNotePlaceholder")}
+   467→   467→                  value={form.note}
+   468→   468→                  onChange={(e) => updateField("note", e.target.value)}
+   469→   469→                  rows={2}
+   470→   470→                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/30"
+   471→   471→                />
+   472→   472→              </div>
+   473→   473→            </div>
+   474→   474→          </div>
+   475→   475→
+   476→   476→          {/* Payment Method */}
+   477→   477→          <div className="rounded-lg border border-border/60 bg-card p-6">
+   478→   478→            <h2 className="mb-4 flex items-center gap-2 font-serif text-xl font-medium">
+   479→   479→              <CreditCard className="h-5 w-5" />
+   480→   480→              {t("checkout.paymentMethod")}
+   481→   481→            </h2>
+   482→   482→            <RadioGroup
+   483→   483→              value={form.payment}
+   484→   484→              onValueChange={(v) => updateField("payment", v)}
+   485→   485→              className="space-y-3"
+   486→   486→            >
+   487→   487→              {paymentMethods.filter((m) => m.enabled).map((method) => (
+   488→   488→                <label
+   489→   489→                  key={method.id}
+   490→   490→                  className={cn(
+   491→   491→                    "flex cursor-pointer items-center gap-3 rounded-lg border p-4 transition-colors",
+   492→   492→                    form.payment === method.id
+   493→   493→                      ? "border-accent bg-accent/5"
+   494→   494→                      : "border-border hover:border-accent/50"
+   495→   495→                  )}
+   496→   496→                >
+   497→   497→                  <RadioGroupItem value={method.id} id={method.id} />
+   498→   498→                  <span className="text-2xl">{method.icon}</span>
+   499→   499→                  <div className="flex-1">
+   500→   500→                    <div className="flex items-center gap-2">
+   501→   501→                      <span className="text-sm font-medium">
+   502→   502→                        {locale === "bn" ? method.nameBn : method.name}
+   503→   503→                      </span>
+   504→   504→                      {method.recommended && (
+   505→   505→                        <span className="rounded-full bg-green-100 px-2 py-0.5 text-[10px] font-medium text-green-700">
+   506→   506→                          {t("checkout.recommended")}
+   507→   507→                        </span>
+   508→   508→                      )}
+   509→   509→                    </div>
+   510→   510→                    <div className="text-xs text-muted-foreground">
+   511→   511→                      {locale === "bn" ? method.descBn : method.desc}
+   512→   512→                    </div>
+   513→   513→                    {method.id === "cod" && !isGiftCard && (
+   514→   514→                      <div className="mt-1 text-xs text-orange-600">
+   515→   515→                        + ৳{COD_CHARGES[form.area]} {t("checkout.codCharge")}
+   516→   516→                      </div>
+   517→   517→                    )}
+   518→   518→                  </div>
+   519→   519→                </label>
+   520→   520→              ))}
+   521→   521→            </RadioGroup>
+   522→   522→
+   523→   523→            <div className="mt-4 flex items-center gap-2 rounded-lg bg-muted/50 p-3 text-xs text-muted-foreground">
+   524→   524→              <Lock className="h-4 w-4 shrink-0" />
+   525→   525→              <span>{t("checkout.securePayment")}</span>
+   526→   526→            </div>
+   527→   527→          </div>
+   528→   528→
+   529→   529→          {/* Place order button (mobile) */}
+   530→   530→          <Button
+   531→   531→            onClick={placeOrderHandler}
+   532→   532→            disabled={processing}
+   533→   533→            size="lg"
+   534→   534→            className="w-full bg-accent text-accent-foreground hover:bg-accent/90 lg:hidden"
+   535→   535→          >
+   536→   536→            {processing ? (
+   537→   537→              <>
+   538→   538→                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+   539→   539→                {t("checkout.processing")}
+   540→   540→              </>
+   541→   541→            ) : (
+   542→   542→              <>
+   543→   543→                <Lock className="mr-2 h-4 w-4" />
+   544→   544→                {t("checkout.placeOrder")} — {formatPrice(total)}
+   545→   545→              </>
+   546→   546→            )}
+   547→   547→          </Button>
+   548→   548→        </div>
+   549→   549→
+   550→   550→        {/* Order summary */}
+   551→   551→        <aside className="lg:sticky lg:top-32 lg:h-fit">
+   552→   552→          <div className="rounded-lg border border-border/60 bg-card p-6">
+   553→   553→            <h2 className="mb-4 flex items-center gap-2 font-serif text-xl font-medium">
+   554→   554→              <ShoppingBag className="h-5 w-5" />
+   555→   555→              {t("checkout.orderSummary")}
+   556→   556→            </h2>
+   557→   557→
+   558→   558→            {/* Items */}
+   559→   559→            <div className="mb-4 max-h-64 space-y-3 overflow-y-auto scrollbar-elegant">
+   560→   560→              {isGiftCard ? (
+   561→   561→                <div className="flex gap-3">
+   562→   562→                  <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-md bg-gradient-to-br from-accent/30 to-accent/10">
+   563→   563→                    <div className="flex h-full w-full items-center justify-center">
+   564→   564→                      <Gift className="h-6 w-6 text-accent" />
+   565→   565→                    </div>
+   566→   566→                  </div>
+   567→   567→                  <div className="flex flex-1 flex-col justify-center">
+   568→   568→                    <p className="text-sm font-medium">
+   569→   569→                      {locale === "bn" ? "গিফট কার্ড" : "Gift Card"}
+   570→   570→                    </p>
+   571→   571→                    <p className="text-xs text-muted-foreground">
+   572→   572→                      {giftCardOrder!.recipientName} ({giftCardOrder!.recipientEmail})
+   573→   573→                    </p>
+   574→   574→                  </div>
+   575→   575→                  <span className="self-center text-sm font-medium">
+   576→   576→                    {formatPrice(giftCardOrder!.amount)}
+   577→   577→                  </span>
+   578→   578→                </div>
+   579→   579→              ) : (
+   580→   580→                items.map((item, idx) => {
+   581→   581→                  const price = item.discountPrice ?? item.price;
+   582→   582→                  const key = `${item.productId}-${item.selectedSize}-${item.selectedColor}-${idx}`;
+   583→   583→                  return (
+   584→   584→                    <div key={key} className="flex gap-3">
+   585→   585→                      <div
+   586→   586→                        className="relative h-16 w-16 shrink-0 overflow-hidden rounded-md bg-muted"
+   587→   587→                        style={{
+   588→   588→                          background: item.image
+   589→   589→                            ? `url(${item.image}) center/cover`
+   590→   590→                            : `linear-gradient(135deg, #f5f5f0, #e5e5e0)`,
+   591→   591→                        }}
+   592→   592→                      >
+   593→   593→                        {!item.image && (
+   594→   594→                          <div className="flex h-full w-full items-center justify-center">
+   595→   595→                            <span className="font-serif text-xs font-light text-muted-foreground/40">
+   596→   596→                              RPH
+   597→   597→                            </span>
+   598→   598→                          </div>
+   599→   599→                        )}
+   600→   600→                        <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
+   601→   601→                          {item.quantity}
+   602→   602→                        </span>
+   603→   603→                      </div>
+   604→   604→                      <div className="flex flex-1 flex-col justify-center">
+   605→   605→                        <p className="line-clamp-1 text-sm font-medium">{item.name}</p>
+   606→   606→                        {(item.selectedSize || item.selectedColor) && (
+   607→   607→                          <p className="text-xs text-muted-foreground">
+   608→   608→                            {item.selectedSize && `${t("productDetail.size")}: ${item.selectedSize}`}
+   609→   609→                            {item.selectedSize && item.selectedColor && " · "}
+   610→   610→                            {item.selectedColor && `${t("productDetail.color")}: ${item.selectedColor}`}
+   611→   611→                          </p>
+   612→   612→                        )}
+   613→   613→                      </div>
+   614→   614→                      <span className="self-center text-sm font-medium">
+   615→   615→                        {formatPrice(price * item.quantity)}
+   616→   616→                      </span>
+   617→   617→                    </div>
+   618→   618→                  );
+   619→   619→                })
+   620→   620→              )}
+   621→   621→            </div>
+   622→   622→
+   623→   623→            <Separator className="my-4" />
+   624→   624→
+   625→   625→            {/* Coupon section */}
+   626→   626→            <div className="mb-4">
+   627→   627→              <label className="mb-2 flex items-center gap-1.5 text-sm font-medium">
+   628→   628→                <Tag className="h-3.5 w-3.5" />
+   629→   629→                {t("cartPage.promoCode")}
+   630→   630→              </label>
+   631→   631→              {couponData ? (
+   632→   632→                <div className="flex items-center justify-between rounded-md border border-accent/30 bg-accent/10 px-3 py-2">
+   633→   633→                  <div>
+   634→   634→                    <p className="text-sm font-medium text-accent">{couponData.code}</p>
+   635→   635→                    <p className="text-xs text-muted-foreground">
+   636→   636→                      {t("cartPage.youSave").replace("{amount}", formatPrice(couponData.discount))}
+   637→   637→                    </p>
+   638→   638→                  </div>
+   639→   639→                  <Button variant="ghost" size="icon" className="h-7 w-7" onClick={removeCoupon}>
+   640→   640→                    <X className="h-3.5 w-3.5" />
+   641→   641→                  </Button>
+   642→   642→                </div>
+   643→   643→              ) : (
+   644→   644→                <div className="flex gap-2">
+   645→   645→                  <Input
+   646→   646→                    placeholder={t("cartPage.couponPlaceholder")}
+   647→   647→                    value={couponCode}
+   648→   648→                    onChange={(e) => setCouponCode(e.target.value)}
+   649→   649→                    className="h-10"
+   650→   650→                    disabled={couponLoading}
+   651→   651→                  />
+   652→   652→                  <Button variant="outline" onClick={applyCoupon} disabled={couponLoading}>
+   653→   653→                    {couponLoading ? (
+   654→   654→                      <Loader2 className="h-4 w-4 animate-spin" />
+   655→   655→                    ) : (
+   656→   656→                      t("cartPage.applyCode")
+   657→   657→                    )}
+   658→   658→                  </Button>
+   659→   659→                </div>
+   660→   660→              )}
+   661→   661→            </div>
+   662→   662→
+   663→   663→            <Separator className="my-4" />
+   664→   664→
+   665→   665→            {/* Totals */}
+   666→   666→            <div className="space-y-2 text-sm">
+   667→   667→              <div className="flex justify-between">
+   668→   668→                <span className="text-muted-foreground">{t("checkout.subtotal")}</span>
+   669→   669→                <span className="font-medium">{formatPrice(subtotal)}</span>
+   670→   670→              </div>
+   671→   671→              {couponDiscount > 0 && (
+   672→   672→                <div className="flex justify-between text-accent">
+   673→   673→                  <span>{t("cartPage.discountLabel")}</span>
+   674→   674→                  <span>-{formatPrice(couponDiscount)}</span>
+   675→   675→                </div>
+   676→   676→              )}
+   677→   677→              {codCharge > 0 && (
+   678→   678→                <div className="flex justify-between">
+   679→   679→                  <span className="text-muted-foreground">
+   680→   680→                    {t("checkout.codCharge")} ({form.area === "inside_dhaka" ? t("checkout.insideDhaka") : t("checkout.outsideDhaka")})
+   681→   681→                  </span>
+   682→   682→                  <span className="font-medium">{formatPrice(codCharge)}</span>
+   683→   683→                </div>
+   684→   684→              )}
+   685→   685→            </div>
+   686→   686→
+   687→   687→            <Separator className="my-4" />
+   688→   688→
+   689→   689→            <div className="flex items-center justify-between">
+   690→   690→              <span className="font-medium">{t("checkout.total")}</span>
+   691→   691→              <span className="font-serif text-2xl font-medium">{formatPrice(total)}</span>
+   692→   692→            </div>
+   693→   693→
+   694→   694→            {/* Place order button (desktop) */}
+   695→   695→            <Button
+   696→   696→              onClick={placeOrderHandler}
+   697→   697→              disabled={processing}
+   698→   698→              size="lg"
+   699→   699→              className="mt-6 hidden w-full bg-accent text-accent-foreground hover:bg-accent/90 lg:flex"
+   700→   700→            >
+   701→   701→              {processing ? (
+   702→   702→                <>
+   703→   703→                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+   704→   704→                  {t("checkout.processing")}
+   705→   705→                </>
+   706→   706→              ) : (
+   707→   707→                <>
+   708→   708→                  <Lock className="mr-2 h-4 w-4" />
+   709→   709→                  {t("checkout.placeOrder")} — {formatPrice(total)}
+   710→   710→                </>
+   711→   711→              )}
+   712→   712→            </Button>
+   713→   713→
+   714→   714→            {/* Trust badges */}
+   715→   715→            <div className="mt-4 space-y-1.5 text-xs text-muted-foreground">
+   716→   716→              <div className="flex items-center gap-2">
+   717→   717→                <CheckCircle2 className="h-3.5 w-3.5 text-green-500" />
+   718→   718→                <span>{t("checkout.trustSecurePayment")}</span>
+   719→   719→              </div>
+   720→   720→              <div className="flex items-center gap-2">
+   721→   721→                <Truck className="h-3.5 w-3.5 text-accent" />
+   722→   722→                <span>{t("checkout.trustFastDelivery")}</span>
+   723→   723→              </div>
+   724→   724→              <div className="flex items-center gap-2">
+   725→   725→                <CheckCircle2 className="h-3.5 w-3.5 text-green-500" />
+   726→   726→                <span>{t("checkout.trustEasyReturns")}</span>
+   727→   727→              </div>
+   728→   728→            </div>
+   729→   729→          </div>
+   730→   730→
+   731→   731→          <Button variant="ghost" className="mt-4 w-full" asChild>
+   732→   732→            <Link href={isGiftCard ? "/gift-cards" : "/shop"}>
+   733→   733→              {t("cartPage.continueShopping")}
+   734→   734→              <ArrowRight className="ml-2 h-4 w-4" />
+   735→   735→            </Link>
+   736→   736→          </Button>
+   737→   737→        </aside>
+   738→   738→      </div>
+   739→   739→    </Container>
+   740→   740→  );
+   741→   741→}
+   742→   742→
