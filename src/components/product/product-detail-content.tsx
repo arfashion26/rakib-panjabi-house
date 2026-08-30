@@ -573,8 +573,9 @@ export function ProductDetailContent({
 
           {/* Reviews */}
           <TabsContent value="reviews" className="mt-5">
+            {/* Existing reviews */}
             {reviews.length === 0 ? (
-              <div className="py-8 text-center">
+              <div className="py-6 text-center">
                 <p className="text-sm font-medium">{t("productDetail.noReviews")}</p>
                 <p className="mt-1 text-xs text-muted-foreground">{t("productDetail.beFirst")}</p>
               </div>
@@ -606,6 +607,9 @@ export function ProductDetailContent({
                 ))}
               </div>
             )}
+
+            {/* Write a review form */}
+            <ReviewForm productId={product.id} />
           </TabsContent>
 
           {/* Shipping */}
@@ -650,5 +654,158 @@ export function ProductDetailContent({
         </div>
       )}
     </div>
+  );
+}
+
+/**
+ * Review submission form — shown in Reviews tab.
+ * Customer fills name, phone (optional), rating, title, content.
+ * Review is saved as PENDING — admin must approve before it shows.
+ */
+function ReviewForm({ productId }: { productId: string }) {
+  const [showForm, setShowForm] = React.useState(false);
+  const [submitting, setSubmitting] = React.useState(false);
+  const [submitted, setSubmitted] = React.useState(false);
+  const [form, setForm] = React.useState({
+    name: "",
+    phone: "",
+    rating: 5,
+    title: "",
+    content: "",
+  });
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!form.name.trim()) return;
+    setSubmitting(true);
+    try {
+      const res = await fetch("/api/reviews", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ productId, ...form }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setSubmitted(true);
+        setForm({ name: "", phone: "", rating: 5, title: "", content: "" });
+      } else {
+        toast.error(data.error || "Failed to submit review");
+      }
+    } catch {
+      toast.error("Failed to submit review");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  if (submitted) {
+    return (
+      <div className="mt-6 rounded-lg border border-green-200 bg-green-50 p-4 text-center">
+        <p className="text-sm font-medium text-green-700">
+          ✓ Review submitted successfully!
+        </p>
+        <p className="mt-1 text-xs text-green-600">
+          Your review will appear here after admin approval.
+        </p>
+        <button
+          onClick={() => { setSubmitted(false); setShowForm(false); }}
+          className="mt-2 text-xs text-green-700 hover:underline"
+        >
+          Close
+        </button>
+      </div>
+    );
+  }
+
+  if (!showForm) {
+    return (
+      <div className="mt-6 border-t border-border pt-4">
+        <Button variant="outline" onClick={() => setShowForm(true)}>
+          Write a Review
+        </Button>
+      </div>
+    );
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="mt-6 rounded-lg border border-border/60 bg-card p-4 space-y-3">
+      <h4 className="text-sm font-semibold">Write a Review</h4>
+
+      {/* Rating */}
+      <div className="space-y-1">
+        <label className="text-xs font-medium">Rating *</label>
+        <div className="flex gap-1">
+          {[1, 2, 3, 4, 5].map((n) => (
+            <button
+              key={n}
+              type="button"
+              onClick={() => setForm({ ...form, rating: n })}
+            >
+              <Star className={cn(
+                "h-6 w-6 transition-colors",
+                n <= form.rating ? "fill-accent text-accent" : "text-muted-foreground/30 hover:text-accent"
+              )} />
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Name + Phone */}
+      <div className="grid gap-3 sm:grid-cols-2">
+        <div className="space-y-1">
+          <label className="text-xs font-medium">Your Name *</label>
+          <input
+            required
+            value={form.name}
+            onChange={(e) => setForm({ ...form, name: e.target.value })}
+            placeholder="John Doe"
+            className="h-9 w-full rounded-md border border-border bg-background px-3 text-sm"
+          />
+        </div>
+        <div className="space-y-1">
+          <label className="text-xs font-medium">Phone (optional)</label>
+          <input
+            type="tel"
+            value={form.phone}
+            onChange={(e) => setForm({ ...form, phone: e.target.value })}
+            placeholder="01XXX-XXXXXX"
+            className="h-9 w-full rounded-md border border-border bg-background px-3 text-sm"
+          />
+        </div>
+      </div>
+
+      {/* Title */}
+      <div className="space-y-1">
+        <label className="text-xs font-medium">Title (optional)</label>
+        <input
+          value={form.title}
+          onChange={(e) => setForm({ ...form, title: e.target.value })}
+          placeholder="Great product!"
+          className="h-9 w-full rounded-md border border-border bg-background px-3 text-sm"
+        />
+      </div>
+
+      {/* Content */}
+      <div className="space-y-1">
+        <label className="text-xs font-medium">Review (optional)</label>
+        <textarea
+          value={form.content}
+          onChange={(e) => setForm({ ...form, content: e.target.value })}
+          rows={3}
+          placeholder="Share your experience..."
+          className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+        />
+      </div>
+
+      {/* Actions */}
+      <div className="flex gap-2">
+        <Button type="submit" size="sm" disabled={submitting || !form.name.trim()}>
+          {submitting ? "Submitting..." : "Submit Review"}
+        </Button>
+        <Button type="button" variant="ghost" size="sm" onClick={() => setShowForm(false)}>
+          Cancel
+        </Button>
+      </div>
+    </form>
   );
 }
