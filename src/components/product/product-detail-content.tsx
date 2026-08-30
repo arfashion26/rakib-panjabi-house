@@ -182,18 +182,18 @@ export function ProductDetailContent({
   return (
     <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
       {/* ===== Premium Breadcrumb ===== */}
-      <nav className="mb-5 flex items-center gap-1.5 rounded-lg border border-border/60 bg-card px-4 py-2.5 text-xs">
-        <Link href="/" className="flex items-center gap-1 text-muted-foreground transition-colors hover:text-accent">
+      <nav className="mb-5 flex flex-wrap items-center gap-1.5 rounded-lg border border-border/60 bg-card px-3 py-2.5 text-xs sm:px-4">
+        <Link href="/" className="flex shrink-0 items-center gap-1 text-muted-foreground transition-colors hover:text-accent">
           <Home className="h-3 w-3" />
-          {t("common.home")}
+          <span className="hidden sm:inline">{t("common.home")}</span>
         </Link>
-        <ChevronRight className="h-3 w-3 text-muted-foreground/40" />
-        <Link href="/shop" className="text-muted-foreground transition-colors hover:text-accent">
+        <ChevronRight className="h-3 w-3 shrink-0 text-muted-foreground/40" />
+        <Link href="/shop" className="shrink-0 text-muted-foreground transition-colors hover:text-accent">
           {t("common.shop")}
         </Link>
-        <ChevronRight className="h-3 w-3 text-muted-foreground/40" />
-        <span className="flex items-center gap-1 font-medium text-foreground">
-          <Package className="h-3 w-3 text-accent" />
+        <ChevronRight className="h-3 w-3 shrink-0 text-muted-foreground/40" />
+        <span className="flex min-w-0 items-center gap-1 font-medium text-foreground">
+          <Package className="h-3 w-3 shrink-0 text-accent" />
           <span className="line-clamp-1">{product.name}</span>
         </span>
       </nav>
@@ -201,16 +201,16 @@ export function ProductDetailContent({
       {/* ===== Main Layout ===== */}
       <div className="grid gap-6 lg:grid-cols-2 lg:gap-10">
         {/* ===== LEFT: Image Gallery ===== */}
-        <div className="flex gap-3">
-          {/* Thumbnails */}
+        <div className="flex gap-2 sm:gap-3">
+          {/* Thumbnails — vertical on desktop, horizontal scroll on mobile */}
           {allImages.length > 1 && (
-            <div className="flex shrink-0 flex-col gap-2">
+            <div className="flex shrink-0 gap-2 overflow-x-auto md:flex-col md:overflow-visible">
               {allImages.map((img, idx) => (
                 <button
                   key={idx}
                   onClick={() => setSelectedImageIdx(idx)}
                   className={cn(
-                    "relative h-16 w-16 overflow-hidden rounded-lg border-2 transition-all",
+                    "relative h-14 w-14 shrink-0 overflow-hidden rounded-lg border-2 transition-all sm:h-16 sm:w-16",
                     selectedImageIdx === idx
                       ? "border-accent ring-1 ring-accent/20"
                       : "border-border hover:border-accent/50"
@@ -281,12 +281,12 @@ export function ProductDetailContent({
             {product.name}
           </h1>
 
-          {/* SKU + Rating row */}
-          <div className="mt-2 flex items-center gap-3">
+          {/* SKU + Rating row — wrap on mobile */}
+          <div className="mt-2 flex flex-wrap items-center gap-2 sm:gap-3">
             <span className="text-xs uppercase tracking-wider text-muted-foreground">
               {t("products.sku")}: {product.sku}
             </span>
-            <span className="h-3 w-px bg-border" />
+            <span className="hidden h-3 w-px bg-border sm:block" />
             <div className="flex items-center gap-1">
               <div className="flex gap-0.5">
                 {[1, 2, 3, 4, 5].map((n) => (
@@ -299,8 +299,8 @@ export function ProductDetailContent({
           </div>
 
           {/* Price card */}
-          <div className="mt-4 rounded-xl border border-border/60 bg-muted/30 p-4">
-            <div className="flex items-center gap-3">
+          <div className="mt-4 rounded-xl border border-border/60 bg-muted/30 p-3 sm:p-4">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3">
               <span className="text-2xl font-bold text-foreground md:text-3xl">
                 {formatPrice(finalPrice)}
               </span>
@@ -390,10 +390,10 @@ export function ProductDetailContent({
             </div>
           )}
 
-          {/* Quantity + Actions */}
-          <div className="mt-5 flex items-center gap-2">
+          {/* Quantity + Actions — stack on mobile, row on desktop */}
+          <div className="mt-5 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-2">
             {/* Quantity */}
-            <div className="flex items-center rounded-lg border border-border">
+            <div className="flex items-center justify-center rounded-lg border border-border sm:justify-start">
               <Button
                 variant="ghost"
                 size="icon"
@@ -414,7 +414,7 @@ export function ProductDetailContent({
               </Button>
             </div>
 
-            {/* Add to cart */}
+            {/* Add to cart — full width on mobile */}
             <Button
               size="lg"
               className="flex-1"
@@ -425,20 +425,20 @@ export function ProductDetailContent({
               {isInStock ? t("productDetail.addToCart") : t("productDetail.outOfStock")}
             </Button>
 
-            {/* Wishlist */}
-            <Button
-              size="lg"
-              variant="outline"
-              onClick={handleWishlist}
-              className={cn(hasInWishlist && "border-red-500 text-red-500")}
-            >
-              <Heart className={cn("h-4 w-4", hasInWishlist && "fill-red-500")} />
-            </Button>
-
-            {/* Share */}
-            <Button size="lg" variant="outline" onClick={handleShare}>
-              <Share2 className="h-4 w-4" />
-            </Button>
+            {/* Wishlist + Share — icons only */}
+            <div className="flex gap-2">
+              <Button
+                size="lg"
+                variant="outline"
+                onClick={handleWishlist}
+                className={cn("flex-1 sm:flex-none", hasInWishlist && "border-red-500 text-red-500")}
+              >
+                <Heart className={cn("h-4 w-4", hasInWishlist && "fill-red-500")} />
+              </Button>
+              <Button size="lg" variant="outline" onClick={handleShare} className="flex-1 sm:flex-none">
+                <Share2 className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
 
           {/* Buy now */}
@@ -475,7 +475,7 @@ export function ProductDetailContent({
           </div>
 
           {/* Quick specs */}
-          <div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-1.5 border-t border-border pt-4 text-xs">
+          <div className="mt-4 grid grid-cols-1 gap-x-4 gap-y-1.5 border-t border-border pt-4 text-xs sm:grid-cols-2">
             {product.fabric && (
               <div className="flex gap-1.5">
                 <span className="font-medium text-muted-foreground">{t("productDetail.fabric")}:</span>
@@ -634,7 +634,8 @@ export function ProductDetailContent({
           <h2 className="mb-5 text-lg font-bold tracking-tight md:text-xl">
             {t("productDetail.relatedProducts")}
           </h2>
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-4 lg:gap-6">
+          {/* Related products */}
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-6">
             {relatedProducts.map((rel) => (
               <ProductCard
                 key={rel.id}
