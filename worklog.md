@@ -96,3 +96,37 @@ Stage Summary:
 - Native browser confirm() popups fully replaced with branded Dialogs that
   match the rest of the admin UI (media/blog/customer delete dialogs)
 - Consistent visual pattern: red AlertCircle icon + Loader2 spinner during deletion
+
+---
+Task ID: 12
+Agent: main
+Task: Fresh clone + environment setup after sandbox reset
+
+Work Log:
+- Cloned latest repo (dc22529) from github.com/arfashion26/rakib-panjabi-house to /tmp/rakib-clone
+- Cleaned my-project dir (preserved `upload` mountpoint)
+- Copied fresh clone contents into /home/z/my-project
+- Created .env with:
+  - DATABASE_URL (Supabase pooler)
+  - DIRECT_URL
+  - NEXT_PUBLIC_SUPABASE_URL
+  - SUPABASE_SERVICE_ROLE_KEY
+  - GITHUB_TOKEN
+- npm install completed
+- npx prisma generate completed
+- Dev server started (Next.js 16.3.3 Turbopack, Ready in 322ms)
+- Homepage returns HTTP 200
+- Supabase REST API works (verified via curl with service role key)
+- BLOCKER: Database pooler connection fails — "tenant/user postgres.diraphksavgifippktuh not found"
+  - Tried multiple regions (us-east-1, ap-south-1)
+  - Tried multiple passwords (Rakib2026House, 7HD#Mak56N7bai=)
+  - Tried both ports (5432 session, 6543 transaction)
+  - node-postgres doesn't support SNI-based routing required by new Supabase pooler
+  - Prisma db execute also fails with same error
+  - REST API works, so project is alive — likely project ref changed or needs different pooler URL
+
+Stage Summary:
+- Fresh clone complete at commit dc22529
+- Dev server running on localhost:3000 (HTTP 200)
+- DB pooler connection BLOCKED — needs user input on correct connection string
+- REST API confirmed working
