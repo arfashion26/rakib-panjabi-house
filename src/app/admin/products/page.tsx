@@ -252,6 +252,7 @@ export default function AdminProductsPage() {
       slug: "",
       sku: "",
       description: "",
+      short_description: "",
       price: 0,
       status: "ACTIVE",
       is_featured: false,
@@ -607,6 +608,21 @@ function ProductFormDialog({
                   onChange={(e) => update("slug", e.target.value)}
                 />
               </div>
+            </div>
+            {/* Short Description — shown on product page above Add to Cart/Buy Now */}
+            <div className="space-y-2">
+              <Label htmlFor="short_description">Short Description</Label>
+              <Textarea
+                id="short_description"
+                rows={2}
+                placeholder="Brief highlight shown above Add to Cart button. e.g. Premium cotton panjabi with hand-stitched details."
+                value={form.short_description || ""}
+                onChange={(e) => update("short_description", e.target.value)}
+              />
+              <p className="text-[10px] text-muted-foreground">
+                Displayed prominently on the product page just before the
+                Add to Cart / Buy Now buttons. Keep it short (1-2 sentences).
+              </p>
             </div>
             <div className="space-y-2">
               <Label htmlFor="description">Description *</Label>
