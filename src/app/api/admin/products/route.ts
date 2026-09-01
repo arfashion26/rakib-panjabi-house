@@ -137,6 +137,8 @@ export async function POST(request: NextRequest) {
       isBestSeller,
       isNewArrival,
       isFlashSale,
+      weight,
+      weightUnit,
       metaTitle,
       metaDescription,
       searchKeywords,
@@ -190,6 +192,8 @@ export async function POST(request: NextRequest) {
         meta_title: metaTitle || null,
         meta_description: metaDescription || null,
         search_keywords: searchKeywords || null,
+        weight: weight != null && weight !== "" ? parseFloat(weight) : null,
+        weight_unit: weightUnit || "kg",
         published_at: status === "ACTIVE" ? new Date().toISOString() : null,
       })
       .select()
@@ -391,6 +395,10 @@ export async function PUT(request: NextRequest) {
     if (body.metaTitle !== undefined) updateData.meta_title = body.metaTitle;
     if (body.metaDescription !== undefined) updateData.meta_description = body.metaDescription;
     if (body.searchKeywords !== undefined) updateData.search_keywords = body.searchKeywords;
+    if (body.weight !== undefined) {
+      updateData.weight = body.weight != null && body.weight !== "" ? parseFloat(body.weight) : null;
+    }
+    if (body.weightUnit !== undefined) updateData.weight_unit = body.weightUnit || "kg";
 
     const { error: updateError } = await admin
       .from("products")

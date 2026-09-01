@@ -184,6 +184,8 @@ model Product {
   metaDescription  String?
   searchKeywords   String?
   video            String?
+  weight           Decimal?      @db.Decimal(10, 2)
+  weightUnit       String?       @default("kg")
   weightKg         Decimal?      @db.Decimal(8, 2)
   publishedAt      DateTime?
   flashSaleStart   DateTime?

@@ -61,6 +61,9 @@ interface Product {
   is_new_arrival: boolean;
   is_flash_sale: boolean;
   category_id: string;
+  // Weight fields (new)
+  weight?: number | null;
+  weight_unit?: string;
   // SEO fields
   meta_title?: string;
   meta_description?: string;
@@ -195,6 +198,9 @@ export default function AdminProductsPage() {
           metaTitle: product.meta_title || null,
           metaDescription: product.meta_description || null,
           searchKeywords: product.search_keywords || null,
+          // Weight fields (new)
+          weight: product.weight ?? null,
+          weightUnit: product.weight_unit || "kg",
           // Custom specifications
           specifications: product.specifications || [],
         }),
@@ -249,6 +255,8 @@ export default function AdminProductsPage() {
       is_new_arrival: false,
       is_flash_sale: false,
       category_id: categories[0]?.id || "",
+      weight: null,
+      weight_unit: "kg",
       meta_title: "",
       meta_description: "",
       search_keywords: "",
@@ -891,6 +899,41 @@ function ProductFormDialog({
                   value={form.fit || ""}
                   onChange={(e) => update("fit", e.target.value)}
                 />
+              </div>
+            </div>
+            {/* Weight row — numeric value + unit selector (kg / g) */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <Label htmlFor="weight">Weight</Label>
+                <Input
+                  id="weight"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  placeholder="e.g. 0.5"
+                  value={form.weight ?? ""}
+                  onChange={(e) =>
+                    update("weight", e.target.value === "" ? null : parseFloat(e.target.value))
+                  }
+                />
+                <p className="text-[10px] text-muted-foreground">
+                  Used for shipping calculations. Leave empty if not applicable.
+                </p>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="weight_unit">Weight Unit</Label>
+                <select
+                  id="weight_unit"
+                  value={form.weight_unit || "kg"}
+                  onChange={(e) => update("weight_unit", e.target.value)}
+                  className="h-9 w-full rounded-md border border-border bg-background px-3 text-sm"
+                >
+                  <option value="kg">Kilograms (kg)</option>
+                  <option value="g">Grams (g)</option>
+                </select>
+                <p className="text-[10px] text-muted-foreground">
+                  Choose kg for items &gt; 1 kg, g for lighter items.
+                </p>
               </div>
             </div>
           </div>

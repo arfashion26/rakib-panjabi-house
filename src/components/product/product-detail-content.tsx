@@ -58,6 +58,8 @@ interface Product {
   fit: string | null;
   care: string | null;
   origin: string | null;
+  weight: number | null;
+  weight_unit: string | null;
   price: number;
   discount_price: number | null;
   is_featured?: boolean;
@@ -500,6 +502,16 @@ export function ProductDetailContent({
                 <span className="text-foreground">{product.care}</span>
               </div>
             )}
+            {product.weight != null && (
+              <div className="flex gap-1.5">
+                <span className="font-medium text-muted-foreground">Weight:</span>
+                <span className="text-foreground">
+                  {product.weight_unit === "g"
+                    ? `${product.weight} g`
+                    : `${product.weight} kg`}
+                </span>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -554,6 +566,16 @@ export function ProductDetailContent({
                     <tr className="border-b border-border">
                       <td className="bg-muted/50 px-4 py-2.5 font-medium">{t("productDetail.origin")}</td>
                       <td className="px-4 py-2.5">{product.origin}</td>
+                    </tr>
+                  )}
+                  {product.weight != null && (
+                    <tr className="border-b border-border">
+                      <td className="bg-muted/50 px-4 py-2.5 font-medium">Weight</td>
+                      <td className="px-4 py-2.5">
+                        {product.weight_unit === "g"
+                          ? `${product.weight} g`
+                          : `${product.weight} kg`}
+                      </td>
                     </tr>
                   )}
                   {customSpecs.map((spec, idx) => (
