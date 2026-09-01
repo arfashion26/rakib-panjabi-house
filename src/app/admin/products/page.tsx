@@ -346,8 +346,12 @@ export default function AdminProductsPage() {
               </thead>
               <tbody className="divide-y divide-border/40">
                 {filtered.map((product) => {
-                  const totalStock = (product.sizes || []).reduce((sum, s) => sum + s.stock, 0) +
+                  // Total stock = sum of size stock + sum of color stock + product-level stock
+                  // (used when product has no variants)
+                  const variantStock = (product.sizes || []).reduce((sum, s) => sum + s.stock, 0) +
                     (product.colors || []).reduce((sum, c) => sum + c.stock, 0);
+                  const hasVariants = (product.sizes?.length || 0) > 0 || (product.colors?.length || 0) > 0;
+                  const totalStock = hasVariants ? variantStock : (product.stock ?? 0);
                   return (
                     <tr key={product.id} className="hover:bg-muted/20">
                       <td className="p-3">

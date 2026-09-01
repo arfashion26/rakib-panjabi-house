@@ -328,7 +328,7 @@ export function ProductDetailContent({
 
           {/* Short description */}
           {product.short_description && (
-            <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
+            <p className="mt-4 whitespace-pre-line text-sm leading-relaxed text-muted-foreground">
               {product.short_description}
             </p>
           )}
@@ -353,7 +353,7 @@ export function ProductDetailContent({
                         ? "border-accent ring-2 ring-accent/20"
                         : "border-border hover:border-accent/50"
                     )}
-                    title={`${color.name} (${color.stock} in stock)`}
+                    title={color.name}
                   >
                     <span className="h-6 w-6 rounded-full" style={{ backgroundColor: color.hex_value }} />
                   </button>
@@ -461,15 +461,13 @@ export function ProductDetailContent({
             {t("productDetail.buyNow")}
           </Button>
 
-          {/* Stock indicator (for products without sizes/colors) */}
+          {/* Stock indicator (for products without sizes/colors) — customers see In/Out only, no count */}
           {!hasVariants && (
             <div className="mt-2 flex items-center justify-center gap-2 text-xs">
               {isInStock ? (
                 <>
                   <span className="inline-block h-2 w-2 rounded-full bg-green-500" />
-                  <span className="font-medium text-green-700">
-                    In Stock ({productLevelStock} {productLevelStock === 1 ? "item" : "items"} available)
-                  </span>
+                  <span className="font-medium text-green-700">In Stock</span>
                 </>
               ) : (
                 <>
@@ -554,7 +552,7 @@ export function ProductDetailContent({
 
           {/* Description */}
           <TabsContent value="description" className="mt-5">
-            <p className="text-sm leading-relaxed text-muted-foreground">{product.description}</p>
+            <p className="whitespace-pre-line text-sm leading-relaxed text-muted-foreground">{product.description}</p>
             {product.care && (
               <div className="mt-4 rounded-lg bg-muted/30 p-3">
                 <h4 className="text-xs font-semibold uppercase tracking-wider text-foreground">
