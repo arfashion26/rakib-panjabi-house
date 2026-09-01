@@ -139,6 +139,7 @@ export async function POST(request: NextRequest) {
       isFlashSale,
       weight,
       weightUnit,
+      stock,
       metaTitle,
       metaDescription,
       searchKeywords,
@@ -194,6 +195,7 @@ export async function POST(request: NextRequest) {
         search_keywords: searchKeywords || null,
         weight: weight != null && weight !== "" ? parseFloat(weight) : null,
         weight_unit: weightUnit || "kg",
+        stock: stock != null ? parseInt(stock) : 0,
         published_at: status === "ACTIVE" ? new Date().toISOString() : null,
       })
       .select()
@@ -399,6 +401,7 @@ export async function PUT(request: NextRequest) {
       updateData.weight = body.weight != null && body.weight !== "" ? parseFloat(body.weight) : null;
     }
     if (body.weightUnit !== undefined) updateData.weight_unit = body.weightUnit || "kg";
+    if (body.stock !== undefined) updateData.stock = parseInt(body.stock) || 0;
 
     const { error: updateError } = await admin
       .from("products")

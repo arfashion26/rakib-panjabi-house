@@ -64,6 +64,8 @@ interface Product {
   // Weight fields (new)
   weight?: number | null;
   weight_unit?: string;
+  // Product-level stock (for items without sizes/colors)
+  stock?: number;
   // SEO fields
   meta_title?: string;
   meta_description?: string;
@@ -201,6 +203,8 @@ export default function AdminProductsPage() {
           // Weight fields (new)
           weight: product.weight ?? null,
           weightUnit: product.weight_unit || "kg",
+          // Product-level stock (for items without sizes/colors)
+          stock: product.stock ?? 0,
           // Custom specifications
           specifications: product.specifications || [],
         }),
@@ -257,6 +261,7 @@ export default function AdminProductsPage() {
       category_id: categories[0]?.id || "",
       weight: null,
       weight_unit: "kg",
+      stock: 0,
       meta_title: "",
       meta_description: "",
       search_keywords: "",
@@ -900,6 +905,23 @@ function ProductFormDialog({
                   onChange={(e) => update("fit", e.target.value)}
                 />
               </div>
+            </div>
+            {/* Product-level stock — used when product has NO sizes/colors */}
+            <div className="space-y-2">
+              <Label htmlFor="stock">Stock Quantity (without sizes/colors)</Label>
+              <Input
+                id="stock"
+                type="number"
+                min="0"
+                step="1"
+                placeholder="e.g. 50"
+                value={form.stock ?? 0}
+                onChange={(e) => update("stock", parseInt(e.target.value) || 0)}
+              />
+              <p className="text-[10px] text-muted-foreground">
+                Used only when this product has no sizes or colors. If sizes/colors
+                are added below, their individual stock takes precedence.
+              </p>
             </div>
             {/* Weight row — numeric value + unit selector (kg / g) */}
             <div className="grid grid-cols-2 gap-3">

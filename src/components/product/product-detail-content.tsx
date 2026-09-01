@@ -60,6 +60,7 @@ interface Product {
   origin: string | null;
   weight: number | null;
   weight_unit: string | null;
+  stock: number | null;
   price: number;
   discount_price: number | null;
   is_featured?: boolean;
@@ -166,9 +167,15 @@ export function ProductDetailContent({
 
   const selectedSizeData = product.sizes.find((s) => s.size === selectedSize);
   const selectedColorData = product.colors.find((c) => c.name === selectedColor);
-  const isInStock =
-    (product.sizes.length === 0 || (selectedSizeData && selectedSizeData.stock > 0)) &&
-    (product.colors.length === 0 || (selectedColorData && selectedColorData.stock > 0));
+  // Stock logic:
+  // - If product has sizes/colors: check selected variant stock
+  // - If product has NO sizes/colors: use product-level stock field
+  const hasVariants = product.sizes.length > 0 || product.colors.length > 0;
+  const productLevelStock = product.stock ?? 0;
+  const isInStock = hasVariants
+    ? (product.sizes.length === 0 || (selectedSizeData && selectedSizeData.stock > 0)) &&
+      (product.colors.length === 0 || (selectedColorData && selectedColorData.stock > 0))
+    : productLevelStock > 0;
 
   const customSpecs: Array<{ key: string; value: string }> = React.useMemo(() => {
     if (!product.specifications) return [];
@@ -453,6 +460,25 @@ export function ProductDetailContent({
           >
             {t("productDetail.buyNow")}
           </Button>
+
+          {/* Stock indicator (for products without sizes/colors) */}
+          {!hasVariants && (
+            <div className="mt-2 flex items-center justify-center gap-2 text-xs">
+              {isInStock ? (
+                <>
+                  <span className="inline-block h-2 w-2 rounded-full bg-green-500" />
+                  <span className="font-medium text-green-700">
+                    In Stock ({productLevelStock} {productLevelStock === 1 ? "item" : "items"} available)
+                  </span>
+                </>
+              ) : (
+                <>
+                  <span className="inline-block h-2 w-2 rounded-full bg-red-500" />
+                  <span className="font-medium text-red-600">Out of Stock</span>
+                </>
+              )}
+            </div>
+          )}
 
           {/* Trust badges */}
           <div className="mt-5 grid grid-cols-3 gap-2 border-t border-border pt-4">

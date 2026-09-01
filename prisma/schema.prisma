@@ -187,6 +187,7 @@ model Product {
   weight           Decimal?      @db.Decimal(10, 2)
   weightUnit       String?       @default("kg")
   weightKg         Decimal?      @db.Decimal(8, 2)
+  stock            Int           @default(0)
   publishedAt      DateTime?
   flashSaleStart   DateTime?
   flashSaleEnd     DateTime?
