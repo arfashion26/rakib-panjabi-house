@@ -19,8 +19,8 @@ export function CartDrawer() {
 
   return (
     <Sheet open={isOpen} onOpenChange={(open) => !open && closeCart()}>
-      <SheetContent className="flex w-full flex-col sm:max-w-md">
-        <SheetHeader className="space-y-0">
+      <SheetContent className="flex w-full flex-col px-4 pb-4 sm:max-w-md">
+        <SheetHeader className="space-y-0 px-0">
           <SheetTitle className="flex items-center justify-between text-left">
             <span className="flex items-center gap-2">
               <ShoppingBag className="h-5 w-5" />
@@ -51,14 +51,14 @@ export function CartDrawer() {
           <>
             <div className="mt-4 rounded-lg bg-muted/50 p-3">
               {subtotal >= FREE_SHIPPING_THRESHOLD ? (
-                <p className="text-center text-xs font-medium text-accent">
+                <p className="break-words text-center text-xs font-medium text-accent">
                   {t("cart.qualifiedFreeShipping")}
                 </p>
               ) : (
                 <>
-                  <p className="mb-2 text-center text-xs text-muted-foreground">
+                  <p className="mb-2 break-words text-center text-xs text-muted-foreground">
                     {t("cart.freeShippingMsg").split("{amount}")[0]}
-                    <span className="font-semibold text-foreground">
+                    <span className="font-semibold text-foreground whitespace-nowrap">
                       {formatPrice(FREE_SHIPPING_THRESHOLD - subtotal)}
                     </span>
                     {t("cart.freeShippingMsg").split("{amount}")[1]}
@@ -95,25 +95,25 @@ export function CartDrawer() {
                       )}
                     </Link>
 
-                    <div className="flex flex-1 flex-col">
+                    <div className="flex min-w-0 flex-1 flex-col">
                       <Link
                         href={`/product/${item.slug}`}
                         onClick={closeCart}
-                        className="line-clamp-2 text-sm font-medium hover:text-accent"
+                        className="line-clamp-2 break-words text-sm font-medium hover:text-accent"
                       >
                         {item.name}
                       </Link>
 
                       {(item.selectedSize || item.selectedColor) && (
-                        <p className="mt-1 text-xs text-muted-foreground">
+                        <p className="mt-1 break-words text-xs text-muted-foreground">
                           {item.selectedSize && `${t("productDetail.size")}: ${item.selectedSize}`}
                           {item.selectedSize && item.selectedColor && " · "}
                           {item.selectedColor && `${t("productDetail.color")}: ${item.selectedColor}`}
                         </p>
                       )}
 
-                      <div className="mt-auto flex items-center justify-between">
-                        <div className="flex items-center gap-1">
+                      <div className="mt-auto flex items-center justify-between gap-2">
+                        <div className="flex shrink-0 items-center gap-1">
                           <Button
                             variant="outline"
                             size="icon"
@@ -137,8 +137,8 @@ export function CartDrawer() {
                           </Button>
                         </div>
 
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm font-semibold">{formatPrice(itemPrice * item.quantity)}</span>
+                        <div className="flex shrink-0 items-center gap-2">
+                          <span className="whitespace-nowrap text-sm font-semibold">{formatPrice(itemPrice * item.quantity)}</span>
                           <Button
                             variant="ghost"
                             size="icon"
@@ -156,12 +156,12 @@ export function CartDrawer() {
               })}
             </div>
 
-            <div className="mt-4 space-y-3 border-t border-border pt-4">
+            <div className="mt-4 space-y-3 border-t border-border px-0 pt-4">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">{t("cartPage.subtotal")}</span>
-                <span className="font-serif text-lg font-medium">{formatPrice(subtotal)}</span>
+                <span className="whitespace-nowrap font-serif text-lg font-medium">{formatPrice(subtotal)}</span>
               </div>
-              <p className="text-xs text-muted-foreground">{t("cartPage.shippingNote")}</p>
+              <p className="break-words text-xs text-muted-foreground">{t("cartPage.shippingNote")}</p>
               <Separator />
               <div className="flex gap-2">
                 <Button variant="outline" className="flex-1" onClick={closeCart} asChild>
