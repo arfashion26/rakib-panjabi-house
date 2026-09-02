@@ -160,3 +160,35 @@ Stage Summary:
 - All previous work intact: 404 page, premium CTA fix, dialog overflow fix,
   delete spinner animations, review system, admin DB-driven settings
 - Dev server running and ready for new tasks
+
+---
+Task ID: 14
+Agent: main
+Task: Fresh sync from remote — verify all latest work intact
+
+Work Log:
+- Fetched latest from origin/main (commit 4fdcff2)
+- Reset 6 modified files to HEAD (only timestamp/mode changes, no real content)
+- Verified NO corrupt (null-byte) tracked files remaining
+- Recreated .env with Supabase + GitHub credentials
+- Cleaned .next cache and restarted dev server
+- Verified:
+  - Homepage: HTTP 200 ✅
+  - Admin /admin/products: HTTP 307 (login redirect, expected) ✅
+  - /nonexistent-test: HTTP 404 (custom 404 page works) ✅
+
+Stage Summary:
+- Latest commit: 4fdcff2 (Cart drawer overflow fix)
+- All previous work intact:
+  - Custom 404 page
+  - Premium CTA URL fix
+  - Product weight (kg/g) field
+  - Product-level stock field
+  - Hide stock count from customers
+  - Preserve description line breaks (whitespace-pre-line)
+  - Short Description field in admin product form
+  - Cart drawer overflow fix
+  - Dialog max-h + overflow-y-auto (all admin dialogs)
+  - Delete spinner animations (7 admin pages)
+  - Review system, DB-driven settings, etc.
+- Dev server running and ready for new tasks
