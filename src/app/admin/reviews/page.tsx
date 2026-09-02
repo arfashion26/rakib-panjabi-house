@@ -186,7 +186,7 @@ export default function AdminReviewsPage() {
               <div className="flex items-start gap-4">
                 {/* Rating + quote */}
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-accent/10">
-                  <Quote className="h-5 w-5 text-accent" />
+                  <Quote className="h-5 w-5 text-accent-text" />
                 </div>
 
                 {/* Content */}
@@ -214,7 +214,7 @@ export default function AdminReviewsPage() {
                           className={cn(
                             "h-3.5 w-3.5",
                             i < review.rating
-                              ? "fill-accent text-accent"
+                              ? "fill-accent text-accent-text"
                               : "text-muted-foreground/30"
                           )}
                         />
@@ -451,8 +451,8 @@ function ReviewEditor({
                       className={cn(
                         "h-6 w-6 transition-colors",
                         n <= form.rating
-                          ? "fill-accent text-accent"
-                          : "text-muted-foreground/30 hover:text-accent"
+                          ? "fill-accent text-accent-text"
+                          : "text-muted-foreground/30 hover:text-accent-text"
                       )}
                     />
                   </button>

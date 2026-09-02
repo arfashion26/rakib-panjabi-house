@@ -117,7 +117,7 @@ export default function TrackOrderPage() {
         {/* Header */}
         <div className="mb-8 text-center">
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-accent/10">
-            <Package className="h-8 w-8 text-accent" />
+            <Package className="h-8 w-8 text-accent-text" />
           </div>
           <h1 className="font-serif text-3xl font-medium tracking-tight md:text-4xl">
             {t("trackOrder.title")}
@@ -173,7 +173,7 @@ export default function TrackOrderPage() {
                   <p className="text-xs uppercase tracking-wider text-muted-foreground">
                     {t("trackOrder.orderNumber")}
                   </p>
-                  <p className="font-serif text-lg font-medium text-accent">
+                  <p className="font-serif text-lg font-medium text-accent-text">
                     {order.order_number}
                   </p>
                 </div>
@@ -184,7 +184,7 @@ export default function TrackOrderPage() {
                   <p
                     className={cn(
                       "font-medium",
-                      STATUS_LABELS[order.status]?.color || "text-accent"
+                      STATUS_LABELS[order.status]?.color || "text-accent-text"
                     )}
                   >
                     {STATUS_LABELS[order.status]?.[locale === "bn" ? "bn" : "en"] ||
@@ -288,7 +288,7 @@ export default function TrackOrderPage() {
                               : step.done
                               ? "border-accent bg-accent text-accent-foreground"
                               : step.current
-                              ? "border-accent bg-accent/10 text-accent"
+                              ? "border-accent bg-accent/10 text-accent-text"
                               : "border-border bg-background text-muted-foreground"
                           )}
                         >
@@ -309,7 +309,7 @@ export default function TrackOrderPage() {
                             {locale === "bn" ? step.titleBn : step.title}
                           </h4>
                           {step.current && !step.isCancelled && (
-                            <span className="flex items-center gap-1 rounded-full bg-accent/10 px-2 py-0.5 text-[10px] font-medium text-accent">
+                            <span className="flex items-center gap-1 rounded-full bg-accent/10 px-2 py-0.5 text-[10px] font-medium text-accent-text">
                               <Clock className="h-2.5 w-2.5" />
                               {t("trackOrder.current")}
                             </span>
@@ -350,7 +350,7 @@ export default function TrackOrderPage() {
                       href={order.tracking_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="mt-2 inline-block text-xs text-accent hover:underline"
+                      className="mt-2 inline-block text-xs text-accent-text hover:underline"
                     >
                       {locale === "bn" ? "কুরিয়ার ওয়েবসাইটে ট্র্যাক করুন →" : "Track on courier website →"}
                     </a>
@@ -370,7 +370,7 @@ export default function TrackOrderPage() {
           <div className="rounded-lg border border-dashed border-border p-6 text-center">
             <p className="text-sm text-muted-foreground">
               {t("trackOrder.noOrderNumber")}{" "}
-              <Link href="/contact" className="text-accent hover:underline">
+              <Link href="/contact" className="text-accent-text hover:underline">
                 {t("trackOrder.contactSupport")}
               </Link>
             </p>

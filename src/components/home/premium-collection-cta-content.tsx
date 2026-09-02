@@ -24,7 +24,7 @@ export function PremiumCTAContent({ content }: { content: Content }) {
         <div className="absolute left-1/3 bottom-0 h-[300px] w-[300px] rounded-full bg-accent/10 blur-3xl" />
       </div>
       <div className="relative mx-auto max-w-3xl px-4 text-center">
-        <p className="mb-4 text-xs font-semibold uppercase tracking-[0.3em] text-accent">
+        <p className="mb-4 text-xs font-semibold uppercase tracking-[0.3em] text-accent-text">
           {t("premiumCTA.eyebrow")}
         </p>
         <h2 className="font-serif text-3xl font-medium leading-tight tracking-tight md:text-4xl lg:text-5xl">

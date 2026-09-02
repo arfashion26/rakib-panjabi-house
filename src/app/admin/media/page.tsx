@@ -317,7 +317,7 @@ export default function AdminMediaPage() {
               <p><span className="font-medium">Uploaded:</span> {formatDate(previewImage.created_at)}</p>
               <p className="break-all">
                 <span className="font-medium">URL:</span>{" "}
-                <span className="text-accent">{previewImage.url}</span>
+                <span className="text-accent-text">{previewImage.url}</span>
               </p>
             </div>
             <DialogFooter>

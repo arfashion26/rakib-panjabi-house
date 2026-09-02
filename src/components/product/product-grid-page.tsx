@@ -50,7 +50,7 @@ export function ProductGridPage({
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 md:py-12">
       <nav className="mb-6 text-xs text-muted-foreground">
-        <Link href="/" className="hover:text-accent">{t("common.home")}</Link>
+        <Link href="/" className="hover:text-accent-text">{t("common.home")}</Link>
         <span className="mx-1">/</span>
         <span className="text-foreground">{pageTitle}</span>
       </nav>
@@ -60,7 +60,7 @@ export function ProductGridPage({
           className={`mb-3 inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-xs font-semibold uppercase tracking-wider ${
             saleMode
               ? "border-red-500/30 bg-red-500/10 text-red-600"
-              : "border-accent/30 bg-accent/10 text-accent"
+              : "border-accent/30 bg-accent/10 text-accent-text"
           }`}
         >
           <Icon className="h-3 w-3" />

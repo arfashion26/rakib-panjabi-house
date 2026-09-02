@@ -99,7 +99,7 @@ export default function BlogPage() {
       <section className="border-b border-border/60 bg-muted/20 py-12 md:py-16">
         <Container>
           <div className="mx-auto max-w-3xl text-center">
-            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-accent">
+            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-accent-text">
               {t("blog.title")}
             </p>
             <h1 className="font-serif text-4xl font-medium tracking-tight md:text-5xl lg:text-6xl">
@@ -170,7 +170,7 @@ export default function BlogPage() {
                       {featuredPost.excerpt}
                     </p>
                   )}
-                  <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-accent">
+                  <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-accent-text">
                     {t("blog.readMore")}
                     <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                   </span>
@@ -256,7 +256,7 @@ export default function BlogPage() {
                       {getReadTime(post.content)} {t("blog.minRead")}
                     </div>
                     <h3 className="font-serif text-xl font-medium leading-snug">
-                      <Link href={`/blog/${post.slug}`} className="hover:text-accent">
+                      <Link href={`/blog/${post.slug}`} className="hover:text-accent-text">
                         {post.title}
                       </Link>
                     </h3>
@@ -267,7 +267,7 @@ export default function BlogPage() {
                     )}
                     <Link
                       href={`/blog/${post.slug}`}
-                      className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-accent hover:underline"
+                      className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-accent-text hover:underline"
                     >
                       {t("blog.readMore")}
                       <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />

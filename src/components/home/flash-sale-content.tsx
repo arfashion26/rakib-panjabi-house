@@ -78,7 +78,7 @@ export function FlashSaleContent({ products }: { products: Product[] }) {
               <Flame className="h-6 w-6" />
             </div>
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">{t("flashSale.eyebrow")}</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent-text">{t("flashSale.eyebrow")}</p>
               <h2 className="font-serif text-3xl font-medium tracking-tight md:text-4xl">
                 {t("flashSale.title")}
               </h2>
@@ -87,9 +87,9 @@ export function FlashSaleContent({ products }: { products: Product[] }) {
 
           <div className="flex items-center gap-3">
             <TimeBlock value={time.hours} label={t("flashSale.hours")} />
-            <span className="font-serif text-2xl text-accent">:</span>
+            <span className="font-serif text-2xl text-accent-text">:</span>
             <TimeBlock value={time.minutes} label={t("flashSale.mins")} />
-            <span className="font-serif text-2xl text-accent">:</span>
+            <span className="font-serif text-2xl text-accent-text">:</span>
             <TimeBlock value={time.seconds} label={t("flashSale.secs")} />
           </div>
         </div>

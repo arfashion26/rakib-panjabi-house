@@ -120,7 +120,7 @@ export function CustomCodeEditor() {
     <div className="rounded-lg border border-border/60 bg-background p-6">
       <div className="mb-4 flex items-start justify-between gap-4">
         <div className="flex items-start gap-2">
-          <Code2 className="mt-0.5 h-5 w-5 text-accent" />
+          <Code2 className="mt-0.5 h-5 w-5 text-accent-text" />
           <div>
             <h2 className="font-serif text-lg font-medium">Custom Tracking Code</h2>
             <p className="mt-1 text-xs text-muted-foreground">

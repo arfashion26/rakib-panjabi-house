@@ -30,7 +30,7 @@ export default function ContactPage() {
       <section className="border-b border-border/60 bg-muted/20 py-12 md:py-16">
         <Container>
           <div className="mx-auto max-w-2xl text-center">
-            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-accent">
+            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-accent-text">
               {t("contact.heroEyebrow")}
             </p>
             <h1 className="font-serif text-4xl font-medium tracking-tight md:text-5xl">
@@ -54,7 +54,7 @@ export default function ContactPage() {
                   href="mailto:info@alrakib.com"
                   className="flex items-start gap-3 rounded-lg border border-border/60 bg-card p-4 transition-colors hover:border-accent/40"
                 >
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/10 text-accent">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/10 text-accent-text">
                     <Mail className="h-5 w-5" />
                   </div>
                   <div>
@@ -67,7 +67,7 @@ export default function ContactPage() {
                   href="tel:+8801716243949"
                   className="flex items-start gap-3 rounded-lg border border-border/60 bg-card p-4 transition-colors hover:border-accent/40"
                 >
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/10 text-accent">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/10 text-accent-text">
                     <Phone className="h-5 w-5" />
                   </div>
                   <div>
@@ -77,7 +77,7 @@ export default function ContactPage() {
                   </div>
                 </a>
                 <div className="flex items-start gap-3 rounded-lg border border-border/60 bg-card p-4">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/10 text-accent">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/10 text-accent-text">
                     <MapPin className="h-5 w-5" />
                   </div>
                   <div>
@@ -92,7 +92,7 @@ export default function ContactPage() {
             {/* Hours */}
             <div className="rounded-lg border border-border/60 bg-card p-6">
               <div className="mb-4 flex items-center gap-2">
-                <Clock className="h-5 w-5 text-accent" />
+                <Clock className="h-5 w-5 text-accent-text" />
                 <h3 className="font-serif text-lg font-medium">{t("contact.businessHours")}</h3>
               </div>
               <div className="space-y-2 text-sm">
@@ -106,7 +106,7 @@ export default function ContactPage() {
                 </div>
                 <div className="flex justify-between border-t border-border pt-2">
                   <span className="text-muted-foreground">{t("contact.onlineSupport")}</span>
-                  <span className="font-medium text-accent">24/7</span>
+                  <span className="font-medium text-accent-text">24/7</span>
                 </div>
               </div>
             </div>

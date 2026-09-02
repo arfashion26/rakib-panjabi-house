@@ -66,9 +66,9 @@ export function CategoryContent({
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <nav className="mb-4 text-xs text-muted-foreground">
-        <Link href="/" className="hover:text-accent">Home</Link>
+        <Link href="/" className="hover:text-accent-text">Home</Link>
         <span className="mx-1">/</span>
-        <Link href="/shop" className="hover:text-accent">Shop</Link>
+        <Link href="/shop" className="hover:text-accent-text">Shop</Link>
         <span className="mx-1">/</span>
         <span className="text-foreground">{category.name}</span>
       </nav>

@@ -72,7 +72,7 @@ export default function PrivacyPolicyPage() {
   return (
     <Container className="py-12 md:py-16">
       <div className="mx-auto max-w-3xl">
-        <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-accent">
+        <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-accent-text">
           {t("policies.lastUpdated")}
         </p>
         <h1 className="font-serif text-4xl font-medium tracking-tight md:text-5xl">

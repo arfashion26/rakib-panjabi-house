@@ -53,14 +53,14 @@ export function CustomerReviews() {
               className="relative flex flex-col rounded-lg border border-border/60 bg-card p-6 shadow-sm transition-shadow hover:shadow-md"
             >
               {/* Decorative quote */}
-              <Quote className="absolute right-6 top-6 h-8 w-8 text-accent/20" />
+              <Quote className="absolute right-6 top-6 h-8 w-8 text-accent-text/20" />
 
               {/* Stars */}
               <div className="mb-4 flex gap-1">
                 {Array.from({ length: review.rating }).map((_, i) => (
                   <Star
                     key={i}
-                    className="h-4 w-4 fill-accent text-accent"
+                    className="h-4 w-4 fill-accent text-accent-text"
                   />
                 ))}
               </div>
@@ -72,7 +72,7 @@ export function CustomerReviews() {
 
               {/* Reviewer */}
               <div className="flex items-center gap-3 border-t border-border/60 pt-4">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/10 text-sm font-semibold text-accent">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/10 text-sm font-semibold text-accent-text">
                   {review.initials}
                 </div>
                 <div>
@@ -91,7 +91,7 @@ export function CustomerReviews() {
         {/* Trust stats */}
         <div className="mt-12 flex flex-wrap items-center justify-center gap-8 border-t border-border/60 pt-8 md:gap-16">
           <div className="text-center">
-            <div className="font-serif text-3xl font-medium text-accent md:text-4xl">
+            <div className="font-serif text-3xl font-medium text-accent-text md:text-4xl">
               10,000+
             </div>
             <div className="mt-1 text-xs uppercase tracking-wider text-muted-foreground">
@@ -100,7 +100,7 @@ export function CustomerReviews() {
           </div>
           <div className="h-12 w-px bg-border/60 hidden md:block" />
           <div className="text-center">
-            <div className="font-serif text-3xl font-medium text-accent md:text-4xl">
+            <div className="font-serif text-3xl font-medium text-accent-text md:text-4xl">
               4.9/5
             </div>
             <div className="mt-1 text-xs uppercase tracking-wider text-muted-foreground">
@@ -109,7 +109,7 @@ export function CustomerReviews() {
           </div>
           <div className="h-12 w-px bg-border/60 hidden md:block" />
           <div className="text-center">
-            <div className="font-serif text-3xl font-medium text-accent md:text-4xl">
+            <div className="font-serif text-3xl font-medium text-accent-text md:text-4xl">
               98%
             </div>
             <div className="mt-1 text-xs uppercase tracking-wider text-muted-foreground">

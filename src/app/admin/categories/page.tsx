@@ -197,7 +197,7 @@ export default function AdminCategoriesPage() {
                     <td className="p-3 text-center text-sm">{cat.order}</td>
                     <td className="p-3 text-center">
                       {cat.is_featured && (
-                        <Badge variant="secondary" className="bg-accent/10 text-accent">
+                        <Badge variant="secondary" className="bg-accent/10 text-accent-text">
                           Featured
                         </Badge>
                       )}

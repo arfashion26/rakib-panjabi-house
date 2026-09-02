@@ -36,7 +36,7 @@ export function BrandStoryContent({ content }: { content: Content }) {
               ) : (
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="text-center">
-                    <div className="font-serif text-[200px] font-light leading-none text-accent/15">RPH</div>
+                    <div className="font-serif text-[200px] font-light leading-none text-accent-text/15">RPH</div>
                     <p className="mt-4 text-sm uppercase tracking-[0.3em] text-muted-foreground">Est. 2026</p>
                   </div>
                 </div>
@@ -45,14 +45,14 @@ export function BrandStoryContent({ content }: { content: Content }) {
             <div className="absolute inset-4 rounded-lg border border-accent/20" />
             <div className="absolute inset-8 rounded-lg border border-accent/10" />
             <div className="absolute -bottom-6 -right-6 rounded-lg bg-background p-5 shadow-xl">
-              <div className="font-serif text-3xl font-medium text-accent">10+</div>
+              <div className="font-serif text-3xl font-medium text-accent-text">10+</div>
               <div className="mt-1 text-xs uppercase tracking-wider text-muted-foreground" dangerouslySetInnerHTML={{ __html: t("brandStory.yearsLabel").replace(" ", "<br />") }} />
             </div>
           </div>
 
           <div>
             <div className="mb-6">
-              <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-accent">{t("brandStory.eyebrow")}</p>
+              <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-accent-text">{t("brandStory.eyebrow")}</p>
               <h2 className="font-serif text-3xl font-medium tracking-tight md:text-4xl lg:text-5xl">{t("brandStory.title")}</h2>
             </div>
             <div className="space-y-4">

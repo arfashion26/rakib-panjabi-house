@@ -93,7 +93,7 @@ export default function OrderDetailPage() {
     return (
       <div className="py-12 text-center">
         <p className="text-sm font-medium">{t("orderDetail.orderNotFound")}</p>
-        <Link href="/dashboard/orders" className="mt-4 inline-block text-sm text-accent hover:underline">
+        <Link href="/dashboard/orders" className="mt-4 inline-block text-sm text-accent-text hover:underline">
           ← {t("orderDetail.backToOrders")}
         </Link>
       </div>
@@ -107,7 +107,7 @@ export default function OrderDetailPage() {
 
   return (
     <div>
-      <Link href="/dashboard/orders" className="mb-6 inline-flex items-center text-sm text-muted-foreground hover:text-accent">
+      <Link href="/dashboard/orders" className="mb-6 inline-flex items-center text-sm text-muted-foreground hover:text-accent-text">
         <ArrowLeft className="mr-1 h-4 w-4" />
         {t("orderDetail.backToOrders")}
       </Link>
@@ -130,7 +130,7 @@ export default function OrderDetailPage() {
           <Badge variant="secondary" className={statusColors[order.status] || ""}>
             {order.status}
           </Badge>
-          <Badge variant="secondary" className="bg-accent/10 text-accent">
+          <Badge variant="secondary" className="bg-accent/10 text-accent-text">
             {order.payment_status}
           </Badge>
         </div>

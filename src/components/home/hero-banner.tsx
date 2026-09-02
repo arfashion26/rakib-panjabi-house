@@ -33,7 +33,7 @@ export function HeroBanner() {
         <div className="grid min-h-[600px] items-center py-16 md:py-24 lg:grid-cols-2 lg:gap-12 lg:py-32">
           {/* Left: Text content */}
           <div className="text-center lg:text-left">
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/10 px-4 py-1.5 text-xs font-medium uppercase tracking-wider text-accent">
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/10 px-4 py-1.5 text-xs font-medium uppercase tracking-wider text-accent-text">
               <Sparkles className="h-3 w-3" />
               New Autumn Collection 2026
             </div>
@@ -41,7 +41,7 @@ export function HeroBanner() {
             <h1 className="font-serif text-4xl font-medium leading-[1.1] tracking-tight md:text-5xl lg:text-6xl xl:text-7xl">
               Timeless Elegance,
               <br />
-              <span className="italic text-accent">Modern Refinement</span>
+              <span className="italic text-accent-text">Modern Refinement</span>
             </h1>
 
             <p className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-primary-foreground/80 md:text-lg lg:mx-0">
@@ -70,7 +70,7 @@ export function HeroBanner() {
             {/* Stats */}
             <div className="mt-12 grid grid-cols-3 gap-6 border-t border-primary-foreground/10 pt-6 lg:max-w-md">
               <div>
-                <div className="font-serif text-2xl font-medium text-accent md:text-3xl">
+                <div className="font-serif text-2xl font-medium text-accent-text md:text-3xl">
                   10K+
                 </div>
                 <div className="mt-1 text-xs text-primary-foreground/60">
@@ -78,7 +78,7 @@ export function HeroBanner() {
                 </div>
               </div>
               <div>
-                <div className="font-serif text-2xl font-medium text-accent md:text-3xl">
+                <div className="font-serif text-2xl font-medium text-accent-text md:text-3xl">
                   500+
                 </div>
                 <div className="mt-1 text-xs text-primary-foreground/60">
@@ -86,7 +86,7 @@ export function HeroBanner() {
                 </div>
               </div>
               <div>
-                <div className="font-serif text-2xl font-medium text-accent md:text-3xl">
+                <div className="font-serif text-2xl font-medium text-accent-text md:text-3xl">
                   4.9
                 </div>
                 <div className="mt-1 text-xs text-primary-foreground/60">
@@ -103,7 +103,7 @@ export function HeroBanner() {
               <div className="absolute inset-0 bg-gradient-to-br from-accent/20 via-accent/5 to-transparent" />
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="text-center">
-                  <div className="font-serif text-9xl font-light text-accent/30">
+                  <div className="font-serif text-9xl font-light text-accent-text/30">
                     RPH
                   </div>
                   <p className="mt-4 text-sm uppercase tracking-[0.3em] text-primary-foreground/40">
@@ -119,7 +119,7 @@ export function HeroBanner() {
             {/* Floating accent card */}
             <div className="absolute -bottom-6 -left-6 rounded-lg bg-background p-4 shadow-xl">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/15 text-accent">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/15 text-accent-text">
                   <Sparkles className="h-5 w-5" />
                 </div>
                 <div>

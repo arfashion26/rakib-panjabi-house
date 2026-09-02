@@ -41,7 +41,7 @@ export default function ForgotPasswordPage() {
       <div className="w-full max-w-md">
         <div className="rounded-xl border border-border/60 bg-background p-6 text-center shadow-sm md:p-8">
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-accent/10">
-            <CheckCircle2 className="h-8 w-8 text-accent" />
+            <CheckCircle2 className="h-8 w-8 text-accent-text" />
           </div>
           <h1 className="font-serif text-2xl font-medium">Check Your Email</h1>
           <p className="mt-3 text-sm text-muted-foreground">
@@ -104,7 +104,7 @@ export default function ForgotPasswordPage() {
         </form>
 
         <p className="mt-6 text-center text-sm text-muted-foreground">
-          <Link href="/login" className="inline-flex items-center text-accent hover:underline">
+          <Link href="/login" className="inline-flex items-center text-accent-text hover:underline">
             <ArrowLeft className="mr-1 h-3.5 w-3.5" />
             Back to login
           </Link>

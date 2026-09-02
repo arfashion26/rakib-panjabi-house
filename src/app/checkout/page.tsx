@@ -302,16 +302,16 @@ export default function CheckoutPage() {
     <Container className="py-8">
       {/* Breadcrumb */}
       <nav className="mb-6 text-xs text-muted-foreground">
-        <Link href="/" className="hover:text-accent">
+        <Link href="/" className="hover:text-accent-text">
           {t("common.home")}
         </Link>
         <span className="mx-1">/</span>
         {isGiftCard ? (
-          <Link href="/gift-cards" className="hover:text-accent">
+          <Link href="/gift-cards" className="hover:text-accent-text">
             {t("giftCards.title")}
           </Link>
         ) : (
-          <Link href="/cart" className="hover:text-accent">
+          <Link href="/cart" className="hover:text-accent-text">
             {t("common.cart")}
           </Link>
         )}
@@ -323,9 +323,9 @@ export default function CheckoutPage() {
       {isGiftCard && (
         <div className="mb-6 rounded-lg border border-accent/30 bg-accent/5 p-4">
           <div className="flex items-start gap-3">
-            <Gift className="h-5 w-5 shrink-0 text-accent" />
+            <Gift className="h-5 w-5 shrink-0 text-accent-text" />
             <div className="flex-1">
-              <p className="text-sm font-medium text-accent">
+              <p className="text-sm font-medium text-accent-text">
                 {locale === "bn" ? "গিফট কার্ড অর্ডার" : "Gift Card Order"}
               </p>
               <p className="mt-1 text-xs text-muted-foreground">
@@ -561,7 +561,7 @@ export default function CheckoutPage() {
                 <div className="flex gap-3">
                   <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-md bg-gradient-to-br from-accent/30 to-accent/10">
                     <div className="flex h-full w-full items-center justify-center">
-                      <Gift className="h-6 w-6 text-accent" />
+                      <Gift className="h-6 w-6 text-accent-text" />
                     </div>
                   </div>
                   <div className="flex flex-1 flex-col justify-center">
@@ -631,7 +631,7 @@ export default function CheckoutPage() {
               {couponData ? (
                 <div className="flex items-center justify-between rounded-md border border-accent/30 bg-accent/10 px-3 py-2">
                   <div>
-                    <p className="text-sm font-medium text-accent">{couponData.code}</p>
+                    <p className="text-sm font-medium text-accent-text">{couponData.code}</p>
                     <p className="text-xs text-muted-foreground">
                       {t("cartPage.youSave").replace("{amount}", formatPrice(couponData.discount))}
                     </p>
@@ -669,7 +669,7 @@ export default function CheckoutPage() {
                 <span className="font-medium">{formatPrice(subtotal)}</span>
               </div>
               {couponDiscount > 0 && (
-                <div className="flex justify-between text-accent">
+                <div className="flex justify-between text-accent-text">
                   <span>{t("cartPage.discountLabel")}</span>
                   <span>-{formatPrice(couponDiscount)}</span>
                 </div>
@@ -718,7 +718,7 @@ export default function CheckoutPage() {
                 <span>{t("checkout.trustSecurePayment")}</span>
               </div>
               <div className="flex items-center gap-2">
-                <Truck className="h-3.5 w-3.5 text-accent" />
+                <Truck className="h-3.5 w-3.5 text-accent-text" />
                 <span>{t("checkout.trustFastDelivery")}</span>
               </div>
               <div className="flex items-center gap-2">

@@ -115,7 +115,7 @@ function PageList({ onSelect }: { onSelect: (slug: PageSlug) => void }) {
               className="group flex flex-col rounded-xl border border-border/60 bg-background p-4 text-left transition-all hover:border-accent/40 hover:shadow-md"
             >
               <div className="mb-2 flex items-start justify-between">
-                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent/10 text-accent">
+                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent/10 text-accent-text">
                   <FileText className="h-4 w-4" />
                 </div>
                 {isEdited ? (
@@ -137,7 +137,7 @@ function PageList({ onSelect }: { onSelect: (slug: PageSlug) => void }) {
                 </p>
               </div>
 
-              <div className="mt-3 flex items-center gap-1 text-xs text-accent opacity-0 transition-opacity group-hover:opacity-100">
+              <div className="mt-3 flex items-center gap-1 text-xs text-accent-text opacity-0 transition-opacity group-hover:opacity-100">
                 <Eye className="h-3 w-3" />
                 Edit content
               </div>
@@ -345,7 +345,7 @@ function PageEditor({ slug, onBack }: { slug: PageSlug; onBack: () => void }) {
                   <button
                     type="button"
                     onClick={() => update("metaTitle", info.defaultMetaTitle)}
-                    className="text-[10px] text-accent hover:underline"
+                    className="text-[10px] text-accent-text hover:underline"
                   >
                     Use default
                   </button>
@@ -375,7 +375,7 @@ function PageEditor({ slug, onBack }: { slug: PageSlug; onBack: () => void }) {
                   <button
                     type="button"
                     onClick={() => update("metaDescription", info.defaultMetaDescription)}
-                    className="text-[10px] text-accent hover:underline"
+                    className="text-[10px] text-accent-text hover:underline"
                   >
                     Use default
                   </button>

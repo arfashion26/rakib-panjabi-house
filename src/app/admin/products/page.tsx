@@ -362,7 +362,7 @@ export default function AdminProductsPage() {
                             <p className="line-clamp-1 text-sm font-medium">{product.name}</p>
                             <div className="mt-0.5 flex items-center gap-1">
                               {product.is_featured && <Badge variant="secondary" className="h-4 text-[10px]">Featured</Badge>}
-                              {product.is_best_seller && <Badge variant="secondary" className="h-4 bg-accent/10 text-accent text-[10px]">Best</Badge>}
+                              {product.is_best_seller && <Badge variant="secondary" className="h-4 bg-accent/10 text-accent-text text-[10px]">Best</Badge>}
                               {product.is_new_arrival && <Badge variant="secondary" className="h-4 text-[10px]">New</Badge>}
                             </div>
                           </div>

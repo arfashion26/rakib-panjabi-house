@@ -53,7 +53,7 @@ export function BlogPosts() {
           />
           <Link
             href="/blog"
-            className="inline-flex shrink-0 items-center gap-2 text-sm font-medium text-accent hover:underline"
+            className="inline-flex shrink-0 items-center gap-2 text-sm font-medium text-accent-text hover:underline"
           >
             {t("blogSection.viewAll")}
             <ArrowRight className="h-4 w-4" />
@@ -92,7 +92,7 @@ export function BlogPosts() {
                 <h3 className="font-serif text-xl font-medium leading-snug text-foreground">
                   <Link
                     href="/blog"
-                    className="transition-colors hover:text-accent"
+                    className="transition-colors hover:text-accent-text"
                   >
                     {post.title}
                   </Link>
@@ -104,7 +104,7 @@ export function BlogPosts() {
 
                 <Link
                   href="/blog"
-                  className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-accent hover:underline"
+                  className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-accent-text hover:underline"
                 >
                   {t("blogSection.readMore")}
                   <ArrowRight className="h-3.5 w-3.5" />

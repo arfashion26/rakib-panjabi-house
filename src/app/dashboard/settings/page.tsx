@@ -44,7 +44,7 @@ export default function SettingsPage() {
         {/* Profile */}
         <div className="rounded-lg border border-border/60 bg-background p-6">
           <div className="mb-4 flex items-center gap-2">
-            <User className="h-5 w-5 text-accent" />
+            <User className="h-5 w-5 text-accent-text" />
             <h2 className="font-serif text-lg font-medium">{t("dashboard.profileInfo")}</h2>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
@@ -107,7 +107,7 @@ export default function SettingsPage() {
         {/* Preferences */}
         <div className="rounded-lg border border-border/60 bg-background p-6">
           <div className="mb-4 flex items-center gap-2">
-            <Globe className="h-5 w-5 text-accent" />
+            <Globe className="h-5 w-5 text-accent-text" />
             <h2 className="font-serif text-lg font-medium">{t("dashboard.preferences")}</h2>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
@@ -142,7 +142,7 @@ export default function SettingsPage() {
         {/* Notifications */}
         <div className="rounded-lg border border-border/60 bg-background p-6">
           <div className="mb-4 flex items-center gap-2">
-            <Bell className="h-5 w-5 text-accent" />
+            <Bell className="h-5 w-5 text-accent-text" />
             <h2 className="font-serif text-lg font-medium">
               {t("dashboard.notifications")}
             </h2>
@@ -176,7 +176,7 @@ export default function SettingsPage() {
         {/* Security */}
         <div className="rounded-lg border border-border/60 bg-background p-6">
           <div className="mb-4 flex items-center gap-2">
-            <Shield className="h-5 w-5 text-accent" />
+            <Shield className="h-5 w-5 text-accent-text" />
             <h2 className="font-serif text-lg font-medium">{t("dashboard.security")}</h2>
           </div>
           <div className="space-y-4">

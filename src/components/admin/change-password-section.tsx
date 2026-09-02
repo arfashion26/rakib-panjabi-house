@@ -94,7 +94,7 @@ export function ChangePasswordSection() {
   return (
     <form onSubmit={handleSubmit} className="rounded-lg border border-border/60 bg-background p-6">
       <div className="mb-4 flex items-start gap-2">
-        <Key className="mt-0.5 h-5 w-5 text-accent" />
+        <Key className="mt-0.5 h-5 w-5 text-accent-text" />
         <div>
           <h2 className="font-serif text-lg font-medium">Change Password</h2>
           <p className="mt-1 text-xs text-muted-foreground">

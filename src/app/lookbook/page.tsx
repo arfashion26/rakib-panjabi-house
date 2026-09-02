@@ -69,7 +69,7 @@ export default function LookbookPage() {
         </div>
         <Container className="relative">
           <div className="mx-auto max-w-3xl text-center">
-            <p className="mb-4 text-xs font-semibold uppercase tracking-[0.3em] text-accent">
+            <p className="mb-4 text-xs font-semibold uppercase tracking-[0.3em] text-accent-text">
               {t("lookbook.title")}
             </p>
             <h1 className="font-serif text-4xl font-medium leading-tight tracking-tight md:text-5xl lg:text-6xl">
@@ -107,7 +107,7 @@ export default function LookbookPage() {
                     {look.title}
                   </h2>
                   <p className="mt-2 text-sm text-white/80">{look.desc}</p>
-                  <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-accent">
+                  <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-accent-text">
                     {t("lookbook.shopLook")}
                     <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                   </span>
@@ -120,7 +120,7 @@ export default function LookbookPage() {
         {/* CTA */}
         <div className="mt-16 text-center">
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-accent/10">
-            <Camera className="h-8 w-8 text-accent" />
+            <Camera className="h-8 w-8 text-accent-text" />
           </div>
           <h2 className="font-serif text-3xl font-medium">
             {t("lookbook.viewProduct")}

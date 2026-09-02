@@ -88,7 +88,7 @@ export default function FAQPage() {
         <Container>
           <div className="mx-auto max-w-2xl text-center">
             <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-accent/10">
-              <HelpCircle className="h-7 w-7 text-accent" />
+              <HelpCircle className="h-7 w-7 text-accent-text" />
             </div>
             <h1 className="font-serif text-4xl font-medium tracking-tight md:text-5xl">
               {t("faq.title")}
@@ -135,7 +135,7 @@ export default function FAQPage() {
         <div className="mx-auto max-w-3xl space-y-8">
           {filteredFaqs.map((section) => (
             <div key={section.category}>
-              <h2 className="mb-4 font-serif text-xl font-medium text-accent">
+              <h2 className="mb-4 font-serif text-xl font-medium text-accent-text">
                 {section.category}
               </h2>
               <Accordion type="single" collapsible className="space-y-3">

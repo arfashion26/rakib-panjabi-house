@@ -120,7 +120,7 @@ export function ShopContent({
             onClick={() => updateParam("category", "")}
             className={cn(
               "block w-full rounded-md px-3 py-1.5 text-left text-sm transition-colors",
-              !categoryParam ? "bg-accent/10 font-medium text-accent" : "text-muted-foreground hover:bg-accent/5 hover:text-foreground"
+              !categoryParam ? "bg-accent/10 font-medium text-accent-text" : "text-muted-foreground hover:bg-accent/5 hover:text-foreground"
             )}
           >
             {t("products.allCategories")}
@@ -131,7 +131,7 @@ export function ShopContent({
               onClick={() => updateParam("category", cat.slug)}
               className={cn(
                 "block w-full rounded-md px-3 py-1.5 text-left text-sm capitalize transition-colors",
-                categoryParam === cat.slug ? "bg-accent/10 font-medium text-accent" : "text-muted-foreground hover:bg-accent/5 hover:text-foreground"
+                categoryParam === cat.slug ? "bg-accent/10 font-medium text-accent-text" : "text-muted-foreground hover:bg-accent/5 hover:text-foreground"
               )}
             >
               {cat.name}
@@ -164,7 +164,7 @@ export function ShopContent({
         <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-foreground">{t("products.sizes")}</h3>
         <div className="flex flex-wrap gap-2">
           {ALL_SIZES.map((size) => (
-            <button key={size} className="flex h-9 min-w-9 items-center justify-center rounded-md border border-border px-2 text-xs font-medium transition-colors hover:border-accent hover:text-accent">
+            <button key={size} className="flex h-9 min-w-9 items-center justify-center rounded-md border border-border px-2 text-xs font-medium transition-colors hover:border-accent hover:text-accent-text">
               {size}
             </button>
           ))}

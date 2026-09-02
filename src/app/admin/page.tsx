@@ -55,7 +55,7 @@ export default function AdminDashboard() {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
         <div className="text-center">
-          <Loader2 className="mx-auto mb-3 h-8 w-8 animate-spin text-accent" />
+          <Loader2 className="mx-auto mb-3 h-8 w-8 animate-spin text-accent-text" />
           <p className="text-sm text-muted-foreground">Loading dashboard...</p>
         </div>
       </div>
@@ -106,7 +106,7 @@ export default function AdminDashboard() {
       value: String(data?.totalProducts || 0),
       icon: Package,
       gradient: "from-accent/20 to-accent/5",
-      iconBg: "bg-accent/15 text-accent",
+      iconBg: "bg-accent/15 text-accent-text",
       link: "/admin/products",
     },
   ];
@@ -185,7 +185,7 @@ export default function AdminDashboard() {
                 >
                   <stat.icon className="h-5 w-5" />
                 </div>
-                <ArrowUpRight className="h-4 w-4 text-muted-foreground/40 transition-colors group-hover:text-accent" />
+                <ArrowUpRight className="h-4 w-4 text-muted-foreground/40 transition-colors group-hover:text-accent-text" />
               </div>
               <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
                 {stat.label}
@@ -212,7 +212,7 @@ export default function AdminDashboard() {
               </div>
               <Link
                 href="/admin/orders"
-                className="flex items-center gap-1 text-xs font-medium text-accent hover:underline"
+                className="flex items-center gap-1 text-xs font-medium text-accent-text hover:underline"
               >
                 View all
                 <ArrowUpRight className="h-3 w-3" />
@@ -286,7 +286,7 @@ export default function AdminDashboard() {
                   href={action.href}
                   className="group flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-muted/40"
                 >
-                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent/10 text-accent transition-colors group-hover:bg-accent group-hover:text-accent-foreground">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent/10 text-accent-text transition-colors group-hover:bg-accent group-hover:text-accent-foreground">
                     <action.icon className="h-4 w-4" />
                   </div>
                   <div className="flex-1">
@@ -295,7 +295,7 @@ export default function AdminDashboard() {
                     </p>
                     <p className="text-xs text-muted-foreground">{action.desc}</p>
                   </div>
-                  <ArrowUpRight className="h-3.5 w-3.5 text-muted-foreground/40 transition-colors group-hover:text-accent" />
+                  <ArrowUpRight className="h-3.5 w-3.5 text-muted-foreground/40 transition-colors group-hover:text-accent-text" />
                 </Link>
               ))}
             </div>
@@ -304,7 +304,7 @@ export default function AdminDashboard() {
           {/* Store status card */}
           <div className="mt-4 overflow-hidden rounded-xl border border-accent/30 bg-gradient-to-br from-accent/10 to-accent/5 p-5">
             <div className="flex items-start gap-3">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-accent/20 text-accent">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-accent/20 text-accent-text">
                 <TrendingUp className="h-5 w-5" />
               </div>
               <div>
@@ -317,7 +317,7 @@ export default function AdminDashboard() {
                 <Link
                   href="/"
                   target="_blank"
-                  className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-accent hover:underline"
+                  className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-accent-text hover:underline"
                 >
                   Visit store
                   <ArrowUpRight className="h-3 w-3" />

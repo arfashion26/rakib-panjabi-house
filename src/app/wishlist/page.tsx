@@ -94,7 +94,7 @@ export default function WishlistPage() {
   return (
     <Container className="py-8">
       <nav className="mb-6 text-xs text-muted-foreground">
-        <Link href="/" className="hover:text-accent">{t("common.home")}</Link>
+        <Link href="/" className="hover:text-accent-text">{t("common.home")}</Link>
         <span className="mx-1">/</span>
         <span className="text-foreground">{t("common.wishlist")}</span>
       </nav>

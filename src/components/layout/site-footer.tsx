@@ -44,16 +44,16 @@ export function SiteFooter() {
                 </div>
                 <div className="leading-none">
                   <p className="font-serif text-lg font-semibold md:text-xl">Al-Rakib</p>
-                  <p className="text-[10px] uppercase tracking-[0.2em] text-accent md:text-xs">Panjabi House</p>
+                  <p className="text-[10px] uppercase tracking-[0.2em] text-accent-text md:text-xs">Panjabi House</p>
                 </div>
               </div>
             </Link>
             <div className="space-y-2 text-xs text-primary-foreground/60">
-              <a href={`mailto:${siteConfig.email}`} className="flex items-center gap-2 transition-colors hover:text-accent">
+              <a href={`mailto:${siteConfig.email}`} className="flex items-center gap-2 transition-colors hover:text-accent-text">
                 <Mail className="h-3.5 w-3.5 shrink-0" />
                 {siteConfig.email}
               </a>
-              <a href={`tel:${siteConfig.phone}`} className="flex items-center gap-2 transition-colors hover:text-accent">
+              <a href={`tel:${siteConfig.phone}`} className="flex items-center gap-2 transition-colors hover:text-accent-text">
                 <Phone className="h-3.5 w-3.5 shrink-0" />
                 {siteConfig.phone}
               </a>
@@ -66,7 +66,7 @@ export function SiteFooter() {
 
           {/* Column 2: Shop */}
           <div>
-            <h3 className="mb-4 text-xs font-bold uppercase tracking-[0.15em] text-accent">
+            <h3 className="mb-4 text-xs font-bold uppercase tracking-[0.15em] text-accent-text">
               {footerNav.shop.title}
             </h3>
             <ul className="space-y-2.5">
@@ -74,7 +74,7 @@ export function SiteFooter() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm text-primary-foreground/60 transition-colors hover:text-accent"
+                    className="text-sm text-primary-foreground/60 transition-colors hover:text-accent-text"
                   >
                     {link.title}
                   </Link>
@@ -85,7 +85,7 @@ export function SiteFooter() {
 
           {/* Column 3: Customer Service */}
           <div>
-            <h3 className="mb-4 text-xs font-bold uppercase tracking-[0.15em] text-accent">
+            <h3 className="mb-4 text-xs font-bold uppercase tracking-[0.15em] text-accent-text">
               {footerNav.customer.title}
             </h3>
             <ul className="space-y-2.5">
@@ -93,7 +93,7 @@ export function SiteFooter() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm text-primary-foreground/60 transition-colors hover:text-accent"
+                    className="text-sm text-primary-foreground/60 transition-colors hover:text-accent-text"
                   >
                     {link.title}
                   </Link>
@@ -104,7 +104,7 @@ export function SiteFooter() {
 
           {/* Column 4: Policies + Social */}
           <div>
-            <h3 className="mb-4 text-xs font-bold uppercase tracking-[0.15em] text-accent">
+            <h3 className="mb-4 text-xs font-bold uppercase tracking-[0.15em] text-accent-text">
               {footerNav.policies.title}
             </h3>
             <ul className="space-y-2.5">
@@ -112,7 +112,7 @@ export function SiteFooter() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm text-primary-foreground/60 transition-colors hover:text-accent"
+                    className="text-sm text-primary-foreground/60 transition-colors hover:text-accent-text"
                   >
                     {link.title}
                   </Link>
@@ -124,7 +124,7 @@ export function SiteFooter() {
 
         {/* Social icons row — centered, prominent */}
         <div className="mt-10 flex flex-col items-center gap-4 border-t border-primary-foreground/10 pt-8">
-          <p className="text-xs font-bold uppercase tracking-[0.2em] text-accent">
+          <p className="text-xs font-bold uppercase tracking-[0.2em] text-accent-text">
             {t("footer.followUs")}
           </p>
           <div className="flex items-center gap-3">
@@ -154,7 +154,7 @@ export function SiteFooter() {
                 href="https://cynlex.com/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-medium text-accent hover:underline"
+                className="font-medium text-accent-text hover:underline"
               >
                 Managed by Cynlex Digital
               </a>

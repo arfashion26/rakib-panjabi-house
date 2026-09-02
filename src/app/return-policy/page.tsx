@@ -24,7 +24,7 @@ export default function ReturnPolicyPage() {
   return (
     <Container className="py-12 md:py-16">
       <div className="mx-auto max-w-3xl">
-        <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-accent">
+        <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-accent-text">
           {t("policies.lastUpdated")}
         </p>
         <h1 className="font-serif text-4xl font-medium tracking-tight md:text-5xl">
@@ -37,17 +37,17 @@ export default function ReturnPolicyPage() {
         {/* Quick summary */}
         <div className="mt-8 grid gap-4 sm:grid-cols-3">
           <div className="rounded-lg border border-border/60 bg-card p-4 text-center">
-            <RefreshCw className="mx-auto mb-2 h-8 w-8 text-accent" />
+            <RefreshCw className="mx-auto mb-2 h-8 w-8 text-accent-text" />
             <p className="font-serif text-2xl font-medium">7 Days</p>
             <p className="text-xs text-muted-foreground">Return window</p>
           </div>
           <div className="rounded-lg border border-border/60 bg-card p-4 text-center">
-            <CreditCard className="mx-auto mb-2 h-8 w-8 text-accent" />
+            <CreditCard className="mx-auto mb-2 h-8 w-8 text-accent-text" />
             <p className="font-serif text-2xl font-medium">3-5 Days</p>
             <p className="text-xs text-muted-foreground">Refund processing</p>
           </div>
           <div className="rounded-lg border border-border/60 bg-card p-4 text-center">
-            <Truck className="mx-auto mb-2 h-8 w-8 text-accent" />
+            <Truck className="mx-auto mb-2 h-8 w-8 text-accent-text" />
             <p className="font-serif text-2xl font-medium">Free</p>
             <p className="text-xs text-muted-foreground">Return shipping*</p>
           </div>

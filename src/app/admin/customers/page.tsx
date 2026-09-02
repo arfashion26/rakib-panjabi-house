@@ -175,7 +175,7 @@ export default function AdminCustomersPage() {
                       <tr key={customer.id} className="hover:bg-muted/20">
                         <td className="p-3">
                           <div className="flex items-center gap-3">
-                            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-accent/10 text-sm font-semibold text-accent">
+                            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-accent/10 text-sm font-semibold text-accent-text">
                               {customer.name?.split(" ").map((n) => n[0]).join("") || customer.email[0].toUpperCase()}
                             </div>
                             <p className="text-sm font-medium">{customer.name || "Unnamed"}</p>
@@ -255,7 +255,7 @@ export default function AdminCustomersPage() {
           {deleteTarget && (
             <div className="rounded-lg border border-border bg-muted/30 p-4">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/10 text-sm font-semibold text-accent">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/10 text-sm font-semibold text-accent-text">
                   {deleteTarget.name?.split(" ").map((n) => n[0]).join("") || deleteTarget.email[0].toUpperCase()}
                 </div>
                 <div className="min-w-0 flex-1">

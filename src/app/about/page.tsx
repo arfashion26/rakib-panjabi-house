@@ -38,7 +38,7 @@ export default function AboutPage() {
         </div>
         <Container className="relative">
           <div className="mx-auto max-w-3xl text-center">
-            <p className="mb-4 text-xs font-semibold uppercase tracking-[0.3em] text-accent">
+            <p className="mb-4 text-xs font-semibold uppercase tracking-[0.3em] text-accent-text">
               {heroEyebrow}
             </p>
             <h1 className="font-serif text-4xl font-medium leading-tight tracking-tight md:text-5xl lg:text-6xl">
@@ -74,7 +74,7 @@ export default function AboutPage() {
         <Container>
           <div className="grid gap-8 md:grid-cols-2">
             <div className="rounded-lg border border-border/60 bg-background p-8">
-              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-accent/10 text-accent">
+              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-accent/10 text-accent-text">
                 <Target className="h-6 w-6" />
               </div>
               <h3 className="font-serif text-2xl font-medium">{t("about.missionTitle")}</h3>
@@ -83,7 +83,7 @@ export default function AboutPage() {
               </p>
             </div>
             <div className="rounded-lg border border-border/60 bg-background p-8">
-              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-accent/10 text-accent">
+              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-accent/10 text-accent-text">
                 <Eye className="h-6 w-6" />
               </div>
               <h3 className="font-serif text-2xl font-medium">{t("about.visionTitle")}</h3>
@@ -108,7 +108,7 @@ export default function AboutPage() {
               key={value.title}
               className="rounded-lg border border-border/60 bg-card p-6 transition-colors hover:border-accent/40"
             >
-              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-accent/10 text-accent">
+              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-accent/10 text-accent-text">
                 <value.icon className="h-6 w-6" />
               </div>
               <h3 className="text-sm font-semibold">{value.title}</h3>
@@ -126,7 +126,7 @@ export default function AboutPage() {
           <div className="grid grid-cols-2 gap-8 text-center md:grid-cols-4">
             {stats.map((stat) => (
               <div key={stat.label}>
-                <div className="font-serif text-4xl font-medium text-accent md:text-5xl">
+                <div className="font-serif text-4xl font-medium text-accent-text md:text-5xl">
                   {stat.value}
                 </div>
                 <div className="mt-2 text-xs uppercase tracking-wider text-primary-foreground/60">

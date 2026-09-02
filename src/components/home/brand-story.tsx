@@ -48,7 +48,7 @@ export function BrandStory() {
               {/* Decorative monogram */}
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="text-center">
-                  <div className="font-serif text-[200px] font-light leading-none text-accent/15">
+                  <div className="font-serif text-[200px] font-light leading-none text-accent-text/15">
                     RPH
                   </div>
                   <p className="mt-4 text-sm uppercase tracking-[0.3em] text-muted-foreground">
@@ -64,7 +64,7 @@ export function BrandStory() {
 
             {/* Floating stat card */}
             <div className="absolute -bottom-6 -right-6 rounded-lg bg-background p-5 shadow-xl">
-              <div className="font-serif text-3xl font-medium text-accent">
+              <div className="font-serif text-3xl font-medium text-accent-text">
                 10+
               </div>
               <div className="mt-1 text-xs uppercase tracking-wider text-muted-foreground">
@@ -99,7 +99,7 @@ export function BrandStory() {
                   key={value.title}
                   className="rounded-lg border border-border/60 bg-card p-4 transition-colors hover:border-accent/40"
                 >
-                  <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-accent/10 text-accent">
+                  <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-accent/10 text-accent-text">
                     <value.icon className="h-5 w-5" />
                   </div>
                   <h3 className="text-sm font-semibold text-foreground">

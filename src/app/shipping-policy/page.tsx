@@ -10,7 +10,7 @@ export default function ShippingPolicyPage() {
   return (
     <Container className="py-12 md:py-16">
       <div className="mx-auto max-w-3xl">
-        <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-accent">
+        <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-accent-text">
           {t("policies.lastUpdated")}
         </p>
         <h1 className="font-serif text-4xl font-medium tracking-tight md:text-5xl">
@@ -27,7 +27,7 @@ export default function ShippingPolicyPage() {
             <div className="mt-4 space-y-4">
               <div className="rounded-lg border border-border/60 bg-card p-5">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/10 text-accent">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/10 text-accent-text">
                     <Truck className="h-5 w-5" />
                   </div>
                   <div className="flex-1">
@@ -45,7 +45,7 @@ export default function ShippingPolicyPage() {
 
               <div className="rounded-lg border border-border/60 bg-card p-5">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/10 text-accent">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/10 text-accent-text">
                     <Package className="h-5 w-5" />
                   </div>
                   <div className="flex-1">
@@ -63,7 +63,7 @@ export default function ShippingPolicyPage() {
 
               <div className="rounded-lg border border-border/60 bg-card p-5">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/10 text-accent">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/10 text-accent-text">
                     <Clock className="h-5 w-5" />
                   </div>
                   <div className="flex-1">
@@ -102,7 +102,7 @@ export default function ShippingPolicyPage() {
                   <tr>
                     <td className="p-3">Inside Dhaka</td>
                     <td className="p-3 text-center">Above ৳2000</td>
-                    <td className="p-3 text-right font-medium text-accent">FREE</td>
+                    <td className="p-3 text-right font-medium text-accent-text">FREE</td>
                   </tr>
                   <tr>
                     <td className="p-3">Outside Dhaka</td>
@@ -112,7 +112,7 @@ export default function ShippingPolicyPage() {
                   <tr>
                     <td className="p-3">Outside Dhaka</td>
                     <td className="p-3 text-center">Above ৳2000</td>
-                    <td className="p-3 text-right font-medium text-accent">FREE</td>
+                    <td className="p-3 text-right font-medium text-accent-text">FREE</td>
                   </tr>
                 </tbody>
               </table>
@@ -128,7 +128,7 @@ export default function ShippingPolicyPage() {
                   key={courier}
                   className="flex flex-col items-center justify-center rounded-lg border border-border/60 bg-card p-4"
                 >
-                  <Truck className="mb-2 h-6 w-6 text-accent" />
+                  <Truck className="mb-2 h-6 w-6 text-accent-text" />
                   <p className="text-sm font-medium">{courier}</p>
                 </div>
               ))}
@@ -180,7 +180,7 @@ export default function ShippingPolicyPage() {
 
           {/* Contact */}
           <div className="rounded-lg bg-primary p-6 text-center text-primary-foreground">
-            <MapPin className="mx-auto mb-2 h-8 w-8 text-accent" />
+            <MapPin className="mx-auto mb-2 h-8 w-8 text-accent-text" />
             <h2 className="font-serif text-xl font-medium">Shipping Questions?</h2>
             <p className="mt-2 text-sm text-primary-foreground/80">
               {t("policies.contactForQuestions")}

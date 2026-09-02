@@ -54,7 +54,7 @@ export default function AdminLoginPage() {
           {/* Header */}
           <div className="mb-6 text-center">
             <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-accent/10">
-              <ShieldCheck className="h-7 w-7 text-accent" />
+              <ShieldCheck className="h-7 w-7 text-accent-text" />
             </div>
             <h1 className="font-serif text-2xl font-medium tracking-tight">
               Admin Login
@@ -115,7 +115,7 @@ export default function AdminLoginPage() {
           <div className="mt-6 text-center">
             <Link
               href="/"
-              className="inline-flex items-center text-xs text-muted-foreground hover:text-accent"
+              className="inline-flex items-center text-xs text-muted-foreground hover:text-accent-text"
             >
               ← Back to website
             </Link>

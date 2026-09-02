@@ -176,7 +176,7 @@ export function ProductCard({
         {/* Rating */}
         {rating !== undefined && (
           <div className="mb-1.5 flex items-center gap-1 text-xs">
-            <Star className="h-3 w-3 fill-accent text-accent" />
+            <Star className="h-3 w-3 fill-accent text-accent-text" />
             <span className="font-semibold text-foreground">{rating}</span>
             {reviewCount !== undefined && (
               <span className="text-muted-foreground">({reviewCount})</span>
@@ -187,7 +187,7 @@ export function ProductCard({
         {/* Name */}
         <Link
           href={`/product/${product.slug}`}
-          className="line-clamp-2 text-sm font-medium leading-snug text-foreground transition-colors hover:text-accent"
+          className="line-clamp-2 text-sm font-medium leading-snug text-foreground transition-colors hover:text-accent-text"
         >
           {product.name}
         </Link>

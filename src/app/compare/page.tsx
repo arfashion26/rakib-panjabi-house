@@ -106,7 +106,7 @@ export default function ComparePage() {
   return (
     <Container className="py-8">
       <nav className="mb-6 text-xs text-muted-foreground">
-        <Link href="/" className="hover:text-accent">{t("common.home")}</Link>
+        <Link href="/" className="hover:text-accent-text">{t("common.home")}</Link>
         <span className="mx-1">/</span>
         <span className="text-foreground">{t("compare.title")}</span>
       </nav>
@@ -144,7 +144,7 @@ export default function ComparePage() {
                         </div>
                       )}
                     </Link>
-                    <Link href={`/product/${product.slug}`} className="mt-2 line-clamp-2 block text-sm font-medium hover:text-accent">
+                    <Link href={`/product/${product.slug}`} className="mt-2 line-clamp-2 block text-sm font-medium hover:text-accent-text">
                       {product.name}
                     </Link>
                   </div>

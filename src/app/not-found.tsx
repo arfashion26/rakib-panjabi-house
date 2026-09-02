@@ -10,7 +10,7 @@ export default function NotFound() {
       <div className="mx-auto max-w-2xl text-center">
         {/* 404 Big Text */}
         <div className="relative mb-8">
-          <h1 className="font-serif text-[120px] font-bold leading-none tracking-tighter text-accent sm:text-[180px]">
+          <h1 className="font-serif text-[120px] font-bold leading-none tracking-tighter text-accent-text sm:text-[180px]">
             404
           </h1>
           <div className="absolute inset-x-0 -bottom-2 mx-auto h-px w-24 bg-accent/30" />
@@ -47,28 +47,28 @@ export default function NotFound() {
         <div className="mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-sm">
           <Link
             href="/new-arrivals"
-            className="inline-flex items-center gap-1.5 text-muted-foreground transition-colors hover:text-accent"
+            className="inline-flex items-center gap-1.5 text-muted-foreground transition-colors hover:text-accent-text"
           >
             <Package className="h-3.5 w-3.5" />
             New Arrivals
           </Link>
           <Link
             href="/best-sellers"
-            className="inline-flex items-center gap-1.5 text-muted-foreground transition-colors hover:text-accent"
+            className="inline-flex items-center gap-1.5 text-muted-foreground transition-colors hover:text-accent-text"
           >
             <Package className="h-3.5 w-3.5" />
             Best Sellers
           </Link>
           <Link
             href="/sale"
-            className="inline-flex items-center gap-1.5 text-muted-foreground transition-colors hover:text-accent"
+            className="inline-flex items-center gap-1.5 text-muted-foreground transition-colors hover:text-accent-text"
           >
             <Package className="h-3.5 w-3.5" />
             Sale
           </Link>
           <Link
             href="/contact"
-            className="inline-flex items-center gap-1.5 text-muted-foreground transition-colors hover:text-accent"
+            className="inline-flex items-center gap-1.5 text-muted-foreground transition-colors hover:text-accent-text"
           >
             <Headphones className="h-3.5 w-3.5" />
             Contact Us
@@ -79,7 +79,7 @@ export default function NotFound() {
         <div className="mt-8">
           <button
             onClick={() => window.history.back()}
-            className="inline-flex items-center gap-1.5 text-xs text-muted-foreground underline-offset-4 transition-colors hover:text-accent hover:underline"
+            className="inline-flex items-center gap-1.5 text-xs text-muted-foreground underline-offset-4 transition-colors hover:text-accent-text hover:underline"
           >
             <ArrowLeft className="h-3 w-3" />
             Or go back to the previous page

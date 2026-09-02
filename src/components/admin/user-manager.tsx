@@ -143,7 +143,7 @@ export function AdminUserManager({ users }: { users: AdminUser[] }) {
               className="flex flex-col gap-3 rounded-lg border border-border/60 bg-background p-4 sm:flex-row sm:items-center sm:justify-between"
             >
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/10 text-sm font-semibold text-accent">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/10 text-sm font-semibold text-accent-text">
                   {user.name?.[0]?.toUpperCase() || user.email[0].toUpperCase()}
                 </div>
                 <div>

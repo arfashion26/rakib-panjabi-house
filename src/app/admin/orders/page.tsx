@@ -217,7 +217,7 @@ export default function AdminOrdersPage() {
                     <tr key={order.id} className="hover:bg-muted/20">
                       <td className="p-3">
                         <button
-                          className="font-medium text-accent hover:underline"
+                          className="font-medium text-accent-text hover:underline"
                           onClick={() => setViewOrder(order)}
                         >
                           {order.order_number}

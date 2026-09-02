@@ -59,7 +59,7 @@ export function Logo({
             className={cn(
               "font-sans uppercase tracking-[0.2em]",
               size === "sm" ? "text-[8px]" : "text-[10px]",
-              variant === "light" ? "text-accent" : "text-muted-foreground"
+              variant === "light" ? "text-accent-text" : "text-muted-foreground"
             )}
           >
             Panjabi House

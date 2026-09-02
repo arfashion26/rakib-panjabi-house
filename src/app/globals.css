@@ -28,6 +28,7 @@
   --color-destructive: var(--destructive);
   --color-accent-foreground: var(--accent-foreground);
   --color-accent: var(--accent);
+  --color-accent-text: var(--accent-text);
   --color-muted-foreground: var(--muted-foreground);
   --color-muted: var(--muted);
   --color-secondary-foreground: var(--secondary-foreground);
@@ -74,8 +75,13 @@
   --muted-foreground: oklch(0.45 0.01 264);
 
   /* Accent - Brand gold (#fedc00) — from logo */
-  --accent: #fedc00;                                /* Brand gold from logo */
+  --accent: #fedc00;                                /* Brand gold from logo — used as background */
   --accent-foreground: oklch(0.18 0.01 264);     /* Dark charcoal text on gold */
+  /* Accent text — for gold-colored text on WHITE/light backgrounds.
+     Brand gold (#fedc00) has poor contrast on white, so we use
+     dark charcoal instead. Keeps brand identity (gold bg) while
+     ensuring readability. Use 'text-accent-text' class. */
+  --accent-text: oklch(0.18 0.01 264);               /* Dark charcoal — readable on white */
 
   /* Destructive */
   --destructive: oklch(0.55 0.22 27);

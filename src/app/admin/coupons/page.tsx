@@ -155,7 +155,7 @@ export default function AdminCouponsPage() {
               <div className="flex items-start justify-between">
                 <div>
                   <div className="mb-1 flex items-center gap-2">
-                    <Tag className="h-4 w-4 text-accent" />
+                    <Tag className="h-4 w-4 text-accent-text" />
                     <button
                       onClick={() => copyCode(coupon.code)}
                       className="group flex items-center gap-1 font-mono text-lg font-bold"
@@ -290,7 +290,7 @@ export default function AdminCouponsPage() {
             </DialogHeader>
             <div className="space-y-3">
               <div className="flex items-center gap-3 rounded-lg border border-border bg-muted/30 p-3">
-                <Tag className="h-5 w-5 text-accent" />
+                <Tag className="h-5 w-5 text-accent-text" />
                 <div>
                   <p className="font-mono text-sm font-bold">{deleteTarget.code}</p>
                   <p className="text-xs text-muted-foreground">

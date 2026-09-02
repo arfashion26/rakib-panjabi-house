@@ -35,7 +35,7 @@ export function NewArrivalsContent({ products }: { products: Product[] }) {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mb-10 md:mb-12 flex flex-col items-end justify-between gap-4 md:flex-row">
           <div className="max-w-xl">
-            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-accent">{t("newArrivals.eyebrow")}</p>
+            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-accent-text">{t("newArrivals.eyebrow")}</p>
             <h2 className="font-serif text-3xl font-medium tracking-tight md:text-4xl">{t("newArrivals.title")}</h2>
             <p className="mt-4 text-base text-muted-foreground md:text-lg">
               {t("newArrivals.description")}

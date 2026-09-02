@@ -140,7 +140,7 @@ function ShopMegaMenu() {
               <li key={cat.id}>
                 <Link
                   href={`/shop/${cat.slug}`}
-                  className="block rounded-md px-3 py-2 text-sm leading-none no-underline transition-colors hover:bg-accent/10 hover:text-accent"
+                  className="block rounded-md px-3 py-2 text-sm leading-none no-underline transition-colors hover:bg-accent/10 hover:text-accent-text"
                 >
                   <div className="font-medium text-foreground">{cat.name}</div>
                   {cat.description && (
@@ -154,7 +154,7 @@ function ShopMegaMenu() {
           </ul>
         </div>
         <div className="rounded-lg bg-gradient-to-br from-accent/15 to-accent/5 p-4">
-          <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-accent">
+          <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-accent-text">
             {t("categories.title")}
           </h3>
           <div className="space-y-1">
@@ -205,7 +205,7 @@ function HeaderLogo({ size = "md" }: { size?: "sm" | "md" }) {
         <span className="font-serif text-sm font-semibold text-primary-foreground">
           Al-Rakib
         </span>
-        <span className="text-[9px] uppercase tracking-[0.2em] text-accent">
+        <span className="text-[9px] uppercase tracking-[0.2em] text-accent-text">
           Panjabi House
         </span>
       </div>
@@ -279,7 +279,7 @@ function DesktopHeader() {
                             className={cn(
                               navigationMenuTriggerStyle(),
                               "h-9 bg-transparent px-4 text-sm font-medium tracking-wide text-primary-foreground/80 hover:bg-accent hover:text-accent-foreground",
-                              pathname === item.href && "text-accent"
+                              pathname === item.href && "text-accent-text"
                             )}
                           >
                             {locale === "bn" && item.label_bn ? item.label_bn : item.label}
@@ -467,7 +467,7 @@ function MobileHeader() {
                   className={cn(
                     "flex items-center justify-between rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
                     pathname === item.href
-                      ? "bg-accent/10 text-accent"
+                      ? "bg-accent/10 text-accent-text"
                       : "text-foreground hover:bg-accent/5"
                   )}
                 >
@@ -524,11 +524,11 @@ function MobileHeader() {
               {/* Contact info */}
               <div className="my-3 border-t border-border" />
               <div className="px-3 space-y-2">
-                <a href={`tel:${siteConfig.phone}`} className="flex items-center gap-2 text-xs text-muted-foreground hover:text-accent">
+                <a href={`tel:${siteConfig.phone}`} className="flex items-center gap-2 text-xs text-muted-foreground hover:text-accent-text">
                   <Phone className="h-3 w-3" />
                   {siteConfig.phone}
                 </a>
-                <a href={`mailto:${siteConfig.email}`} className="flex items-center gap-2 text-xs text-muted-foreground hover:text-accent">
+                <a href={`mailto:${siteConfig.email}`} className="flex items-center gap-2 text-xs text-muted-foreground hover:text-accent-text">
                   <Search className="h-3 w-3" />
                   {siteConfig.email}
                 </a>

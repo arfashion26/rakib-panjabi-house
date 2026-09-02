@@ -105,7 +105,7 @@ export default function DashboardOverview() {
       label: t("dashboard.totalSpent"),
       value: formatPrice(stats.totalSpent),
       icon: CreditCard,
-      color: "bg-accent/10 text-accent",
+      color: "bg-accent/10 text-accent-text",
       link: "/dashboard/orders",
     },
   ];
@@ -126,7 +126,7 @@ export default function DashboardOverview() {
       {profile && (
         <div className="mb-6 rounded-lg border border-border/60 bg-background p-4">
           <div className="flex items-center gap-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-accent/10 text-accent">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-accent/10 text-accent-text">
               <User className="h-6 w-6" />
             </div>
             <div className="flex-1">
@@ -171,7 +171,7 @@ export default function DashboardOverview() {
       <div>
         <div className="mb-4 flex items-center justify-between">
           <h2 className="font-serif text-xl font-medium">{t("dashboard.recentOrders")}</h2>
-          <Link href="/dashboard/orders" className="text-sm text-accent hover:underline">
+          <Link href="/dashboard/orders" className="text-sm text-accent-text hover:underline">
             {t("dashboard.viewAll")}
           </Link>
         </div>
@@ -197,7 +197,7 @@ export default function DashboardOverview() {
               >
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="font-medium text-accent">{order.order_number}</p>
+                    <p className="font-medium text-accent-text">{order.order_number}</p>
                     <p className="text-xs text-muted-foreground">
                       {new Date(order.placed_at).toLocaleDateString("en-US", {
                         month: "short",

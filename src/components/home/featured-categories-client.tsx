@@ -30,7 +30,7 @@ export function FeaturedCategoriesClient({ featured }: { featured: FeaturedCateg
       <Container>
         <div className="mb-10 md:mb-12 flex flex-col items-end justify-between gap-4 md:flex-row">
           <div className="max-w-2xl text-left">
-            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-accent">
+            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-accent-text">
               {t("categories.eyebrow")}
             </p>
             <h2 className="font-serif text-3xl font-medium tracking-tight md:text-4xl lg:text-5xl">
@@ -79,7 +79,7 @@ export function FeaturedCategoriesClient({ featured }: { featured: FeaturedCateg
                     {cat.description}
                   </p>
                 )}
-                <div className="mt-4 inline-flex items-center gap-2 text-sm font-medium uppercase tracking-wider text-accent">
+                <div className="mt-4 inline-flex items-center gap-2 text-sm font-medium uppercase tracking-wider text-accent-text">
                   {t("categories.shopNow")}
                   <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </div>

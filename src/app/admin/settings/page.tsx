@@ -105,7 +105,7 @@ export default function AdminSettingsPage() {
         {/* General */}
         <div className="rounded-lg border border-border/60 bg-background p-6">
           <div className="mb-4 flex items-center gap-2">
-            <Store className="h-5 w-5 text-accent" />
+            <Store className="h-5 w-5 text-accent-text" />
             <h2 className="font-serif text-lg font-medium">General</h2>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
@@ -140,7 +140,7 @@ export default function AdminSettingsPage() {
         {/* Contact */}
         <div className="rounded-lg border border-border/60 bg-background p-6">
           <div className="mb-4 flex items-center gap-2">
-            <Mail className="h-5 w-5 text-accent" />
+            <Mail className="h-5 w-5 text-accent-text" />
             <h2 className="font-serif text-lg font-medium">Contact Information</h2>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
@@ -183,7 +183,7 @@ export default function AdminSettingsPage() {
         {/* Shipping */}
         <div className="rounded-lg border border-border/60 bg-background p-6">
           <div className="mb-4 flex items-center gap-2">
-            <Truck className="h-5 w-5 text-accent" />
+            <Truck className="h-5 w-5 text-accent-text" />
             <h2 className="font-serif text-lg font-medium">Shipping</h2>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

@@ -192,17 +192,17 @@ export function ProductDetailContent({
     <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
       {/* ===== Premium Breadcrumb ===== */}
       <nav className="mb-5 flex flex-wrap items-center gap-1.5 rounded-lg border border-border/60 bg-card px-3 py-2.5 text-xs sm:px-4">
-        <Link href="/" className="flex shrink-0 items-center gap-1 text-muted-foreground transition-colors hover:text-accent">
+        <Link href="/" className="flex shrink-0 items-center gap-1 text-muted-foreground transition-colors hover:text-accent-text">
           <Home className="h-3 w-3" />
           <span className="hidden sm:inline">{t("common.home")}</span>
         </Link>
         <ChevronRight className="h-3 w-3 shrink-0 text-muted-foreground/40" />
-        <Link href="/shop" className="shrink-0 text-muted-foreground transition-colors hover:text-accent">
+        <Link href="/shop" className="shrink-0 text-muted-foreground transition-colors hover:text-accent-text">
           {t("common.shop")}
         </Link>
         <ChevronRight className="h-3 w-3 shrink-0 text-muted-foreground/40" />
         <span className="flex min-w-0 items-center gap-1 font-medium text-foreground">
-          <Package className="h-3 w-3 shrink-0 text-accent" />
+          <Package className="h-3 w-3 shrink-0 text-accent-text" />
           <span className="line-clamp-1">{product.name}</span>
         </span>
       </nav>
@@ -280,7 +280,7 @@ export function ProductDetailContent({
         <div className="flex flex-col">
           {/* Featured label */}
           {product.is_featured && (
-            <span className="mb-1.5 text-xs font-bold uppercase tracking-wider text-accent">
+            <span className="mb-1.5 text-xs font-bold uppercase tracking-wider text-accent-text">
               {t("productDetail.featuredProduct")}
             </span>
           )}
@@ -299,7 +299,7 @@ export function ProductDetailContent({
             <div className="flex items-center gap-1">
               <div className="flex gap-0.5">
                 {[1, 2, 3, 4, 5].map((n) => (
-                  <Star key={n} className="h-3.5 w-3.5 fill-accent text-accent" />
+                  <Star key={n} className="h-3.5 w-3.5 fill-accent text-accent-text" />
                 ))}
               </div>
               <span className="text-xs font-medium">{reviews.length > 0 ? "5.0" : "—"}</span>
@@ -340,7 +340,7 @@ export function ProductDetailContent({
             <div className="mb-4">
               <label className="mb-2 block text-sm font-medium">
                 {t("productDetail.color")}:{" "}
-                <span className="text-accent">{selectedColor ?? t("productDetail.selectPlaceholder")}</span>
+                <span className="text-accent-text">{selectedColor ?? t("productDetail.selectPlaceholder")}</span>
               </label>
               <div className="flex gap-2">
                 {product.colors.map((color) => (
@@ -368,9 +368,9 @@ export function ProductDetailContent({
               <div className="mb-2 flex items-center justify-between">
                 <label className="text-sm font-medium">
                   {t("productDetail.size")}:{" "}
-                  <span className="text-accent">{selectedSize ?? t("productDetail.selectPlaceholder")}</span>
+                  <span className="text-accent-text">{selectedSize ?? t("productDetail.selectPlaceholder")}</span>
                 </label>
-                <Link href="/size-guide" className="text-xs text-accent hover:underline">
+                <Link href="/size-guide" className="text-xs text-accent-text hover:underline">
                   {t("productDetail.sizeGuide")}
                 </Link>
               </div>
@@ -383,8 +383,8 @@ export function ProductDetailContent({
                     className={cn(
                       "relative flex h-10 min-w-10 items-center justify-center rounded-lg border px-3 text-sm font-medium transition-all",
                       size.stock === 0 && "cursor-not-allowed border-border bg-muted text-muted-foreground/50 line-through",
-                      selectedSize === size.size && size.stock > 0 && "border-accent bg-accent/10 text-accent",
-                      selectedSize !== size.size && size.stock > 0 && "border-border hover:border-accent hover:text-accent"
+                      selectedSize === size.size && size.stock > 0 && "border-accent bg-accent/10 text-accent-text",
+                      selectedSize !== size.size && size.stock > 0 && "border-border hover:border-accent hover:text-accent-text"
                     )}
                   >
                     {size.size}
@@ -482,19 +482,19 @@ export function ProductDetailContent({
           <div className="mt-5 grid grid-cols-3 gap-2 border-t border-border pt-4">
             <div className="flex flex-col items-center gap-1 text-center">
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-accent/10">
-                <Truck className="h-4 w-4 text-accent" />
+                <Truck className="h-4 w-4 text-accent-text" />
               </div>
               <span className="text-[10px] font-medium text-muted-foreground">{t("productDetail.shippingInfo")}</span>
             </div>
             <div className="flex flex-col items-center gap-1 text-center">
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-accent/10">
-                <RefreshCw className="h-4 w-4 text-accent" />
+                <RefreshCw className="h-4 w-4 text-accent-text" />
               </div>
               <span className="text-[10px] font-medium text-muted-foreground">{t("productDetail.returnsInfo")}</span>
             </div>
             <div className="flex flex-col items-center gap-1 text-center">
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-accent/10">
-                <ShieldCheck className="h-4 w-4 text-accent" />
+                <ShieldCheck className="h-4 w-4 text-accent-text" />
               </div>
               <span className="text-[10px] font-medium text-muted-foreground">{t("productDetail.paymentOptions")}</span>
             </div>
@@ -631,14 +631,14 @@ export function ProductDetailContent({
                   <div key={review.id} className="rounded-lg border border-border/60 p-4">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-accent/10 text-sm font-semibold text-accent">
+                        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-accent/10 text-sm font-semibold text-accent-text">
                           {review.user?.name?.[0] || t("productDetail.anonymous")[0]}
                         </div>
                         <div>
                           <div className="text-sm font-medium">{review.user?.name || t("productDetail.anonymous")}</div>
                           <div className="flex items-center gap-1">
                             {Array.from({ length: 5 }).map((_, idx) => (
-                              <Star key={idx} className={cn("h-3 w-3", idx < review.rating ? "fill-accent text-accent" : "text-muted-foreground")} />
+                              <Star key={idx} className={cn("h-3 w-3", idx < review.rating ? "fill-accent text-accent-text" : "text-muted-foreground")} />
                             ))}
                           </div>
                         </div>
@@ -789,7 +789,7 @@ function ReviewForm({ productId }: { productId: string }) {
             >
               <Star className={cn(
                 "h-6 w-6 transition-colors",
-                n <= form.rating ? "fill-accent text-accent" : "text-muted-foreground/30 hover:text-accent"
+                n <= form.rating ? "fill-accent text-accent-text" : "text-muted-foreground/30 hover:text-accent-text"
               )} />
             </button>
           ))}

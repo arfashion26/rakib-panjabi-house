@@ -109,7 +109,7 @@ export default function BlogPostPage() {
           {/* Back link */}
           <Link
             href="/blog"
-            className="mb-8 inline-flex items-center text-sm text-muted-foreground hover:text-accent"
+            className="mb-8 inline-flex items-center text-sm text-muted-foreground hover:text-accent-text"
           >
             <ArrowLeft className="mr-1 h-4 w-4" />
             {t("blog.backToBlog")}

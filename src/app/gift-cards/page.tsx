@@ -73,9 +73,9 @@ export default function GiftCardsPage() {
         <Container className="relative">
           <div className="mx-auto max-w-3xl text-center">
             <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-accent/10">
-              <Gift className="h-8 w-8 text-accent" />
+              <Gift className="h-8 w-8 text-accent-text" />
             </div>
-            <p className="mb-4 text-xs font-semibold uppercase tracking-[0.3em] text-accent">
+            <p className="mb-4 text-xs font-semibold uppercase tracking-[0.3em] text-accent-text">
               {t("giftCards.title")}
             </p>
             <h1 className="font-serif text-4xl font-medium leading-tight tracking-tight md:text-5xl lg:text-6xl">
@@ -117,7 +117,7 @@ export default function GiftCardsPage() {
                 )}
               >
                 <div className="flex h-full flex-col items-center justify-center">
-                  <Gift className="mb-2 h-6 w-6 text-accent" />
+                  <Gift className="mb-2 h-6 w-6 text-accent-text" />
                   <p className="font-serif text-2xl font-medium">৳{amount}</p>
                 </div>
                 {!useCustom && selectedAmount === amount && (
@@ -223,7 +223,7 @@ export default function GiftCardsPage() {
                 <p className="text-xs uppercase tracking-wider text-muted-foreground">
                   {locale === "bn" ? "মোট" : "Total"}
                 </p>
-                <p className="font-serif text-3xl font-medium text-accent">
+                <p className="font-serif text-3xl font-medium text-accent-text">
                   ৳{finalAmount.toLocaleString()}
                 </p>
               </div>
@@ -280,7 +280,7 @@ export default function GiftCardsPage() {
                 key={feature.title}
                 className="rounded-lg border border-border/60 bg-card p-6 text-center"
               >
-                <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-accent/10 text-accent">
+                <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-accent/10 text-accent-text">
                   <feature.icon className="h-6 w-6" />
                 </div>
                 <h3 className="text-sm font-semibold">{feature.title}</h3>

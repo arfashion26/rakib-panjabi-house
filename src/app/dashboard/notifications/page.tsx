@@ -71,7 +71,7 @@ export default function NotificationsPage() {
               !n.read ? "border-accent/40 bg-accent/5" : "border-border/60"
             }`}
           >
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent/10 text-accent">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent/10 text-accent-text">
               <n.icon className="h-5 w-5" />
             </div>
             <div className="flex-1">

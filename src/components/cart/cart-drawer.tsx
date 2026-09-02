@@ -51,7 +51,7 @@ export function CartDrawer() {
           <>
             <div className="mt-4 rounded-lg bg-muted/50 p-3">
               {subtotal >= FREE_SHIPPING_THRESHOLD ? (
-                <p className="break-words text-center text-xs font-medium text-accent">
+                <p className="break-words text-center text-xs font-medium text-accent-text">
                   {t("cart.qualifiedFreeShipping")}
                 </p>
               ) : (
@@ -99,7 +99,7 @@ export function CartDrawer() {
                       <Link
                         href={`/product/${item.slug}`}
                         onClick={closeCart}
-                        className="line-clamp-2 break-words text-sm font-medium hover:text-accent"
+                        className="line-clamp-2 break-words text-sm font-medium hover:text-accent-text"
                       >
                         {item.name}
                       </Link>

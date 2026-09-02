@@ -57,7 +57,7 @@ export default function DashboardLayout({
       {/* User info */}
       <div className="border-b border-border p-4">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/10 text-accent">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/10 text-accent-text">
             <User className="h-5 w-5" />
           </div>
           <div className="min-w-0 flex-1">
@@ -82,7 +82,7 @@ export default function DashboardLayout({
               className={cn(
                 "flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-colors",
                 isActive
-                  ? "bg-accent/10 text-accent"
+                  ? "bg-accent/10 text-accent-text"
                   : "text-muted-foreground hover:bg-accent/5 hover:text-foreground"
               )}
             >

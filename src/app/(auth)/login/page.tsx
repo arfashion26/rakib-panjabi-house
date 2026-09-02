@@ -119,7 +119,7 @@ function LoginForm() {
       <div className="mt-4 text-center">
         <Link
           href="/admin/login"
-          className="text-xs text-muted-foreground hover:text-accent"
+          className="text-xs text-muted-foreground hover:text-accent-text"
         >
           Admin Login →
         </Link>
@@ -127,8 +127,8 @@ function LoginForm() {
 
       <p className="mt-4 text-center text-xs text-muted-foreground">
         By logging in, you agree to our{" "}
-        <Link href="/terms" className="underline hover:text-accent">Terms</Link> and{" "}
-        <Link href="/privacy-policy" className="underline hover:text-accent">Privacy Policy</Link>.
+        <Link href="/terms" className="underline hover:text-accent-text">Terms</Link> and{" "}
+        <Link href="/privacy-policy" className="underline hover:text-accent-text">Privacy Policy</Link>.
       </p>
     </div>
   );

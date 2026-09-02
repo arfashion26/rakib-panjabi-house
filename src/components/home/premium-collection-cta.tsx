@@ -20,7 +20,7 @@ export function PremiumCollectionCTA() {
 
       <Container className="relative">
         <div className="mx-auto max-w-3xl text-center">
-          <p className="mb-4 text-xs font-semibold uppercase tracking-[0.3em] text-accent">
+          <p className="mb-4 text-xs font-semibold uppercase tracking-[0.3em] text-accent-text">
             Exclusive Edition
           </p>
           <h2 className="font-serif text-3xl font-medium leading-tight tracking-tight md:text-4xl lg:text-5xl">

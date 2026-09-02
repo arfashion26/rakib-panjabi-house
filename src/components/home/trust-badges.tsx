@@ -21,7 +21,7 @@ export function TrustBadges() {
             >
               {/* Icon circle */}
               <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-accent/30 bg-accent/10 transition-all group-hover:scale-110 group-hover:border-accent/50 md:h-12 md:w-12">
-                <badge.icon className="h-4 w-4 text-accent md:h-5 md:w-5" />
+                <badge.icon className="h-4 w-4 text-accent-text md:h-5 md:w-5" />
               </div>
               {/* Text */}
               <div className="min-w-0">

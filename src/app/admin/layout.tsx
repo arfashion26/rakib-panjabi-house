@@ -226,7 +226,7 @@ export default function AdminLayout({
             <div className="mx-auto flex max-w-7xl items-center gap-2 px-8 py-4 text-sm">
               <Link
                 href="/admin"
-                className="text-muted-foreground hover:text-accent"
+                className="text-muted-foreground hover:text-accent-text"
               >
                 Admin
               </Link>

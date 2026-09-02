@@ -90,7 +90,7 @@ export function PaymentMethodsConfig() {
   return (
     <div className="rounded-lg border border-border/60 bg-background p-6">
       <div className="mb-4 flex items-center gap-2">
-        <CreditCard className="h-5 w-5 text-accent" />
+        <CreditCard className="h-5 w-5 text-accent-text" />
         <h2 className="font-serif text-lg font-medium">Payment Methods</h2>
       </div>
       <p className="mb-4 text-xs text-muted-foreground">

@@ -96,7 +96,7 @@ export default function CartPage() {
     <Container className="py-8">
       {/* Breadcrumb */}
       <nav className="mb-6 text-xs text-muted-foreground">
-        <Link href="/" className="hover:text-accent">{t("common.home")}</Link>
+        <Link href="/" className="hover:text-accent-text">{t("common.home")}</Link>
         <span className="mx-1">/</span>
         <span className="text-foreground">{t("common.cart")}</span>
       </nav>
@@ -146,7 +146,7 @@ export default function CartPage() {
                     <div>
                       <Link
                         href={`/product/${item.slug}`}
-                        className="line-clamp-2 text-sm font-medium hover:text-accent sm:text-base"
+                        className="line-clamp-2 text-sm font-medium hover:text-accent-text sm:text-base"
                       >
                         {item.name}
                       </Link>
@@ -259,7 +259,7 @@ export default function CartPage() {
             {/* Free shipping progress */}
             {subtotal < FREE_SHIPPING_THRESHOLD && (
               <div className="mb-4 rounded-lg bg-accent/10 p-3">
-                <p className="flex items-center gap-2 text-xs text-accent">
+                <p className="flex items-center gap-2 text-xs text-accent-text">
                   <Truck className="h-4 w-4" />
                   {t("cartPage.freeShippingProgress").split("{amount}")[0]}
                   <strong>
@@ -287,7 +287,7 @@ export default function CartPage() {
               {appliedCoupon ? (
                 <div className="flex items-center justify-between rounded-md border border-accent/30 bg-accent/10 px-3 py-2">
                   <div>
-                    <p className="text-sm font-medium text-accent">
+                    <p className="text-sm font-medium text-accent-text">
                       {appliedCoupon.code}
                     </p>
                     <p className="text-xs text-muted-foreground">
@@ -330,7 +330,7 @@ export default function CartPage() {
                 <span className="font-medium">{formatPrice(subtotal)}</span>
               </div>
               {discount > 0 && (
-                <div className="flex justify-between text-accent">
+                <div className="flex justify-between text-accent-text">
                   <span>{t("cartPage.discountLabel")}</span>
                   <span>-{formatPrice(discount)}</span>
                 </div>
@@ -338,7 +338,7 @@ export default function CartPage() {
               <div className="flex justify-between">
                 <span className="text-muted-foreground">{t("cartPage.shippingLabel")}</span>
                 {shipping === 0 ? (
-                  <span className="font-medium text-accent">{t("cart.free")}</span>
+                  <span className="font-medium text-accent-text">{t("cart.free")}</span>
                 ) : (
                   <span className="font-medium">{formatPrice(shipping)}</span>
                 )}

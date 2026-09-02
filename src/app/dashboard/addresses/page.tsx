@@ -185,7 +185,7 @@ export default function AddressesPage() {
           {addresses.map((addr) => (
             <div key={addr.id} className="relative rounded-lg border border-border/60 bg-background p-4">
               {addr.is_default && (
-                <span className="absolute right-3 top-3 flex items-center gap-1 rounded-full bg-accent/10 px-2 py-0.5 text-[10px] font-medium text-accent">
+                <span className="absolute right-3 top-3 flex items-center gap-1 rounded-full bg-accent/10 px-2 py-0.5 text-[10px] font-medium text-accent-text">
                   <Check className="h-2.5 w-2.5" />
                   {t("dashboard.default")}
                 </span>

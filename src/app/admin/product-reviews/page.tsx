@@ -162,7 +162,7 @@ export default function AdminProductReviewsPage() {
             >
               <div className="flex items-start gap-3">
                 {/* Avatar */}
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent/10 text-sm font-semibold text-accent">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent/10 text-sm font-semibold text-accent-text">
                   {review.reviewer_name[0]?.toUpperCase() || "A"}
                 </div>
 
@@ -176,7 +176,7 @@ export default function AdminProductReviewsPage() {
                           key={n}
                           className={cn(
                             "h-3 w-3",
-                            n <= review.rating ? "fill-accent text-accent" : "text-muted-foreground/30"
+                            n <= review.rating ? "fill-accent text-accent-text" : "text-muted-foreground/30"
                           )}
                         />
                       ))}
@@ -213,7 +213,7 @@ export default function AdminProductReviewsPage() {
                   {review.content && review.content.length > 100 && (
                     <button
                       onClick={() => setExpanded(expanded === review.id ? null : review.id)}
-                      className="mt-1 text-xs text-accent hover:underline"
+                      className="mt-1 text-xs text-accent-text hover:underline"
                     >
                       {expanded === review.id ? "Show less" : "Read more"}
                     </button>

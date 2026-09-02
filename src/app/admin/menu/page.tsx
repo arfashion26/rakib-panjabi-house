@@ -216,7 +216,7 @@ export default function AdminMenuPage() {
                   href={item.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-xs text-accent hover:underline"
+                  className="text-xs text-accent-text hover:underline"
                 >
                   {item.href}
                 </a>

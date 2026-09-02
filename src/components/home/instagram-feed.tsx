@@ -75,7 +75,7 @@ export function InstagramFeed({ content }: { content?: InstagramContent }) {
             href={siteConfig.social.instagram}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 text-sm font-medium text-accent hover:underline"
+            className="inline-flex items-center gap-2 text-sm font-medium text-accent-text hover:underline"
           >
             <Instagram className="h-4 w-4" />
             {t("instagram.followUs")}
