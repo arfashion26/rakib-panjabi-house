@@ -1,6 +1,8 @@
 "use client";
 
+import * as React from "react";
 import Link from "next/link";
+import { useLogoUrl } from "@/components/logo";
 import {
   Facebook,
   Instagram,
@@ -23,6 +25,7 @@ const socials = [
  */
 export function SiteFooter() {
   const { t } = useLanguage();
+  const logoUrl = useLogoUrl();
 
   return (
     <footer className="mt-auto bg-primary text-primary-foreground">
@@ -35,7 +38,7 @@ export function SiteFooter() {
               <div className="flex items-center gap-3">
                 <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-full ring-2 ring-accent/40 md:h-20 md:w-20">
                   <img
-                    src="/logo.jpg"
+                    src={logoUrl}
                     alt="Al-Rakib Panjabi House"
                     className="h-full w-full object-cover"
                     width={80}

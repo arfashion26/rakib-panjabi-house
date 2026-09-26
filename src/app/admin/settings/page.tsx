@@ -1,12 +1,13 @@
 "use client";
 
 import * as React from "react";
-import { Save, Store, Truck, Mail, Loader2 } from "lucide-react";
+import { Save, Store, Truck, Mail, Loader2, Image as ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
+import { ImageUpload } from "@/components/admin/image-upload";
 import { PaymentMethodsConfig } from "@/components/admin/payment-methods-config";
 import { CustomCodeEditor } from "@/components/admin/custom-code-editor";
 import { ChangePasswordSection } from "@/components/admin/change-password-section";
@@ -21,6 +22,8 @@ export default function AdminSettingsPage() {
     site_name: "Rakib Panjabi House",
     tagline: "Premium Panjabi & Fashion for the Modern Gentleman",
     site_description: "Premium quality Panjabis, shirts, pants, and ethnic wear with timeless elegance and modern designs.",
+    logo_url: "",
+    favicon_url: "",
     contact_email: "info@alrakib.com",
     contact_phone: "+880 1716-243949",
     whatsapp_number: "+880 1716-243949",
@@ -102,6 +105,39 @@ export default function AdminSettingsPage() {
       </div>
 
       <div className="space-y-6">
+        {/* Brand Assets — Logo + Favicon */}
+        <div className="rounded-lg border border-border/60 bg-background p-6">
+          <div className="mb-4 flex items-center gap-2">
+            <ImageIcon className="h-5 w-5 text-accent-text" />
+            <h2 className="font-serif text-lg font-medium">Brand Assets</h2>
+          </div>
+          <p className="mb-4 text-xs text-muted-foreground">
+            Upload your store logo and favicon. Logo appears in the header, footer,
+            and emails. Favicon appears in browser tabs. If left empty, defaults to
+            <code className="mx-1 rounded bg-muted px-1.5 py-0.5 text-[10px]">/logo.jpg</code>
+            and
+            <code className="mx-1 rounded bg-muted px-1.5 py-0.5 text-[10px]">/favicon.ico</code>.
+          </p>
+          <div className="grid gap-6 sm:grid-cols-2">
+            <ImageUpload
+              label="Store Logo"
+              value={form.logo_url || ""}
+              onChange={(url) => update("logo_url", url)}
+              folder="brand"
+              aspectRatio="aspect-square"
+              hint="Recommended: 400×400px (square). Used in header, footer, emails."
+            />
+            <ImageUpload
+              label="Favicon"
+              value={form.favicon_url || ""}
+              onChange={(url) => update("favicon_url", url)}
+              folder="brand"
+              aspectRatio="aspect-square"
+              hint="Recommended: 32×32px or 64×64px (square, PNG/ICO). Shown in browser tab."
+            />
+          </div>
+        </div>
+
         {/* General */}
         <div className="rounded-lg border border-border/60 bg-background p-6">
           <div className="mb-4 flex items-center gap-2">

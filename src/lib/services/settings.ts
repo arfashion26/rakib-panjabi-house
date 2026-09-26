@@ -36,6 +36,34 @@ export async function getPaymentConfig(): Promise<PaymentConfig> {
 }
 
 /**
+ * Fetch brand assets (logo URL, favicon URL) from the settings table.
+ * Falls back to defaults (/logo.jpg, /favicon.ico) if DB is unreachable
+ * or no custom logo is set.
+ *
+ * Used by the Logo component (server-side) and the root layout (favicon).
+ */
+export async function getBrandAssets(): Promise<{ logoUrl: string; faviconUrl: string }> {
+  const DEFAULTS = { logoUrl: "/logo.jpg", faviconUrl: "/favicon.ico" };
+  try {
+    const supabase = createAdminClient();
+    const { data, error } = await supabase
+      .from("settings")
+      .select("key, value")
+      .in("key", ["logo_url", "favicon_url"]);
+
+    if (error || !data) return DEFAULTS;
+
+    const out = { ...DEFAULTS };
+    for (const row of data) {
+      if (row.key === "logo_url" && row.value) out.logoUrl = row.value;
+      if (row.key === "favicon_url" && row.value) out.faviconUrl = row.value;
+    }
+    return out;
+  } catch {
+    return DEFAULTS;
+  }
+}
+/**
  * Update the payment configuration (admin only).
  */
 export async function updatePaymentConfig(config: PaymentConfig): Promise<boolean> {

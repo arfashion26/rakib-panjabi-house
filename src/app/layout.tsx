@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { AppShell } from "@/components/layout/app-shell";
 import { LanguageProvider } from "@/i18n/language-context";
 import { getCustomCode } from "@/lib/services/custom-code";
+import { getBrandAssets } from "@/lib/services/settings";
 
 // Poppins — used everywhere (body, headings, UI, buttons, etc.)
 const poppins = Poppins({
@@ -17,39 +18,46 @@ const poppins = Poppins({
 
 const siteUrl = "https://alrakib.com";
 
-export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
-  title: {
-    default: "Rakib Panjabi House — Premium Panjabi & Fashion for Men",
-    template: "%s | Rakib Panjabi House",
-  },
-  description:
-    "Discover premium quality Panjabis, shirts, pants, and ethnic wear at Rakib Panjabi House. Shop the latest collections with timeless elegance, modern designs, and superior craftsmanship. Free shipping across Bangladesh.",
-  keywords: [
-    "Panjabi",
-    "Men's fashion",
-    "Panjabi House",
-    "Bangladesh fashion",
-    "Ethnic wear",
-    "Sherwani",
-    "Kurta",
-    "Panjabi online shop",
-    "Rakib Panjabi House",
-    "Premium fashion",
-  ],
-  authors: [{ name: "Rakib Panjabi House" }],
-  creator: "Rakib Panjabi House",
-  publisher: "Rakib Panjabi House",
-  icons: {
-    icon: "/logo.jpg",
-    shortcut: "/logo.jpg",
-    apple: "/logo.jpg",
-    other: {
-      rel: "icon",
-      type: "image/jpeg",
-      url: "/logo.jpg",
+/**
+ * Generate metadata dynamically — fetches custom favicon/logo URL from DB.
+ * Falls back to /logo.jpg if DB is unreachable or no custom logo is set.
+ */
+export async function generateMetadata(): Promise<Metadata> {
+  const { faviconUrl, logoUrl } = await getBrandAssets();
+  const iconUrl = faviconUrl || logoUrl;
+
+  return {
+    metadataBase: new URL(siteUrl),
+    title: {
+      default: "Rakib Panjabi House — Premium Panjabi & Fashion for Men",
+      template: "%s | Rakib Panjabi House",
     },
-  },
+    description:
+      "Discover premium quality Panjabis, shirts, pants, and ethnic wear at Rakib Panjabi House. Shop the latest collections with timeless elegance, modern designs, and superior craftsmanship. Free shipping across Bangladesh.",
+    keywords: [
+      "Panjabi",
+      "Men's fashion",
+      "Panjabi House",
+      "Bangladesh fashion",
+      "Ethnic wear",
+      "Sherwani",
+      "Kurta",
+      "Panjabi online shop",
+      "Rakib Panjabi House",
+      "Premium fashion",
+    ],
+    authors: [{ name: "Rakib Panjabi House" }],
+    creator: "Rakib Panjabi House",
+    publisher: "Rakib Panjabi House",
+    icons: {
+      icon: iconUrl,
+      shortcut: iconUrl,
+      apple: iconUrl,
+      other: {
+        rel: "icon",
+        url: iconUrl,
+      },
+    },
   openGraph: {
     type: "website",
     locale: "en_US",
@@ -93,7 +101,8 @@ export const metadata: Metadata = {
     },
   },
   category: "shopping",
-};
+  };
+}
 
 export const viewport = {
   themeColor: [

@@ -42,6 +42,7 @@ import {
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
+import { useLogoUrl } from "@/components/logo";
 
 /**
  * Top announcement bar (above header) — gold accent
@@ -190,11 +191,12 @@ function ShopMegaMenu() {
  */
 function HeaderLogo({ size = "md" }: { size?: "sm" | "md" }) {
   const dim = size === "sm" ? "h-10 w-10" : "h-12 w-12";
+  const logoUrl = useLogoUrl();
   return (
     <Link href="/" aria-label="Al-Rakib Panjabi House - Home" className="flex items-center gap-2.5 group">
       <div className={cn("relative shrink-0 overflow-hidden rounded-full ring-2 ring-accent/40 transition-transform group-hover:scale-105", dim)}>
         <img
-          src="/logo.jpg"
+          src={logoUrl}
           alt="Al-Rakib Panjabi House"
           className="h-full w-full object-cover"
           width={size === "sm" ? 40 : 48}

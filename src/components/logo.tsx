@@ -1,3 +1,6 @@
+"use client";
+
+import * as React from "react";
 import { cn } from "@/lib/utils";
 
 interface LogoProps {
@@ -7,15 +10,53 @@ interface LogoProps {
   className?: string;
 }
 
+// Cache logo URL across all Logo instances on the same page
+let cachedLogoUrl: string | null = null;
+let fetchPromise: Promise<string> | null = null;
+
+async function fetchLogoUrl(): Promise<string> {
+  if (cachedLogoUrl) return cachedLogoUrl;
+  if (fetchPromise) return fetchPromise;
+  fetchPromise = fetch("/api/brand-assets")
+    .then((r) => r.json())
+    .then((data) => {
+      const url = data?.logoUrl || "/logo.jpg";
+      cachedLogoUrl = url;
+      return url;
+    })
+    .catch(() => {
+      cachedLogoUrl = "/logo.jpg";
+      return cachedLogoUrl;
+    });
+  return fetchPromise;
+}
+
+/**
+ * Hook to fetch the brand logo URL on the client.
+ * Uses an in-memory cache so all components share one fetch.
+ * Falls back to /logo.jpg if the API is unreachable.
+ */
+export function useLogoUrl(): string {
+  const [logoUrl, setLogoUrl] = React.useState<string>(cachedLogoUrl || "/logo.jpg");
+  React.useEffect(() => {
+    if (!cachedLogoUrl) {
+      fetchLogoUrl().then(setLogoUrl);
+    } else if (logoUrl !== cachedLogoUrl) {
+      setLogoUrl(cachedLogoUrl);
+    }
+  }, [logoUrl]);
+  return logoUrl;
+}
+
 /**
  * Brand logo component.
  *
- * Uses the actual logo image (public/logo.jpg) — a royal crest design
- * with gold text on black background: "AL-RAKIB PUNJABI HOUSE"
+ * Fetches the logo URL from /api/brand-assets (DB-driven). Falls back to
+ * /logo.jpg if the API is unreachable or no custom logo is set.
  *
  * The logo is a circular crest. Since the logo itself has a black background,
- * we display it WITHOUT any border or ring so it blends seamlessly
- * with the dark background behind it.
+ * we display it WITHOUT any border or ring so it blends seamlessly with
+ * the dark background behind it.
  */
 export function Logo({
   variant = "default",
@@ -23,6 +64,8 @@ export function Logo({
   size = "md",
   className,
 }: LogoProps) {
+  const logoUrl = useLogoUrl();
+
   const sizes = {
     sm: { container: "h-12 w-12 sm:h-14 sm:w-14", text: "text-xs" },
     md: { container: "h-20 w-20 md:h-24 md:w-24", text: "text-sm" },
@@ -36,7 +79,7 @@ export function Logo({
       {/* Logo image — circular crest, no border (blends with bg) */}
       <div className={cn("relative shrink-0 overflow-hidden rounded-full", s.container)}>
         <img
-          src="/logo.jpg"
+          src={logoUrl}
           alt="Al-Rakib Panjabi House Logo"
           className="h-full w-full object-cover"
           width={128}
@@ -74,10 +117,12 @@ export function Logo({
  * Compact logo mark — icon only, for mobile header
  */
 export function LogoMark({ className }: { className?: string }) {
+  const logoUrl = useLogoUrl();
+
   return (
     <div className={cn("relative h-10 w-10 shrink-0 overflow-hidden rounded-full", className)}>
       <img
-        src="/logo.jpg"
+        src={logoUrl}
         alt="Al-Rakib Panjabi House"
         className="h-full w-full object-cover"
         width={40}

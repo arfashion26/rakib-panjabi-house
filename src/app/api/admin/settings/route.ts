@@ -33,6 +33,7 @@ export async function GET() {
       .select("key, value")
       .in("key", [
         "site_name", "tagline", "site_description",
+        "logo_url", "favicon_url",
         "contact_email", "contact_phone", "whatsapp_number", "address",
         "facebook_url", "instagram_url", "youtube_url", "twitter_url",
         "free_shipping_threshold", "cod_inside_dhaka", "cod_outside_dhaka",
@@ -75,6 +76,8 @@ export async function PUT(req: NextRequest) {
       site_name: "text",
       tagline: "text",
       site_description: "text",
+      logo_url: "text",
+      favicon_url: "text",
       contact_email: "text",
       contact_phone: "text",
       whatsapp_number: "text",
