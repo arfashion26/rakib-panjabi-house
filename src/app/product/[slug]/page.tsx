@@ -64,6 +64,14 @@ export async function generateMetadata({
   };
 }
 
+// Revalidate product pages every 1 hour (ISR) — product edits propagate
+// within an hour. Admin product updates trigger on-demand revalidation
+// via /api/revalidate if needed (e.g. after price/stock changes).
+export const revalidate = 3600;
+
+// Allow static generation of product pages at build/runtime cache
+export const dynamicParams = true;
+
 export default async function ProductDetailPage({
   params,
 }: {

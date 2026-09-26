@@ -100,6 +100,8 @@ export function ProductCard({
             src={images[0]}
             alt={product.name}
             className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+            loading="lazy"
+            decoding="async"
           />
         ) : (
           <>

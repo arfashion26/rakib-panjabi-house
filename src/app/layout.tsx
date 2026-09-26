@@ -114,6 +114,16 @@ export const viewport = {
   maximumScale: 5,
 };
 
+// DNS prefetch + preconnect — speeds up first byte for critical assets.
+// Supabase (DB + storage) and Google Fonts are loaded on nearly every page.
+export const dnsPrefetch = {
+  hints: [
+    { href: "https://fonts.googleapis.com" },
+    { href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
+    { href: "https://diraphksavgifippktuh.supabase.co" },
+  ],
+};
+
 export default async function RootLayout({
   children,
 }: Readonly<{

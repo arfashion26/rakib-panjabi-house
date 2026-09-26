@@ -12,9 +12,24 @@ import { CustomerReviewsContent } from "@/components/home/customer-reviews-conte
 import { InstagramFeed } from "@/components/home/instagram-feed";
 import { BlogPosts } from "@/components/home/blog-posts";
 
+// Revalidate homepage every 24 hours ( ISR — static + incremental )
+// Once cached, users get instant load. Admin homepage edits still
+// propagate within 24h, or instantly via /api/revalidate if needed.
+export const revalidate = 86400;
+
+// Static generation + dynamicParams disabled for full pre-render
+export const dynamic = "force-static";
+
+// Cache homepage for a long time at the CDN/edge level too
+export const fetchCache = "force-cache";
+
 export default async function Home() {
-  const content = await getHomepageContent();
-  const { products: trending } = await getProducts({ isBestSeller: true, sortBy: "popular", limit: 4 });
+  // Parallel fetches — all run concurrently for faster TTFB
+  const [content, trendingRes] = await Promise.all([
+    getHomepageContent(),
+    getProducts({ isBestSeller: true, sortBy: "popular", limit: 4 }),
+  ]);
+  const trending = trendingRes.products;
 
   return (
     <>

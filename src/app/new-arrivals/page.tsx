@@ -7,6 +7,10 @@ export async function generateMetadata(): Promise<Metadata> {
   return getPageMetadata("new-arrivals");
 }
 
+
+// ISR — revalidate every 1 hour. Once cached, users get instant load.
+export const revalidate = 3600;
+
 export default async function NewArrivalsPage() {
   const { products } = await getProducts({ isNewArrival: true, sortBy: "newest", limit: 100 });
   return (

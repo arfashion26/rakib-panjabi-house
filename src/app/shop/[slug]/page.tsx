@@ -2,6 +2,10 @@ import { getProducts, getCategoryBySlug } from "@/lib/services/products";
 import { CategoryContent } from "@/components/shop/category-content";
 import { notFound } from "next/navigation";
 
+
+// ISR — revalidate every 1 hour. Once cached, users get instant load.
+export const revalidate = 3600;
+
 export default async function CategoryPage({
   params,
 }: {

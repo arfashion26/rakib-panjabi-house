@@ -127,6 +127,9 @@ export function HeroBannerContent({ content, announcement }: { content: HeroCont
                   src={slide.image}
                   alt={slide.title}
                   className="hidden h-full w-full object-cover md:block"
+                  loading={idx === 0 ? "eager" : "lazy"}
+                  fetchPriority={idx === 0 ? "high" : "low"}
+                  decoding="async"
                 />
               )}
               {/* Mobile image (hidden on desktop) — falls back to desktop image if not set */}
@@ -134,6 +137,9 @@ export function HeroBannerContent({ content, announcement }: { content: HeroCont
                 src={slide.mobileImage || slide.image}
                 alt={slide.title}
                 className={`h-full w-full object-cover ${slide.image ? "md:hidden" : ""}`}
+                loading={idx === 0 ? "eager" : "lazy"}
+                fetchPriority={idx === 0 ? "high" : "low"}
+                decoding="async"
               />
             </>
           ) : (

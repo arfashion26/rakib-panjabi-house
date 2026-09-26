@@ -1,6 +1,10 @@
 import { getProducts, getCategories } from "@/lib/services/products";
 import { ShopContent } from "@/components/shop/shop-content";
 
+
+// ISR — revalidate every 1 hour. Once cached, users get instant load.
+export const revalidate = 3600;
+
 export default async function ShopPage({
   searchParams,
 }: {
