@@ -232,7 +232,7 @@ export function HeroBannerContent({ content, announcement }: { content: HeroCont
           window.scrollTo({ top: window.innerHeight - 56, behavior: "smooth" });
         }}
         aria-label="Scroll down"
-        className="absolute bottom-5 right-5 z-30 hidden flex-col items-center gap-1 text-white/70 transition-colors hover:text-white md:flex"
+        className="absolute bottom-5 left-1/2 z-30 hidden -translate-x-1/2 flex-col items-center gap-1 text-white/70 transition-colors hover:text-white md:flex"
       >
         <span className="text-[10px] font-medium uppercase tracking-[0.2em]">
           Scroll
