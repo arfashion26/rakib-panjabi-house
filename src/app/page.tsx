@@ -1,6 +1,6 @@
 import { getHomepageContent } from "@/lib/services/homepage";
-import { getProducts } from "@/lib/services/products";
-import { HeroBannerContent } from "@/components/home/hero-banner-content";
+import { getProducts, getCategories } from "@/lib/services/products";
+import { MegaHero } from "@/components/home/mega-hero";
 import { TrustBadges } from "@/components/home/trust-badges";
 import { FeaturedCategories } from "@/components/home/featured-categories";
 import { NewArrivals } from "@/components/home/new-arrivals";
@@ -25,15 +25,25 @@ export const fetchCache = "force-cache";
 
 export default async function Home() {
   // Parallel fetches — all run concurrently for faster TTFB
-  const [content, trendingRes] = await Promise.all([
+  const [content, trendingRes, categories] = await Promise.all([
     getHomepageContent(),
     getProducts({ isBestSeller: true, sortBy: "popular", limit: 4 }),
+    getCategories(),
   ]);
   const trending = trendingRes.products;
 
   return (
     <>
-      <HeroBannerContent content={{ ...content.hero, heroSlides: content.heroSlides } as any} announcement={content.announcement} />
+      <MegaHero
+        slides={content.heroSlides || []}
+        categories={categories.map((c) => ({
+          id: c.id,
+          name: c.name,
+          slug: c.slug,
+          image: c.image,
+        }))}
+        announcement={content.announcement}
+      />
       <TrustBadges />
       <FeaturedCategories />
       <NewArrivals />
