@@ -92,7 +92,7 @@ export default function AdminLayout({
           <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full ring-2 ring-accent/30">
             <img
               src="/logo.jpg"
-              alt="Al-Rakib Panjabi House"
+              alt="Al-Rakib .com"
               className="h-full w-full object-cover"
               width={48}
               height={48}
@@ -100,10 +100,10 @@ export default function AdminLayout({
           </div>
           <div>
             <p className="font-serif text-sm font-semibold leading-tight">
-              Al-Rakib Panjabi
+              Al-Rakib
             </p>
             <p className="text-[10px] uppercase tracking-[0.25em] text-primary-foreground/50">
-              Admin Panel
+              .com
             </p>
           </div>
         </Link>
@@ -202,7 +202,7 @@ export default function AdminLayout({
           <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-full ring-1 ring-accent/30">
             <img
               src="/logo.jpg"
-              alt="Al-Rakib Panjabi House"
+              alt="Al-Rakib .com"
               className="h-full w-full object-cover"
               width={32}
               height={32}
