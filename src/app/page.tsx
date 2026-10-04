@@ -12,15 +12,13 @@ import { CustomerReviewsContent } from "@/components/home/customer-reviews-conte
 import { InstagramFeed } from "@/components/home/instagram-feed";
 import { BlogPosts } from "@/components/home/blog-posts";
 
-// Revalidate homepage every 24 hours ( ISR — static + incremental )
-// Once cached, users get instant load. Admin homepage edits still
-// propagate within 24h, or instantly via /api/revalidate if needed.
-export const revalidate = 86400;
+// Revalidate homepage every hour (ISR — static + incremental).
+// Admin homepage edits trigger on-demand revalidation via /api/revalidate,
+// so changes appear immediately. This hourly revalidate is a fallback.
+export const revalidate = 3600;
 
-// Static generation + dynamicParams disabled for full pre-render
-export const dynamic = "force-static";
-
-// Cache homepage for a long time at the CDN/edge level too
+// Cache homepage at the CDN/edge level for fast repeat visits.
+// In dev mode, Next.js automatically bypasses caching.
 export const fetchCache = "force-cache";
 
 export default async function Home() {

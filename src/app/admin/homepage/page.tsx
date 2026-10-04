@@ -127,7 +127,18 @@ export default function AdminHomepagePage() {
       });
       const data = await res.json();
       if (data.success) {
-        toast.success("Homepage content saved successfully!");
+        // Purge the homepage ISR cache so changes appear immediately
+        // (homepage is cached for 24h via revalidate=86400)
+        try {
+          await fetch("/api/revalidate", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ paths: ["/", "/shop"] }),
+          });
+        } catch {
+          // Revalidation is best-effort — don't block save on failure
+        }
+        toast.success("Homepage content saved — changes are live!");
       } else {
         toast.error(data.error || "Failed to save");
       }
