@@ -93,10 +93,9 @@ export function MegaHero({ slides, categories, announcement }: MegaHeroProps) {
 
   return (
     <section className="relative bg-background">
-      {/* Hero takes full viewport height (minus header offset).
-          Announcement bar is now in the site header, so we don't
-          duplicate it here. */}
-      <div className="mx-auto flex max-w-7xl flex-col px-3 py-3 sm:px-6 sm:py-4 lg:px-8 lg:py-6 min-h-[calc(100vh-11rem)] lg:min-h-[calc(100vh-13rem)]">
+      {/* Hero section — slider uses fixed 2:1 aspect ratio on ALL devices.
+          No min-height tricks → no empty space below the image. */}
+      <div className="mx-auto max-w-7xl px-3 py-3 sm:px-6 sm:py-4 lg:px-8 lg:py-6">
         {/* Search bar — mobile/tablet only. Desktop header already has
             its own big search bar, so we hide this on lg+ to avoid
             duplication. */}
@@ -119,10 +118,11 @@ export function MegaHero({ slides, categories, announcement }: MegaHeroProps) {
         </form>
 
         {/* 2-column layout: categories (left, desktop only) + slider (right).
-            On mobile, only the slider shows (categories become chips below). */}
-        <div className="grid min-h-0 flex-1 gap-3 lg:grid-cols-[280px_1fr]">
+            On mobile, only the slider shows (categories become chips below).
+            No flex-1 or min-h → slider's aspect-[2/1] determines its height. */}
+        <div className="grid gap-3 lg:grid-cols-[280px_1fr]">
           {/* Categories sidebar — hidden on mobile, shown on lg+.
-              h-full so it stretches to match the slider's height. */}
+              Matches slider height via self-stretch (items-stretch on grid). */}
           <aside className="hidden lg:block">
             <div className="flex h-full flex-col overflow-hidden rounded-lg border border-border/60 bg-background">
               <div className="border-b border-border bg-muted/30 px-4 py-2.5">
