@@ -86,7 +86,7 @@ export function ProductCard({
   return (
     <div
       className={cn(
-        "group relative flex flex-col overflow-hidden rounded-xl border border-border/50 bg-card transition-all duration-300 hover:border-accent/40 hover:shadow-xl",
+        "group relative flex flex-col overflow-hidden rounded-xl border border-border/50 bg-card shadow-md transition-all duration-300 hover:border-accent/40 hover:shadow-xl",
         variant === "compact" && "gap-3",
         className
       )}
