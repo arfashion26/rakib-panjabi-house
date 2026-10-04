@@ -258,10 +258,10 @@ function HeaderLogo({ size = "md" }: { size?: "sm" | "md" }) {
         />
       </div>
       <div className="hidden flex-col leading-none sm:flex">
-        <span className="font-serif text-sm font-semibold text-foreground">
+        <span className="font-serif text-sm font-semibold text-accent-foreground">
           Al-Rakib
         </span>
-        <span className="text-[9px] uppercase tracking-[0.2em] text-muted-foreground">
+        <span className="text-[9px] uppercase tracking-[0.2em] text-accent-foreground/70">
           .com
         </span>
       </div>
@@ -305,16 +305,16 @@ function DesktopHeader() {
 
   return (
     <div className="hidden md:block">
-      {/* Navigation row — gold background, at the very top.
+      {/* Navigation row — dark background, at the very top (as before).
           Includes 'Track My Order' link (left, prominent) + DB-driven nav
           + language toggle + currency toggle. */}
-      <div className="bg-accent text-accent-foreground">
+      <div className="bg-primary text-primary-foreground">
         <div className="mx-auto max-w-7xl px-4 lg:px-6">
           <div className="flex h-11 items-center justify-between gap-3">
             {/* Track My Order — prominent link at the very start */}
             <Link
               href="/track-order"
-              className="flex shrink-0 items-center gap-1.5 rounded-md bg-accent-foreground px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-accent transition-colors hover:bg-accent-foreground/90"
+              className="flex shrink-0 items-center gap-1.5 rounded-md bg-accent px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-accent-foreground transition-colors hover:bg-accent/90"
             >
               <Package className="h-3.5 w-3.5" />
               Track My Order
@@ -327,7 +327,7 @@ function DesktopHeader() {
                     navItems.map((item) =>
                       item.href === "/shop" ? (
                         <NavigationMenuItem key={item.id}>
-                          <NavigationMenuTrigger className="h-9 bg-transparent px-4 text-sm font-medium tracking-wide text-accent-foreground/80 hover:bg-accent-foreground hover:text-accent data-[state=open]:bg-accent-foreground data-[state=open]:text-accent">
+                          <NavigationMenuTrigger className="h-9 bg-transparent px-4 text-sm font-medium tracking-wide text-primary-foreground/80 hover:bg-accent hover:text-accent-foreground data-[state=open]:bg-accent data-[state=open]:text-accent-foreground">
                             {locale === "bn" && item.label_bn ? item.label_bn : item.label}
                           </NavigationMenuTrigger>
                           <ShopMegaMenu />
@@ -343,8 +343,8 @@ function DesktopHeader() {
                             <NavigationMenuLink
                               className={cn(
                                 navigationMenuTriggerStyle(),
-                                "h-9 bg-transparent px-4 text-sm font-medium tracking-wide text-accent-foreground/80 hover:bg-accent-foreground hover:text-accent",
-                                pathname === item.href && "text-accent-foreground font-semibold underline underline-offset-4"
+                                "h-9 bg-transparent px-4 text-sm font-medium tracking-wide text-primary-foreground/80 hover:bg-accent hover:text-accent-foreground",
+                                pathname === item.href && "text-accent-text"
                               )}
                             >
                               {locale === "bn" && item.label_bn ? item.label_bn : item.label}
@@ -355,7 +355,7 @@ function DesktopHeader() {
                     )
                   ) : (
                     <NavigationMenuItem>
-                      <NavigationMenuLink className={cn(navigationMenuTriggerStyle(), "h-9 bg-transparent px-4 text-sm text-accent-foreground/50")}>
+                      <NavigationMenuLink className={cn(navigationMenuTriggerStyle(), "h-9 bg-transparent px-4 text-sm text-primary-foreground/50")}>
                         Loading...
                       </NavigationMenuLink>
                     </NavigationMenuItem>
@@ -367,14 +367,14 @@ function DesktopHeader() {
             {/* Right: language toggle + currency toggle (in nav row) */}
             <div className="flex shrink-0 items-center gap-2">
               {/* Language toggle */}
-              <div className="flex items-center gap-1 rounded-full bg-accent-foreground/10 px-1 py-0.5">
+              <div className="flex items-center gap-1 rounded-full bg-primary-foreground/10 px-1 py-0.5">
                 <button
                   onClick={() => setLocale("en")}
                   className={cn(
                     "rounded-full px-2.5 py-0.5 text-xs font-medium transition-colors",
                     locale === "en"
-                      ? "bg-accent-foreground text-accent"
-                      : "text-accent-foreground/70 hover:text-accent-foreground"
+                      ? "bg-accent text-accent-foreground"
+                      : "text-primary-foreground/70 hover:text-primary-foreground"
                   )}
                 >
                   EN
@@ -384,8 +384,8 @@ function DesktopHeader() {
                   className={cn(
                     "rounded-full px-2.5 py-0.5 text-xs font-medium transition-colors",
                     locale === "bn"
-                      ? "bg-accent-foreground text-accent"
-                      : "text-accent-foreground/70 hover:text-accent-foreground"
+                      ? "bg-accent text-accent-foreground"
+                      : "text-primary-foreground/70 hover:text-primary-foreground"
                   )}
                 >
                   বাংলা
@@ -395,21 +395,21 @@ function DesktopHeader() {
               {/* Currency toggle */}
               <button
                 onClick={toggleCurrency}
-                className="flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium transition-colors hover:bg-accent-foreground/10"
+                className="flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium transition-colors hover:bg-primary-foreground/10"
                 title={`Switch to ${currency === "BDT" ? "USD" : "BDT"}`}
                 aria-label={`Switch currency (current: ${currency})`}
               >
-                <span className={currency === "BDT" ? "text-accent-foreground font-semibold" : "text-accent-foreground/50"}>
+                <span className={currency === "BDT" ? "text-accent" : "text-primary-foreground/50"}>
                   ৳
                 </span>
-                <span className={currency === "BDT" ? "text-accent-foreground" : "text-accent-foreground/50"}>
+                <span className={currency === "BDT" ? "text-primary-foreground" : "text-primary-foreground/50"}>
                   BDT
                 </span>
-                <span className="text-accent-foreground/30">/</span>
-                <span className={currency === "USD" ? "text-accent-foreground font-semibold" : "text-accent-foreground/50"}>
+                <span className="text-primary-foreground/30">/</span>
+                <span className={currency === "USD" ? "text-accent" : "text-primary-foreground/50"}>
                   $
                 </span>
-                <span className={currency === "USD" ? "text-accent-foreground" : "text-accent-foreground/50"}>
+                <span className={currency === "USD" ? "text-primary-foreground" : "text-primary-foreground/50"}>
                   USD
                 </span>
               </button>
@@ -418,9 +418,9 @@ function DesktopHeader() {
         </div>
       </div>
 
-      {/* Main bar — white background (gold nav row above).
+      {/* Main bar — gold background (as before).
           Logo (left) | Big rectangular search bar (center) | Cart button (right) */}
-      <div className="border-b border-border bg-background text-foreground">
+      <div className="border-b border-accent-foreground/10 bg-accent text-accent-foreground">
         <div className="mx-auto max-w-7xl px-4 lg:px-6">
           <div className="flex h-24 items-center justify-between gap-6">
             {/* Left: Logo */}
@@ -434,13 +434,13 @@ function DesktopHeader() {
             </div>
 
             {/* Right: Cart button only (wishlist + account removed per request).
-                Bigger, with a distinct background so it stands out on the white
-                main bar. Uses bg-accent (gold) so it's clearly visible. */}
+                Bigger, with a distinct background so it stands out on the gold
+                main bar. Uses bg-background (white) so it's clearly visible. */}
             <div className="flex shrink-0 items-center">
               <Button
                 variant="ghost"
                 aria-label="Cart"
-                className="relative h-16 w-16 gap-1 rounded-lg border border-border bg-accent text-accent-foreground shadow-sm hover:bg-accent/90"
+                className="relative h-16 w-16 gap-1 rounded-lg border border-accent-foreground/15 bg-background text-accent-foreground shadow-sm hover:bg-accent-foreground hover:text-accent"
                 onClick={openCart}
               >
                 <ShoppingBag className="h-7 w-7" />
@@ -483,7 +483,7 @@ function BigSearchBar() {
           type="search"
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          className="h-full w-full rounded-l-md border border-r-0 border-border bg-muted/30 pl-12 text-sm shadow-sm transition-shadow focus:border-accent focus:bg-background focus:outline-none sm:text-base"
+          className="h-full w-full rounded-l-md border border-r-0 border-accent-foreground/15 bg-background pl-12 text-sm shadow-sm transition-shadow focus:border-accent-foreground focus:bg-background focus:outline-none sm:text-base"
           aria-label="Search products"
         />
       </div>
