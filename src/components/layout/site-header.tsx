@@ -16,6 +16,7 @@ import {
   ShieldCheck,
   RefreshCw,
   Package,
+  Mail,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -541,10 +542,14 @@ function SearchBar() {
  */
 function MobileHeader() {
   const [open, setOpen] = React.useState(false);
+  const [searchOpen, setSearchOpen] = React.useState(false);
+  const [search, setSearch] = React.useState("");
   const pathname = usePathname();
   const totalItems = useCart((s) => s.getTotalItems());
   const openCart = useCart((s) => s.openCart);
   const { locale, setLocale, t } = useLanguage();
+  const { currency, toggleCurrency } = useCurrency();
+  const logoUrl = useLogoUrl();
 
   // Fetch DB-driven nav items
   const [navItems, setNavItems] = React.useState<Array<{
@@ -567,169 +572,244 @@ function MobileHeader() {
       .catch(() => {});
   }, []);
 
+  function handleSearch(e: React.FormEvent) {
+    e.preventDefault();
+    const q = search.trim();
+    if (q) window.location.href = `/shop?q=${encodeURIComponent(q)}`;
+    else window.location.href = "/shop";
+  }
+
   return (
-    <div className="border-b border-primary-foreground/10 bg-primary text-primary-foreground md:hidden">
-      <div className="flex h-14 items-center justify-between px-4">
-        {/* Left: Menu button */}
-        <Sheet open={open} onOpenChange={setOpen}>
-          <SheetTrigger asChild>
+    <div className="md:hidden">
+      {/* Main bar — gold background (matches desktop).
+          Layout: Menu (left) | Logo (center) | Cart (right) */}
+      <div className="bg-accent text-accent-foreground">
+        <div className="flex h-16 items-center justify-between px-3">
+          {/* Left: Menu button */}
+          <Sheet open={open} onOpenChange={setOpen}>
+            <SheetTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                aria-label="Open menu"
+                className="h-11 w-11 text-accent-foreground hover:bg-accent-foreground hover:text-accent"
+              >
+                <Menu className="h-5 w-5" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="w-[300px] overflow-y-auto bg-background p-0">
+              <SheetHeader className="border-b border-border bg-primary px-4 py-4">
+                <SheetTitle className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-full ring-2 ring-accent/40">
+                      <img
+                        src={logoUrl}
+                        alt="Al-Rakib"
+                        className="h-full w-full object-cover"
+                        width={36}
+                        height={36}
+                      />
+                    </div>
+                    <div className="leading-none">
+                      <span className="font-serif text-sm font-semibold text-primary-foreground">Al-Rakib</span>
+                      <span className="ml-1 text-[9px] uppercase tracking-[0.2em] text-accent">.com</span>
+                    </div>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 text-primary-foreground hover:bg-accent hover:text-accent-foreground"
+                    onClick={() => setOpen(false)}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </SheetTitle>
+              </SheetHeader>
+
+              {/* Mobile nav — DB-driven */}
+              <div className="flex flex-col gap-0.5 p-3">
+                {navItems.map((item) => (
+                  <Link
+                    key={item.id}
+                    href={item.href}
+                    onClick={() => setOpen(false)}
+                    target={item.open_in_new_tab ? "_blank" : undefined}
+                    className={cn(
+                      "flex items-center justify-between rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+                      pathname === item.href
+                        ? "bg-accent/10 text-accent-text"
+                        : "text-foreground hover:bg-accent/5"
+                    )}
+                  >
+                    {locale === "bn" && item.label_bn ? item.label_bn : item.label}
+                  </Link>
+                ))}
+
+                {/* Track My Order — prominent link */}
+                <Link
+                  href="/track-order"
+                  onClick={() => setOpen(false)}
+                  className="mt-1 flex items-center gap-1.5 rounded-lg bg-accent px-3 py-2.5 text-sm font-semibold uppercase tracking-wider text-accent-foreground"
+                >
+                  <Package className="h-4 w-4" />
+                  Track My Order
+                </Link>
+
+                {/* Categories section */}
+                <div className="my-3 border-t border-border" />
+                <p className="px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  {t("products.categories")}
+                </p>
+                <div className="mt-1 grid grid-cols-2 gap-1">
+                  {categories.slice(0, 10).map((cat) => (
+                    <Link
+                      key={cat.slug}
+                      href={cat.href}
+                      onClick={() => setOpen(false)}
+                      className="rounded-md px-3 py-2 text-xs text-muted-foreground hover:bg-accent/5 hover:text-foreground"
+                    >
+                      {cat.name}
+                    </Link>
+                  ))}
+                </div>
+
+                {/* Language + Currency toggle */}
+                <div className="my-3 border-t border-border" />
+                <div className="px-3 space-y-3">
+                  <div>
+                    <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                      {t("dashboard.language")}
+                    </p>
+                    <div className="flex items-center gap-1 rounded-full bg-muted p-1">
+                      <button
+                        onClick={() => setLocale("en")}
+                        className={cn(
+                          "flex-1 rounded-full px-3 py-1.5 text-xs font-medium transition-colors",
+                          locale === "en" ? "bg-accent text-accent-foreground" : "text-muted-foreground"
+                        )}
+                      >
+                        English
+                      </button>
+                      <button
+                        onClick={() => setLocale("bn")}
+                        className={cn(
+                          "flex-1 rounded-full px-3 py-1.5 text-xs font-medium transition-colors",
+                          locale === "bn" ? "bg-accent text-accent-foreground" : "text-muted-foreground"
+                        )}
+                      >
+                        বাংলা
+                      </button>
+                    </div>
+                  </div>
+
+                  <div>
+                    <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                      Currency
+                    </p>
+                    <button
+                      onClick={toggleCurrency}
+                      className="flex w-full items-center justify-center gap-2 rounded-full bg-muted px-3 py-2 text-xs font-medium transition-colors hover:bg-accent/10"
+                    >
+                      <span className={currency === "BDT" ? "text-accent-text font-bold" : "text-muted-foreground"}>
+                        ৳ BDT
+                      </span>
+                      <span className="text-muted-foreground/50">/</span>
+                      <span className={currency === "USD" ? "text-accent-text font-bold" : "text-muted-foreground"}>
+                        $ USD
+                      </span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Contact info */}
+                <div className="my-3 border-t border-border" />
+                <div className="px-3 space-y-2">
+                  <a href={`tel:${siteConfig.phone}`} className="flex items-center gap-2 text-xs text-muted-foreground hover:text-accent-text">
+                    <Phone className="h-3 w-3" />
+                    {siteConfig.phone}
+                  </a>
+                  <a href={`mailto:${siteConfig.email}`} className="flex items-center gap-2 text-xs text-muted-foreground hover:text-accent-text">
+                    <Mail className="h-3 w-3" />
+                    {siteConfig.email}
+                  </a>
+                </div>
+              </div>
+            </SheetContent>
+          </Sheet>
+
+          {/* Center: Logo */}
+          <Link href="/" aria-label="Home" className="absolute left-1/2 -translate-x-1/2">
+            <div className="flex items-center gap-2">
+              <div className="relative h-10 w-10 overflow-hidden rounded-full ring-2 ring-accent-foreground/20">
+                <img
+                  src={logoUrl}
+                  alt="Al-Rakib"
+                  className="h-full w-full object-cover"
+                  width={40}
+                  height={40}
+                />
+              </div>
+              <div className="flex flex-col leading-none">
+                <span className="font-serif text-sm font-semibold text-accent-foreground">Al-Rakib</span>
+                <span className="text-[8px] uppercase tracking-[0.2em] text-accent-foreground/70">.com</span>
+              </div>
+            </div>
+          </Link>
+
+          {/* Right: Search toggle + Cart */}
+          <div className="flex items-center gap-1">
+            {/* Search toggle button */}
             <Button
               variant="ghost"
               size="icon"
-              aria-label="Open menu"
-              className="h-10 w-10 text-primary-foreground hover:bg-accent hover:text-accent-foreground"
+              aria-label="Search"
+              className="h-11 w-11 text-accent-foreground hover:bg-accent-foreground hover:text-accent"
+              onClick={() => setSearchOpen(!searchOpen)}
             >
-              <Menu className="h-5 w-5" />
+              <Search className="h-5 w-5" />
             </Button>
-          </SheetTrigger>
-          <SheetContent side="left" className="w-[300px] overflow-y-auto bg-background p-0">
-            <SheetHeader className="border-b border-border bg-primary px-4 py-4">
-              <SheetTitle className="flex items-center justify-between">
-                <HeaderLogo size="sm" />
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 text-primary-foreground hover:bg-accent hover:text-accent-foreground"
-                  onClick={() => setOpen(false)}
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              </SheetTitle>
-            </SheetHeader>
 
-            {/* Mobile nav — DB-driven */}
-            <div className="flex flex-col gap-0.5 p-3">
-              {navItems.map((item) => (
-                <Link
-                  key={item.id}
-                  href={item.href}
-                  onClick={() => setOpen(false)}
-                  target={item.open_in_new_tab ? "_blank" : undefined}
-                  className={cn(
-                    "flex items-center justify-between rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
-                    pathname === item.href
-                      ? "bg-accent/10 text-accent-text"
-                      : "text-foreground hover:bg-accent/5"
-                  )}
-                >
-                  {locale === "bn" && item.label_bn ? item.label_bn : item.label}
-                </Link>
-              ))}
-
-              {/* Categories section */}
-              <div className="my-3 border-t border-border" />
-              <p className="px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                {t("products.categories")}
-              </p>
-              <div className="mt-1 grid grid-cols-2 gap-1">
-                {categories.slice(0, 10).map((cat) => (
-                  <Link
-                    key={cat.slug}
-                    href={cat.href}
-                    onClick={() => setOpen(false)}
-                    className="rounded-md px-3 py-2 text-xs text-muted-foreground hover:bg-accent/5 hover:text-foreground"
-                  >
-                    {cat.name}
-                  </Link>
-                ))}
-              </div>
-
-              {/* Language toggle */}
-              <div className="my-3 border-t border-border" />
-              <div className="px-3">
-                <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  {t("dashboard.language")}
-                </p>
-                <div className="flex items-center gap-1 rounded-full bg-muted p-1">
-                  <button
-                    onClick={() => setLocale("en")}
-                    className={cn(
-                      "flex-1 rounded-full px-3 py-1.5 text-xs font-medium transition-colors",
-                      locale === "en" ? "bg-accent text-accent-foreground" : "text-muted-foreground"
-                    )}
-                  >
-                    English
-                  </button>
-                  <button
-                    onClick={() => setLocale("bn")}
-                    className={cn(
-                      "flex-1 rounded-full px-3 py-1.5 text-xs font-medium transition-colors",
-                      locale === "bn" ? "bg-accent text-accent-foreground" : "text-muted-foreground"
-                    )}
-                  >
-                    বাংলা
-                  </button>
-                </div>
-              </div>
-
-              {/* Contact info */}
-              <div className="my-3 border-t border-border" />
-              <div className="px-3 space-y-2">
-                <a href={`tel:${siteConfig.phone}`} className="flex items-center gap-2 text-xs text-muted-foreground hover:text-accent-text">
-                  <Phone className="h-3 w-3" />
-                  {siteConfig.phone}
-                </a>
-                <a href={`mailto:${siteConfig.email}`} className="flex items-center gap-2 text-xs text-muted-foreground hover:text-accent-text">
-                  <Search className="h-3 w-3" />
-                  {siteConfig.email}
-                </a>
-              </div>
-            </div>
-          </SheetContent>
-        </Sheet>
-
-        {/* Center: Logo */}
-        <Link href="/" aria-label="Home" className="absolute left-1/2 -translate-x-1/2">
-          <div className="relative h-9 w-9 overflow-hidden rounded-full ring-2 ring-accent/40">
-            <img
-              src="/logo.jpg"
-              alt="Al-Rakib Panjabi House"
-              className="h-full w-full object-cover"
-              width={36}
-              height={36}
-            />
+            {/* Cart — big, prominent */}
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label="Cart"
+              className="relative h-12 w-12 rounded-lg border border-accent-foreground/15 bg-background text-accent-foreground hover:bg-accent-foreground hover:text-accent"
+              onClick={openCart}
+            >
+              <ShoppingBag className="h-5 w-5" />
+              {totalItems > 0 && (
+                <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-accent-foreground px-1 text-[10px] font-bold text-accent ring-2 ring-background">
+                  {totalItems > 99 ? "99+" : totalItems}
+                </span>
+              )}
+            </Button>
           </div>
-        </Link>
-
-        {/* Right: Actions */}
-        <div className="flex items-center gap-0.5">
-          <Button
-            variant="ghost"
-            size="icon"
-            asChild
-            aria-label="Search"
-            className="h-9 w-9 text-primary-foreground/80 hover:bg-accent hover:text-accent-foreground"
-          >
-            <Link href="/shop">
-              <Search className="h-[18px] w-[18px]" />
-            </Link>
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            asChild
-            aria-label="Wishlist"
-            className="h-9 w-9 text-primary-foreground/80 hover:bg-accent hover:text-accent-foreground"
-          >
-            <Link href="/wishlist">
-              <Heart className="h-[18px] w-[18px]" />
-            </Link>
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            aria-label="Cart"
-            className="relative h-9 w-9 text-primary-foreground/80 hover:bg-accent hover:text-accent-foreground"
-            onClick={openCart}
-          >
-            <ShoppingBag className="h-[18px] w-[18px]" />
-            {totalItems > 0 && (
-              <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-accent px-1 text-[10px] font-bold text-accent-foreground">
-                {totalItems > 99 ? "99+" : totalItems}
-              </span>
-            )}
-          </Button>
         </div>
+
+        {/* Expandable search bar (mobile) */}
+        {searchOpen && (
+          <form onSubmit={handleSearch} className="border-t border-accent-foreground/10 px-3 pb-3">
+            <div className="relative flex h-12 items-stretch">
+              <Search className="pointer-events-none absolute left-4 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <input
+                type="search"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search products..."
+                autoFocus
+                className="h-full w-full rounded-l-md border border-r-0 border-accent-foreground/15 bg-background pl-11 text-sm focus:outline-none"
+                aria-label="Search products"
+              />
+              <button
+                type="submit"
+                className="flex h-full items-center gap-1 rounded-r-md bg-accent-foreground px-4 text-xs font-semibold uppercase tracking-wider text-accent"
+              >
+                Go
+              </button>
+            </div>
+          </form>
+        )}
       </div>
     </div>
   );
