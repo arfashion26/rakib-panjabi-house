@@ -93,7 +93,7 @@ export function MegaHero({ slides, categories, announcement }: MegaHeroProps) {
       {/* Announcement bar (optional, hidden if disabled or empty) */}
       {announcement?.enabled && announcement.text && (
         <div className="bg-accent text-accent-foreground">
-          <div className="mx-auto max-w-7xl px-4">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="flex h-9 items-center justify-center text-center text-xs">
               <span className="font-medium tracking-wide">{announcement.text}</span>
             </div>
@@ -101,28 +101,28 @@ export function MegaHero({ slides, categories, announcement }: MegaHeroProps) {
         </div>
       )}
 
-      <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
         {/* Search bar — full width, prominent */}
-        <form onSubmit={handleSearch} className="relative mb-4">
+        <form onSubmit={handleSearch} className="relative mb-5">
           <input
             type="search"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search for panjabis, shirts, pants, accessories..."
-            className="h-12 sm:h-14 w-full rounded-full border border-border bg-background pl-12 pr-28 text-sm shadow-sm transition-shadow focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30 sm:text-base"
+            className="h-14 sm:h-16 w-full rounded-full border border-border bg-background pl-14 pr-32 text-sm shadow-sm transition-shadow focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30 sm:text-base"
             aria-label="Search products"
           />
-          <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+          <Search className="pointer-events-none absolute left-5 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
           <button
             type="submit"
-            className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded-full bg-accent px-5 py-2 text-xs font-semibold uppercase tracking-wider text-accent-foreground transition-colors hover:bg-accent/90 sm:px-6 sm:text-sm"
+            className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-accent px-6 py-2.5 text-xs font-semibold uppercase tracking-wider text-accent-foreground transition-colors hover:bg-accent/90 sm:px-7 sm:text-sm"
           >
             Search
           </button>
         </form>
 
         {/* 2-column layout: categories (left) + slider (right) */}
-        <div className="grid gap-3 lg:grid-cols-[260px_1fr]">
+        <div className="grid gap-3 lg:grid-cols-[280px_1fr]">
           {/* Categories sidebar — hidden on mobile, shown on lg+ */}
           <aside className="hidden lg:block">
             <div className="overflow-hidden rounded-lg border border-border/60 bg-background">
@@ -187,7 +187,7 @@ export function MegaHero({ slides, categories, announcement }: MegaHeroProps) {
                 </div>
               </div>
             ) : (
-              <div className="relative aspect-[16/9] sm:aspect-[16/8] lg:aspect-[16/7]">
+              <div className="relative aspect-[16/10] sm:aspect-[16/8] lg:aspect-[16/7]">
                 {slides.map((slide, idx) => (
                   <div
                     key={slide.id || idx}
