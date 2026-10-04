@@ -85,6 +85,25 @@ export function SiteFooter() {
                 <span>{siteConfig.address}</span>
               </p>
             </div>
+
+            {/* Small social icons — under contact info */}
+            <div className="mt-4 flex items-center gap-2">
+              {socials.map((social) => {
+                const Icon = social.icon;
+                return (
+                  <a
+                    key={social.label}
+                    href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={social.label}
+                    className={`group flex h-8 w-8 items-center justify-center rounded-full border border-primary-foreground/20 bg-primary-foreground/5 transition-all hover:scale-110 active:scale-95 ${social.hoverClass}`}
+                  >
+                    <Icon className={`h-3.5 w-3.5 transition-transform group-hover:scale-110 group-hover:text-white ${social.iconClass}`} />
+                  </a>
+                );
+              })}
+            </div>
           </div>
 
           {/* Column 2: Shop */}
@@ -142,30 +161,6 @@ export function SiteFooter() {
                 </li>
               ))}
             </ul>
-          </div>
-        </div>
-
-        {/* Social icons row — centered, prominent */}
-        <div className="mt-10 flex flex-col items-center gap-4 border-t border-primary-foreground/10 pt-8">
-          <p className="text-xs font-bold uppercase tracking-[0.2em] text-accent-text">
-            {t("footer.followUs")}
-          </p>
-          <div className="flex items-center gap-3">
-            {socials.map((social) => {
-              const Icon = social.icon;
-              return (
-                <a
-                  key={social.label}
-                  href={social.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={social.label}
-                  className={`group flex h-11 w-11 items-center justify-center rounded-full border border-primary-foreground/20 bg-primary-foreground/5 transition-all hover:scale-110 active:scale-95 ${social.hoverClass}`}
-                >
-                  <Icon className={`h-5 w-5 transition-transform group-hover:scale-110 group-hover:text-white ${social.iconClass}`} />
-                </a>
-              );
-            })}
           </div>
         </div>
       </div>
