@@ -285,7 +285,7 @@ function DesktopHeader() {
   }>>([]);
 
   React.useEffect(() => {
-    fetch("/api/nav-menu")
+    fetch(`/api/nav-menu?_t=${Date.now()}`)
       .then((r) => r.json())
       .then((data) => {
         if (data.success && data.items?.length > 0) {
@@ -326,13 +326,7 @@ function DesktopHeader() {
                         </Link>
                       </NavigationMenuItem>
                     ))
-                  ) : (
-                    <NavigationMenuItem>
-                      <NavigationMenuLink className={cn(navigationMenuTriggerStyle(), "h-9 bg-transparent px-4 text-sm text-accent-foreground/50")}>
-                        Loading...
-                      </NavigationMenuLink>
-                    </NavigationMenuItem>
-                  )}
+                  ) : null}
                 </NavigationMenuList>
               </NavigationMenu>
             </nav>
