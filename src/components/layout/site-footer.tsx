@@ -168,7 +168,7 @@ export function SiteFooter() {
       {/* Bottom bar */}
       <div className="border-t border-primary-foreground/10">
         <div className="mx-auto max-w-7xl px-4 py-5">
-          <div className="flex flex-col items-center justify-between gap-2 md:flex-row">
+          <div className="flex flex-col items-center justify-between gap-3 md:flex-row">
             <p className="text-xs text-primary-foreground/50">
               © {new Date().getFullYear()} {siteConfig.name}. {t("footer.rights")}{" "}
               <a
@@ -183,6 +183,28 @@ export function SiteFooter() {
             <p className="text-[10px] uppercase tracking-wider text-primary-foreground/30">
               Cash on Delivery · Inside Dhaka ৳70 · Outside ৳120
             </p>
+          </div>
+
+          {/* Design & Developed by Cynlex Digital — with logo */}
+          <div className="mt-4 flex justify-end">
+            <a
+              href="https://cynlex.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex items-center gap-2 rounded-md transition-opacity hover:opacity-90"
+              aria-label="Design and Developed by Cynlex Digital"
+            >
+              <span className="text-[10px] uppercase tracking-[0.15em] text-primary-foreground/40">
+                Design &amp; Developed by
+              </span>
+              <img
+                src="https://diraphksavgifippktuh.supabase.co/storage/v1/object/public/homepage-images/general/1791118247981-t4h49bp6eo.png"
+                alt="Cynlex Digital"
+                className="h-6 w-auto opacity-70 transition-opacity group-hover:opacity-100"
+                loading="lazy"
+                decoding="async"
+              />
+            </a>
           </div>
         </div>
       </div>
