@@ -269,9 +269,9 @@ function HeaderLogo({ size = "md" }: { size?: "sm" | "md" }) {
 }
 
 /**
- * Desktop header — gold main bar + dark nav row
- * Row 1 (gold bg): Logo (left) | Big search bar (center) | Cart + wishlist + account (right)
- * Row 2 (dark bg): Navigation menu + language toggle + currency toggle
+ * Desktop header — dark nav row on top + gold main bar below
+ * Row 1 (dark bg): Navigation menu + language toggle + currency toggle
+ * Row 2 (gold bg): Logo (left) | Big rectangular search bar (center) | Cart button (right)
  */
 function DesktopHeader() {
   const pathname = usePathname();
@@ -304,69 +304,7 @@ function DesktopHeader() {
 
   return (
     <div className="hidden md:block">
-      {/* Main bar — gold background */}
-      <div className="border-b border-accent-foreground/10 bg-accent text-accent-foreground">
-        <div className="mx-auto max-w-7xl px-4 lg:px-6">
-          <div className="flex h-20 items-center justify-between gap-6">
-            {/* Left: Logo */}
-            <div className="flex shrink-0 items-center">
-              <HeaderLogo size="md" />
-            </div>
-
-            {/* Center: Big search bar (takes most of the space) */}
-            <div className="flex-1 max-w-2xl">
-              <BigSearchBar />
-            </div>
-
-            {/* Right: Action icons */}
-            <div className="flex shrink-0 items-center gap-1">
-              {/* Wishlist */}
-              <Button
-                variant="ghost"
-                size="icon"
-                asChild
-                aria-label="Wishlist"
-                className="h-10 w-10 text-accent-foreground/80 hover:bg-accent-foreground hover:text-accent"
-              >
-                <Link href="/wishlist">
-                  <Heart className="h-5 w-5" />
-                </Link>
-              </Button>
-
-              {/* Account */}
-              <Button
-                variant="ghost"
-                size="icon"
-                asChild
-                aria-label="Account"
-                className="h-10 w-10 text-accent-foreground/80 hover:bg-accent-foreground hover:text-accent"
-              >
-                <Link href="/dashboard">
-                  <User className="h-5 w-5" />
-                </Link>
-              </Button>
-
-              {/* Cart — prominent */}
-              <Button
-                variant="ghost"
-                size="icon"
-                aria-label="Cart"
-                className="relative h-10 w-10 text-accent-foreground/80 hover:bg-accent-foreground hover:text-accent"
-                onClick={openCart}
-              >
-                <ShoppingBag className="h-5 w-5" />
-                {totalItems > 0 && (
-                  <span className="absolute -right-0.5 -top-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-accent-foreground px-1 text-[10px] font-bold text-accent">
-                    {totalItems > 99 ? "99+" : totalItems}
-                  </span>
-                )}
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Navigation row — dark background, full width.
+      {/* Navigation row — dark background, at the very top.
           Includes DB-driven nav + language toggle + currency toggle. */}
       <div className="bg-primary text-primary-foreground">
         <div className="mx-auto max-w-7xl px-4 lg:px-6">
@@ -468,12 +406,48 @@ function DesktopHeader() {
           </div>
         </div>
       </div>
+
+      {/* Main bar — gold background.
+          Logo (left) | Big rectangular search bar (center) | Cart button (right) */}
+      <div className="border-b border-accent-foreground/10 bg-accent text-accent-foreground">
+        <div className="mx-auto max-w-7xl px-4 lg:px-6">
+          <div className="flex h-24 items-center justify-between gap-6">
+            {/* Left: Logo */}
+            <div className="flex shrink-0 items-center">
+              <HeaderLogo size="md" />
+            </div>
+
+            {/* Center: Big rectangular search bar (takes most of the space) */}
+            <div className="flex-1 max-w-3xl">
+              <BigSearchBar />
+            </div>
+
+            {/* Right: Cart button only (wishlist + account removed per request) */}
+            <div className="flex shrink-0 items-center">
+              <Button
+                variant="ghost"
+                aria-label="Cart"
+                className="relative h-14 w-14 gap-2 rounded-lg text-accent-foreground hover:bg-accent-foreground hover:text-accent"
+                onClick={openCart}
+              >
+                <ShoppingBag className="h-6 w-6" />
+                {totalItems > 0 && (
+                  <span className="absolute -right-1 -top-1 flex h-6 min-w-6 items-center justify-center rounded-full bg-accent-foreground px-1 text-xs font-bold text-accent">
+                    {totalItems > 99 ? "99+" : totalItems}
+                  </span>
+                )}
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
 
 /**
- * Big search bar — visible in the desktop header (gold bg).
+ * Big rectangular search bar — visible in the desktop header (gold bg).
+ * Larger and rectangular (not pill-shaped) per user request.
  * Routes to /shop?q=QUERY on submit.
  */
 function BigSearchBar() {
@@ -487,20 +461,21 @@ function BigSearchBar() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="relative">
+    <form onSubmit={onSubmit} className="relative flex h-14 items-stretch">
       <input
         type="search"
         value={q}
         onChange={(e) => setQ(e.target.value)}
         placeholder="Search for panjabis, shirts, pants, accessories..."
-        className="h-12 w-full rounded-full border border-accent-foreground/15 bg-background pl-12 pr-28 text-sm shadow-sm transition-shadow focus:border-accent-foreground focus:bg-background focus:outline-none focus:ring-2 focus:ring-accent-foreground/30"
+        className="h-full w-full rounded-l-md border border-r-0 border-accent-foreground/15 bg-background pl-5 text-sm shadow-sm transition-shadow focus:border-accent-foreground focus:bg-background focus:outline-none sm:text-base"
         aria-label="Search products"
       />
       <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
       <button
         type="submit"
-        className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded-full bg-accent-foreground px-5 py-2 text-xs font-semibold uppercase tracking-wider text-accent transition-colors hover:bg-accent-foreground/90"
+        className="flex h-full items-center gap-2 rounded-r-md bg-accent-foreground px-6 text-sm font-semibold uppercase tracking-wider text-accent transition-colors hover:bg-accent-foreground/90"
       >
+        <Search className="h-4 w-4" />
         Search
       </button>
     </form>
