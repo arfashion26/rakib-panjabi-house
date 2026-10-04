@@ -47,7 +47,7 @@ export function SiteFooter() {
                 </div>
                 <div className="leading-none">
                   <p className="font-serif text-lg font-semibold md:text-xl">Al-Rakib</p>
-                  <p className="text-[10px] uppercase tracking-[0.2em] text-accent-text md:text-xs">Panjabi House</p>
+                  <p className="text-[10px] uppercase tracking-[0.2em] text-accent-text md:text-xs">.com</p>
                 </div>
               </div>
             </Link>

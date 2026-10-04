@@ -105,7 +105,7 @@ export function Logo({
               variant === "light" ? "text-accent-text" : "text-muted-foreground"
             )}
           >
-            Panjabi House
+            .com
           </span>
         </div>
       )}

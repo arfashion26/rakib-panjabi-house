@@ -261,7 +261,7 @@ function HeaderLogo({ size = "md" }: { size?: "sm" | "md" }) {
           Al-Rakib
         </span>
         <span className="text-[9px] uppercase tracking-[0.2em] text-accent-foreground/70">
-          Panjabi House
+          .com
         </span>
       </div>
     </Link>
