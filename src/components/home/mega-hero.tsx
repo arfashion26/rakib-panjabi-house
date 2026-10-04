@@ -97,16 +97,16 @@ export function MegaHero({ slides, categories, announcement }: MegaHeroProps) {
           Announcement bar is now in the site header, so we don't
           duplicate it here. */}
       <div className="mx-auto flex max-w-7xl flex-col px-3 py-3 sm:px-6 sm:py-4 lg:px-8 lg:py-6 min-h-[calc(100vh-11rem)] lg:min-h-[calc(100vh-13rem)]">
-        {/* Search bar — full width, prominent.
-            Visible on all screen sizes (desktop header has its own
-            search, but this one is for mobile + tablet). */}
-        <form onSubmit={handleSearch} className="relative mb-3 sm:mb-4">
+        {/* Search bar — mobile/tablet only. Desktop header already has
+            its own big search bar, so we hide this on lg+ to avoid
+            duplication. */}
+        <form onSubmit={handleSearch} className="relative mb-3 sm:mb-4 lg:hidden">
           <input
             type="search"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search for panjabis, shirts, pants, accessories..."
-            className="h-11 sm:h-12 lg:h-14 w-full rounded-full border border-border bg-background pl-11 pr-24 text-sm shadow-sm transition-shadow focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30 sm:pr-28 sm:text-base"
+            className="h-11 sm:h-12 w-full rounded-full border border-border bg-background pl-11 pr-24 text-sm shadow-sm transition-shadow focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30 sm:pr-28 sm:text-base"
             aria-label="Search products"
           />
           <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground sm:h-5 sm:w-5" />
