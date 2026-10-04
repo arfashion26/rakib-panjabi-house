@@ -175,8 +175,8 @@ export function ProductCard({
         </div>
       </Link>
 
-      {/* Info section */}
-      <div className="flex flex-1 flex-col p-3">
+      {/* Info section — separated from image with a top border */}
+      <div className="flex flex-1 flex-col border-t border-border bg-card p-3">
         {/* Rating */}
         {rating !== undefined && (
           <div className="mb-1.5 flex items-center gap-1 text-xs">
