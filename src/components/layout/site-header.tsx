@@ -306,35 +306,26 @@ function DesktopHeader() {
               <NavigationMenu>
                 <NavigationMenuList className="flex-wrap justify-start gap-1">
                   {navItems.length > 0 ? (
-                    navItems.map((item) =>
-                      item.href === "/shop" ? (
-                        <NavigationMenuItem key={item.id}>
-                          <NavigationMenuTrigger className="h-9 bg-transparent px-4 text-sm font-medium tracking-wide text-accent-foreground/80 hover:bg-accent-foreground hover:text-accent data-[state=open]:bg-accent-foreground data-[state=open]:text-accent">
-                            {locale === "bn" && item.label_bn ? item.label_bn : item.label}
-                          </NavigationMenuTrigger>
-                          <ShopMegaMenu />
-                        </NavigationMenuItem>
-                      ) : (
-                        <NavigationMenuItem key={item.id}>
-                          <Link
-                            href={item.href}
-                            legacyBehavior
-                            passHref
-                            target={item.open_in_new_tab ? "_blank" : undefined}
+                    navItems.map((item) => (
+                      <NavigationMenuItem key={item.id}>
+                        <Link
+                          href={item.href}
+                          legacyBehavior
+                          passHref
+                          target={item.open_in_new_tab ? "_blank" : undefined}
+                        >
+                          <NavigationMenuLink
+                            className={cn(
+                              navigationMenuTriggerStyle(),
+                              "h-9 bg-transparent px-4 text-sm font-medium tracking-wide text-accent-foreground/80 hover:bg-accent-foreground hover:text-accent",
+                              pathname === item.href && "text-accent-foreground font-semibold underline underline-offset-4"
+                            )}
                           >
-                            <NavigationMenuLink
-                              className={cn(
-                                navigationMenuTriggerStyle(),
-                                "h-9 bg-transparent px-4 text-sm font-medium tracking-wide text-accent-foreground/80 hover:bg-accent-foreground hover:text-accent",
-                                pathname === item.href && "text-accent-foreground font-semibold underline underline-offset-4"
-                              )}
-                            >
-                              {locale === "bn" && item.label_bn ? item.label_bn : item.label}
-                            </NavigationMenuLink>
-                          </Link>
-                        </NavigationMenuItem>
-                      )
-                    )
+                            {locale === "bn" && item.label_bn ? item.label_bn : item.label}
+                          </NavigationMenuLink>
+                        </Link>
+                      </NavigationMenuItem>
+                    ))
                   ) : (
                     <NavigationMenuItem>
                       <NavigationMenuLink className={cn(navigationMenuTriggerStyle(), "h-9 bg-transparent px-4 text-sm text-accent-foreground/50")}>
