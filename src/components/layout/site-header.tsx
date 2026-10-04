@@ -257,10 +257,10 @@ function HeaderLogo({ size = "md" }: { size?: "sm" | "md" }) {
         />
       </div>
       <div className="hidden flex-col leading-none sm:flex">
-        <span className="font-serif text-sm font-semibold text-primary-foreground">
+        <span className="font-serif text-sm font-semibold text-accent-foreground">
           Al-Rakib
         </span>
-        <span className="text-[9px] uppercase tracking-[0.2em] text-accent-text">
+        <span className="text-[9px] uppercase tracking-[0.2em] text-accent-foreground/70">
           Panjabi House
         </span>
       </div>
@@ -269,15 +269,16 @@ function HeaderLogo({ size = "md" }: { size?: "sm" | "md" }) {
 }
 
 /**
- * Desktop header — white background, two rows
- * Row 1: Logo (left) | Big search bar (center) | Cart + wishlist + account (right)
- * Row 2: Navigation menu (full width, dark accent line)
+ * Desktop header — gold main bar + dark nav row
+ * Row 1 (gold bg): Logo (left) | Big search bar (center) | Cart + wishlist + account (right)
+ * Row 2 (dark bg): Navigation menu + language toggle + currency toggle
  */
 function DesktopHeader() {
   const pathname = usePathname();
   const totalItems = useCart((s) => s.getTotalItems());
   const openCart = useCart((s) => s.openCart);
-  const { locale, t } = useLanguage();
+  const { locale, setLocale, t } = useLanguage();
+  const { currency, toggleCurrency } = useCurrency();
 
   // Fetch DB-driven nav items
   const [navItems, setNavItems] = React.useState<Array<{
@@ -303,8 +304,8 @@ function DesktopHeader() {
 
   return (
     <div className="hidden md:block">
-      {/* Main bar — white background */}
-      <div className="border-b border-border bg-background">
+      {/* Main bar — gold background */}
+      <div className="border-b border-accent-foreground/10 bg-accent text-accent-foreground">
         <div className="mx-auto max-w-7xl px-4 lg:px-6">
           <div className="flex h-20 items-center justify-between gap-6">
             {/* Left: Logo */}
@@ -325,7 +326,7 @@ function DesktopHeader() {
                 size="icon"
                 asChild
                 aria-label="Wishlist"
-                className="h-10 w-10 text-foreground/80 hover:bg-accent hover:text-accent-foreground"
+                className="h-10 w-10 text-accent-foreground/80 hover:bg-accent-foreground hover:text-accent"
               >
                 <Link href="/wishlist">
                   <Heart className="h-5 w-5" />
@@ -338,7 +339,7 @@ function DesktopHeader() {
                 size="icon"
                 asChild
                 aria-label="Account"
-                className="h-10 w-10 text-foreground/80 hover:bg-accent hover:text-accent-foreground"
+                className="h-10 w-10 text-accent-foreground/80 hover:bg-accent-foreground hover:text-accent"
               >
                 <Link href="/dashboard">
                   <User className="h-5 w-5" />
@@ -350,12 +351,12 @@ function DesktopHeader() {
                 variant="ghost"
                 size="icon"
                 aria-label="Cart"
-                className="relative h-10 w-10 text-foreground/80 hover:bg-accent hover:text-accent-foreground"
+                className="relative h-10 w-10 text-accent-foreground/80 hover:bg-accent-foreground hover:text-accent"
                 onClick={openCart}
               >
                 <ShoppingBag className="h-5 w-5" />
                 {totalItems > 0 && (
-                  <span className="absolute -right-0.5 -top-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-accent px-1 text-[10px] font-bold text-accent-foreground">
+                  <span className="absolute -right-0.5 -top-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-accent-foreground px-1 text-[10px] font-bold text-accent">
                     {totalItems > 99 ? "99+" : totalItems}
                   </span>
                 )}
@@ -365,52 +366,106 @@ function DesktopHeader() {
         </div>
       </div>
 
-      {/* Navigation row — dark background, full width */}
+      {/* Navigation row — dark background, full width.
+          Includes DB-driven nav + language toggle + currency toggle. */}
       <div className="bg-primary text-primary-foreground">
         <div className="mx-auto max-w-7xl px-4 lg:px-6">
-          <nav className="flex h-11 items-center">
-            <NavigationMenu>
-              <NavigationMenuList className="flex-wrap justify-start gap-1">
-                {navItems.length > 0 ? (
-                  navItems.map((item) =>
-                    item.href === "/shop" ? (
-                      <NavigationMenuItem key={item.id}>
-                        <NavigationMenuTrigger className="h-9 bg-transparent px-4 text-sm font-medium tracking-wide text-primary-foreground/80 hover:bg-accent hover:text-accent-foreground data-[state=open]:bg-accent data-[state=open]:text-accent-foreground">
-                          {locale === "bn" && item.label_bn ? item.label_bn : item.label}
-                        </NavigationMenuTrigger>
-                        <ShopMegaMenu />
-                      </NavigationMenuItem>
-                    ) : (
-                      <NavigationMenuItem key={item.id}>
-                        <Link
-                          href={item.href}
-                          legacyBehavior
-                          passHref
-                          target={item.open_in_new_tab ? "_blank" : undefined}
-                        >
-                          <NavigationMenuLink
-                            className={cn(
-                              navigationMenuTriggerStyle(),
-                              "h-9 bg-transparent px-4 text-sm font-medium tracking-wide text-primary-foreground/80 hover:bg-accent hover:text-accent-foreground",
-                              pathname === item.href && "text-accent-text"
-                            )}
-                          >
+          <div className="flex h-11 items-center justify-between">
+            <nav className="flex-1">
+              <NavigationMenu>
+                <NavigationMenuList className="flex-wrap justify-start gap-1">
+                  {navItems.length > 0 ? (
+                    navItems.map((item) =>
+                      item.href === "/shop" ? (
+                        <NavigationMenuItem key={item.id}>
+                          <NavigationMenuTrigger className="h-9 bg-transparent px-4 text-sm font-medium tracking-wide text-primary-foreground/80 hover:bg-accent hover:text-accent-foreground data-[state=open]:bg-accent data-[state=open]:text-accent-foreground">
                             {locale === "bn" && item.label_bn ? item.label_bn : item.label}
-                          </NavigationMenuLink>
-                        </Link>
-                      </NavigationMenuItem>
+                          </NavigationMenuTrigger>
+                          <ShopMegaMenu />
+                        </NavigationMenuItem>
+                      ) : (
+                        <NavigationMenuItem key={item.id}>
+                          <Link
+                            href={item.href}
+                            legacyBehavior
+                            passHref
+                            target={item.open_in_new_tab ? "_blank" : undefined}
+                          >
+                            <NavigationMenuLink
+                              className={cn(
+                                navigationMenuTriggerStyle(),
+                                "h-9 bg-transparent px-4 text-sm font-medium tracking-wide text-primary-foreground/80 hover:bg-accent hover:text-accent-foreground",
+                                pathname === item.href && "text-accent-text"
+                              )}
+                            >
+                              {locale === "bn" && item.label_bn ? item.label_bn : item.label}
+                            </NavigationMenuLink>
+                          </Link>
+                        </NavigationMenuItem>
+                      )
                     )
-                  )
-                ) : (
-                  <NavigationMenuItem>
-                    <NavigationMenuLink className={cn(navigationMenuTriggerStyle(), "h-9 bg-transparent px-4 text-sm text-primary-foreground/50")}>
-                      Loading...
-                    </NavigationMenuLink>
-                  </NavigationMenuItem>
-                )}
-              </NavigationMenuList>
-            </NavigationMenu>
-          </nav>
+                  ) : (
+                    <NavigationMenuItem>
+                      <NavigationMenuLink className={cn(navigationMenuTriggerStyle(), "h-9 bg-transparent px-4 text-sm text-primary-foreground/50")}>
+                        Loading...
+                      </NavigationMenuLink>
+                    </NavigationMenuItem>
+                  )}
+                </NavigationMenuList>
+              </NavigationMenu>
+            </nav>
+
+            {/* Right: language toggle + currency toggle (in nav row) */}
+            <div className="flex shrink-0 items-center gap-2">
+              {/* Language toggle */}
+              <div className="flex items-center gap-1 rounded-full bg-primary-foreground/10 px-1 py-0.5">
+                <button
+                  onClick={() => setLocale("en")}
+                  className={cn(
+                    "rounded-full px-2.5 py-0.5 text-xs font-medium transition-colors",
+                    locale === "en"
+                      ? "bg-accent text-accent-foreground"
+                      : "text-primary-foreground/70 hover:text-primary-foreground"
+                  )}
+                >
+                  EN
+                </button>
+                <button
+                  onClick={() => setLocale("bn")}
+                  className={cn(
+                    "rounded-full px-2.5 py-0.5 text-xs font-medium transition-colors",
+                    locale === "bn"
+                      ? "bg-accent text-accent-foreground"
+                      : "text-primary-foreground/70 hover:text-primary-foreground"
+                  )}
+                >
+                  বাংলা
+                </button>
+              </div>
+
+              {/* Currency toggle */}
+              <button
+                onClick={toggleCurrency}
+                className="flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium transition-colors hover:bg-primary-foreground/10"
+                title={`Switch to ${currency === "BDT" ? "USD" : "BDT"}`}
+                aria-label={`Switch currency (current: ${currency})`}
+              >
+                <span className={currency === "BDT" ? "text-accent" : "text-primary-foreground/50"}>
+                  ৳
+                </span>
+                <span className={currency === "BDT" ? "text-primary-foreground" : "text-primary-foreground/50"}>
+                  BDT
+                </span>
+                <span className="text-primary-foreground/30">/</span>
+                <span className={currency === "USD" ? "text-accent" : "text-primary-foreground/50"}>
+                  $
+                </span>
+                <span className={currency === "USD" ? "text-primary-foreground" : "text-primary-foreground/50"}>
+                  USD
+                </span>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -418,7 +473,7 @@ function DesktopHeader() {
 }
 
 /**
- * Big search bar — visible in the desktop header (white bg).
+ * Big search bar — visible in the desktop header (gold bg).
  * Routes to /shop?q=QUERY on submit.
  */
 function BigSearchBar() {
@@ -438,13 +493,13 @@ function BigSearchBar() {
         value={q}
         onChange={(e) => setQ(e.target.value)}
         placeholder="Search for panjabis, shirts, pants, accessories..."
-        className="h-12 w-full rounded-full border border-border bg-muted/30 pl-12 pr-28 text-sm shadow-sm transition-shadow focus:border-accent focus:bg-background focus:outline-none focus:ring-2 focus:ring-accent/30"
+        className="h-12 w-full rounded-full border border-accent-foreground/15 bg-background pl-12 pr-28 text-sm shadow-sm transition-shadow focus:border-accent-foreground focus:bg-background focus:outline-none focus:ring-2 focus:ring-accent-foreground/30"
         aria-label="Search products"
       />
       <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
       <button
         type="submit"
-        className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded-full bg-accent px-5 py-2 text-xs font-semibold uppercase tracking-wider text-accent-foreground transition-colors hover:bg-accent/90"
+        className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded-full bg-accent-foreground px-5 py-2 text-xs font-semibold uppercase tracking-wider text-accent transition-colors hover:bg-accent-foreground/90"
       >
         Search
       </button>
@@ -691,12 +746,14 @@ function MobileHeader() {
 }
 
 /**
- * Site Header - composed of TopBar + Desktop/Mobile headers + CartDrawer
+ * Site Header - Desktop/Mobile headers + CartDrawer.
+ * TopBar (announcement) removed by request — language + currency
+ * toggles are now in the dark nav row, and the main bar (logo +
+ * search + cart) has a gold background.
  */
 export function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 w-full">
-      <TopBar />
       <DesktopHeader />
       <MobileHeader />
       <CartDrawer />
