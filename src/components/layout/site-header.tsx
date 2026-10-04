@@ -474,7 +474,7 @@ function BigSearchBar() {
           type="search"
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          className="h-full w-full rounded-l-md border border-r-0 border-border bg-background pl-12 text-sm shadow-sm transition-shadow focus:border-accent focus:bg-background focus:outline-none focus:ring-2 focus:ring-accent/30 sm:text-base"
+          className="h-full w-full rounded-l-md border border-r-0 border-border bg-background pl-12 text-sm text-foreground shadow-sm transition-shadow placeholder:text-muted-foreground focus:border-accent focus:bg-background focus:outline-none focus:ring-2 focus:ring-accent/30 sm:text-base"
           aria-label="Search products"
         />
       </div>

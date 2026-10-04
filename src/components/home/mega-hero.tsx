@@ -106,7 +106,7 @@ export function MegaHero({ slides, categories, announcement }: MegaHeroProps) {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search for panjabis, shirts, pants, accessories..."
-            className="h-11 sm:h-12 w-full rounded-full border border-border bg-background pl-11 pr-24 text-sm shadow-sm transition-shadow focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30 sm:pr-28 sm:text-base"
+            className="h-11 sm:h-12 w-full rounded-full border border-border bg-background pl-11 pr-24 text-sm text-foreground shadow-sm transition-shadow placeholder:text-muted-foreground focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30 sm:pr-28 sm:text-base"
             aria-label="Search products"
           />
           <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground sm:h-5 sm:w-5" />
@@ -176,10 +176,12 @@ export function MegaHero({ slides, categories, announcement }: MegaHeroProps) {
           </aside>
 
           {/* Slider — fills available height (h-full) so the hero takes
-              the full first viewport. Uses the SAME aspect ratio on
-              mobile and desktop so the desktop image shows at full size
-              on mobile too (no separate mobile cropping). */}
-          <div className="relative h-full min-h-[220px] overflow-hidden rounded-lg border border-border/60 bg-muted">
+              the full first viewport. Uses object-contain so the FULL
+              image is visible on ALL devices without cropping.
+              Black background (bg-primary) fills any empty space around
+              the image when the container's aspect ratio differs from
+              the image's aspect ratio. */}
+          <div className="relative h-full min-h-[220px] overflow-hidden rounded-lg border border-border/60 bg-primary">
             {/* Slides */}
             {total === 0 ? (
               <div className="flex h-full min-h-[220px] items-center justify-center bg-gradient-to-br from-primary via-primary to-primary/80 text-center text-primary-foreground/70">
@@ -198,13 +200,13 @@ export function MegaHero({ slides, categories, announcement }: MegaHeroProps) {
                       idx === current ? "opacity-100" : "opacity-0 pointer-events-none"
                     )}
                   >
-                    {/* Use mobileImage if provided, otherwise use the
-                        desktop image. Same aspect ratio on all devices
-                        so the full image is visible without cropping. */}
+                    {/* Use the SAME image on all devices. object-contain
+                        ensures the full image is visible without cropping.
+                        The container bg-primary (black) fills empty space. */}
                     <img
-                      src={slide.mobileImage || slide.image}
+                      src={slide.image || slide.mobileImage}
                       alt={slide.title || `Slide ${idx + 1}`}
-                      className="h-full w-full object-cover"
+                      className="h-full w-full object-contain"
                       loading={idx === 0 ? "eager" : "lazy"}
                       fetchPriority={idx === 0 ? "high" : "low"}
                       decoding="async"
