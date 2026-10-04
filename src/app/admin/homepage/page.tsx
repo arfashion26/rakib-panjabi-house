@@ -222,54 +222,14 @@ export default function AdminHomepagePage() {
           </>
         ))}
 
-        {/* Hero Section */}
-        {sectionWrapper("🎯 Hero Banner", (
-          <>
-            {field("Eyebrow Text", content.hero.eyebrow, (v) => updateSection("hero", "eyebrow", v), "input", "e.g. New Autumn Collection 2026")}
-            <div className="grid gap-4 sm:grid-cols-2">
-              {field("Title (Part 1)", content.hero.title, (v) => updateSection("hero", "title", v))}
-              {field("Title (Accent Part)", content.hero.titleAccent, (v) => updateSection("hero", "titleAccent", v))}
-            </div>
-            {field("Description", content.hero.description, (v) => updateSection("hero", "description", v), "textarea")}
-            <Separator />
-            <p className="text-sm font-semibold">Buttons</p>
-            <div className="grid gap-4 sm:grid-cols-2">
-              {field("Primary Button Text", content.hero.primaryCtaText, (v) => updateSection("hero", "primaryCtaText", v))}
-              {field("Primary Button Link", content.hero.primaryCtaLink, (v) => updateSection("hero", "primaryCtaLink", v))}
-              {field("Secondary Button Text", content.hero.secondaryCtaText, (v) => updateSection("hero", "secondaryCtaText", v))}
-              {field("Secondary Button Link", content.hero.secondaryCtaLink, (v) => updateSection("hero", "secondaryCtaLink", v))}
-            </div>
-            <Separator />
-            <p className="text-sm font-semibold">Statistics</p>
-            <div className="grid gap-4 sm:grid-cols-3">
-              {field("Stat 1 Value", content.hero.stat1Value, (v) => updateSection("hero", "stat1Value", v))}
-              {field("Stat 1 Label", content.hero.stat1Label, (v) => updateSection("hero", "stat1Label", v))}
-              {field("Stat 2 Value", content.hero.stat2Value, (v) => updateSection("hero", "stat2Value", v))}
-              {field("Stat 2 Label", content.hero.stat2Label, (v) => updateSection("hero", "stat2Label", v))}
-              {field("Stat 3 Value", content.hero.stat3Value, (v) => updateSection("hero", "stat3Value", v))}
-              {field("Stat 3 Label", content.hero.stat3Label, (v) => updateSection("hero", "stat3Label", v))}
-            </div>
-            <Separator />
-            <p className="text-sm font-semibold">Images</p>
-            <ImageUpload
-              label="Hero Image (right side)"
-              value={content.hero.image || ""}
-              onChange={(v) => updateSection("hero", "image", v)}
-              folder="hero"
-              aspectRatio="aspect-[4/5]"
-              hint="Recommended: 800×1000px (portrait)"
-            />
-            {field("Badge Text (on hero image)", content.hero.badgeText || "", (v) => updateSection("hero", "badgeText", v), "input", "e.g. Handcrafted")}
-          </>
-        ))}
-
         {/* Hero Slider Slides */}
         {sectionWrapper("🖼️ Hero Slider Slides", (
           <>
             <p className="text-xs text-muted-foreground">
-              These slides appear as a rotating banner on the homepage hero.
-              Upload a banner image, add a short title + subtitle, and link to a
-              category or collection page. Keep text minimal for best visual impact.
+              Upload a single banner image per slide. It will automatically
+              adapt to all screen sizes (desktop, tablet, mobile). Recommended
+              size: 1920×960px (2:1 ratio). Add optional title, subtitle, and
+              a call-to-action button.
             </p>
             {(content.heroSlides || []).map((slide, idx) => (
               <div key={slide.id || idx} className="rounded-md border border-border p-4 space-y-3">
@@ -289,33 +249,22 @@ export default function AdminHomepagePage() {
                     Delete
                   </Button>
                 </div>
+                {/* Single image — responsive, works on all devices */}
                 <ImageUpload
-                  label="Desktop Banner Image"
+                  label="Banner Image"
                   value={slide.image || ""}
                   onChange={(v) => {
                     const slides = [...(content.heroSlides || [])];
-                    slides[idx] = { ...slides[idx], image: v };
+                    slides[idx] = { ...slides[idx], image: v, mobileImage: v };
                     setContent({ ...content, heroSlides: slides });
                   }}
                   folder="hero"
-                  aspectRatio="aspect-[16/9]"
-                  hint="Desktop: 1920×1080px (landscape)"
-                />
-                <ImageUpload
-                  label="Mobile Banner Image (optional)"
-                  value={slide.mobileImage || ""}
-                  onChange={(v) => {
-                    const slides = [...(content.heroSlides || [])];
-                    slides[idx] = { ...slides[idx], mobileImage: v };
-                    setContent({ ...content, heroSlides: slides });
-                  }}
-                  folder="hero"
-                  aspectRatio="aspect-[9/16]"
-                  hint="Mobile: 1080×1920px (portrait). If empty, desktop image is used."
+                  aspectRatio="aspect-[2/1]"
+                  hint="Recommended: 1920×960px (2:1 ratio). Same image on all devices."
                 />
                 <div className="grid gap-3 sm:grid-cols-2">
                   <div className="space-y-2">
-                    <Label>Title</Label>
+                    <Label>Title (optional)</Label>
                     <Input
                       value={slide.title || ""}
                       onChange={(e) => {
@@ -327,7 +276,7 @@ export default function AdminHomepagePage() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>Subtitle (short)</Label>
+                    <Label>Subtitle (optional)</Label>
                     <Input
                       value={slide.subtitle || ""}
                       onChange={(e) => {
@@ -339,9 +288,9 @@ export default function AdminHomepagePage() {
                     />
                   </div>
                 </div>
-                <div className="grid gap-3 sm:grid-cols-3">
+                <div className="grid gap-3 sm:grid-cols-2">
                   <div className="space-y-2">
-                    <Label>Button Text</Label>
+                    <Label>Button Text (optional)</Label>
                     <Input
                       value={slide.buttonText || ""}
                       onChange={(e) => {
@@ -363,22 +312,6 @@ export default function AdminHomepagePage() {
                       }}
                       placeholder="/shop/panjabi-collection"
                     />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Text Position</Label>
-                    <select
-                      value={slide.align || "left"}
-                      onChange={(e) => {
-                        const slides = [...(content.heroSlides || [])];
-                        slides[idx] = { ...slides[idx], align: e.target.value };
-                        setContent({ ...content, heroSlides: slides });
-                      }}
-                      className="h-9 w-full rounded-md border border-border bg-background px-3 text-sm"
-                    >
-                      <option value="left">Left</option>
-                      <option value="center">Center</option>
-                      <option value="right">Right</option>
-                    </select>
                   </div>
                 </div>
               </div>
