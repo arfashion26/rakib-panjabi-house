@@ -43,6 +43,7 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import { useLogoUrl } from "@/components/logo";
+import { useCurrency } from "@/i18n/currency-context";
 
 /**
  * Top announcement bar (above header) — gold accent
@@ -50,6 +51,7 @@ import { useLogoUrl } from "@/components/logo";
  */
 function AnnouncementBar() {
   const { locale, setLocale, t } = useLanguage();
+  const { currency, toggleCurrency } = useCurrency();
   return (
     <div className="bg-accent text-accent-foreground">
       <div className="mx-auto max-w-7xl px-4">
@@ -94,7 +96,29 @@ function AnnouncementBar() {
               </button>
             </div>
             <span className="text-accent-foreground/40">|</span>
-            <span className="font-medium">৳ BDT</span>
+            {/* Currency toggle — switches between BDT and USD.
+                Click cycles through BDT → USD → BDT. Persisted to localStorage
+                via CurrencyProvider so it stays after page reload. */}
+            <button
+              onClick={toggleCurrency}
+              className="flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium transition-colors hover:bg-accent-foreground/10"
+              title={`Switch to ${currency === "BDT" ? "USD" : "BDT"}`}
+              aria-label={`Switch currency (current: ${currency})`}
+            >
+              <span className={currency === "BDT" ? "text-accent" : "text-accent-foreground/50"}>
+                ৳
+              </span>
+              <span className={currency === "BDT" ? "text-accent-foreground" : "text-accent-foreground/50"}>
+                BDT
+              </span>
+              <span className="text-accent-foreground/30">/</span>
+              <span className={currency === "USD" ? "text-accent" : "text-accent-foreground/50"}>
+                $
+              </span>
+              <span className={currency === "USD" ? "text-accent-foreground" : "text-accent-foreground/50"}>
+                USD
+              </span>
+            </button>
           </div>
         </div>
       </div>

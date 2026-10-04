@@ -42,14 +42,18 @@ export async function getPaymentConfig(): Promise<PaymentConfig> {
  *
  * Used by the Logo component (server-side) and the root layout (favicon).
  */
-export async function getBrandAssets(): Promise<{ logoUrl: string; faviconUrl: string }> {
-  const DEFAULTS = { logoUrl: "/logo.jpg", faviconUrl: "/favicon.ico" };
+export async function getBrandAssets(): Promise<{
+  logoUrl: string;
+  faviconUrl: string;
+  usdRate: number;
+}> {
+  const DEFAULTS = { logoUrl: "/logo.jpg", faviconUrl: "/favicon.ico", usdRate: 110 };
   try {
     const supabase = createAdminClient();
     const { data, error } = await supabase
       .from("settings")
       .select("key, value")
-      .in("key", ["logo_url", "favicon_url"]);
+      .in("key", ["logo_url", "favicon_url", "usd_rate"]);
 
     if (error || !data) return DEFAULTS;
 
@@ -57,6 +61,10 @@ export async function getBrandAssets(): Promise<{ logoUrl: string; faviconUrl: s
     for (const row of data) {
       if (row.key === "logo_url" && row.value) out.logoUrl = row.value;
       if (row.key === "favicon_url" && row.value) out.faviconUrl = row.value;
+      if (row.key === "usd_rate" && row.value) {
+        const n = parseFloat(row.value);
+        if (!isNaN(n) && n > 0) out.usdRate = n;
+      }
     }
     return out;
   } catch {

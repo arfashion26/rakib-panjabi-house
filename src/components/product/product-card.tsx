@@ -5,9 +5,10 @@ import Link from "next/link";
 import { Heart, ShoppingBag, Star, Eye, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/i18n/language-context";
+import { useCurrency } from "@/i18n/currency-context";
 import { useCart, useWishlist } from "@/lib/store";
 import { cn } from "@/lib/utils";
-import { formatPrice, calculateDiscount } from "@/lib/types";
+import { calculateDiscount } from "@/lib/types";
 import { toast } from "sonner";
 
 interface ProductCardProps {
@@ -41,6 +42,7 @@ export function ProductCard({
   className,
 }: ProductCardProps) {
   const { t } = useLanguage();
+  const { formatPrice } = useCurrency();
   const addItem = useCart((s) => s.addItem);
   const toggleWishlist = useWishlist((s) => s.toggle);
   const hasInWishlist = useWishlist((s) => s.has(product.id));

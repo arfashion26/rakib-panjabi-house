@@ -17,6 +17,7 @@ import {
   Package,
 } from "lucide-react";
 import { useLanguage } from "@/i18n/language-context";
+import { useCurrency } from "@/i18n/currency-context";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -24,7 +25,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useCart, useWishlist } from "@/lib/store";
 import { ProductCard } from "@/components/product/product-card";
 import { cn } from "@/lib/utils";
-import { formatPrice, calculateDiscount } from "@/lib/types";
+import { calculateDiscount } from "@/lib/types";
 import { toast } from "sonner";
 
 interface ProductImage {
@@ -101,6 +102,7 @@ export function ProductDetailContent({
   relatedProducts: RelatedProduct[];
 }) {
   const { t } = useLanguage();
+  const { formatPrice } = useCurrency();
   const [selectedSize, setSelectedSize] = React.useState<string | null>(null);
   const [selectedColor, setSelectedColor] = React.useState<string | null>(null);
   const [quantity, setQuantity] = React.useState(1);

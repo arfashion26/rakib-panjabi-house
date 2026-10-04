@@ -3,13 +3,12 @@ import { getBrandAssets } from "@/lib/services/settings";
 
 /**
  * GET /api/brand-assets
- * Public endpoint — returns the brand logo URL and favicon URL.
- * Used by client-side Logo component and other places that need
- * to know the current brand logo without exposing admin auth.
+ * Public endpoint — returns the brand logo URL, favicon URL, and USD rate.
+ * Used by client-side Logo component and the currency toggle.
  *
- * Falls back to /logo.jpg and /favicon.ico if no custom logo set.
+ * Falls back to /logo.jpg, /favicon.ico, and 110 if not set.
  *
- * Cache: 1 hour at CDN, 1 hour in browser. Logo rarely changes,
+ * Cache: 1 hour at CDN, 1 hour in browser. Logo/rate rarely changes,
  * so aggressive caching is safe and reduces DB hits significantly.
  */
 export async function GET() {
@@ -29,6 +28,7 @@ export async function GET() {
         success: true,
         logoUrl: "/logo.jpg",
         faviconUrl: "/favicon.ico",
+        usdRate: 110,
       },
       {
         headers: {

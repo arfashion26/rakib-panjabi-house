@@ -7,11 +7,12 @@ import { useCart } from "@/lib/store";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useLanguage } from "@/i18n/language-context";
-import { formatPrice } from "@/lib/types";
+import { useCurrency } from "@/i18n/currency-context";
 import { Separator } from "@/components/ui/separator";
 
 export function CartDrawer() {
   const { t } = useLanguage();
+  const { formatPrice } = useCurrency();
   const { items, isOpen, closeCart, updateQuantity, removeItem, getSubtotal } =
     useCart();
   const subtotal = getSubtotal();

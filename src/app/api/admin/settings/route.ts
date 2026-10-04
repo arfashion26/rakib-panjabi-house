@@ -37,6 +37,7 @@ export async function GET() {
         "contact_email", "contact_phone", "whatsapp_number", "address",
         "facebook_url", "instagram_url", "youtube_url", "twitter_url",
         "free_shipping_threshold", "cod_inside_dhaka", "cod_outside_dhaka",
+        "usd_rate",
       ]);
 
     if (error) {
@@ -89,6 +90,7 @@ export async function PUT(req: NextRequest) {
       free_shipping_threshold: "text",
       cod_inside_dhaka: "text",
       cod_outside_dhaka: "text",
+      usd_rate: "text",
     };
 
     // Upsert each setting

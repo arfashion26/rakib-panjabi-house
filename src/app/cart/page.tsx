@@ -15,6 +15,7 @@ import {
   Truck,
 } from "lucide-react";
 import { useLanguage } from "@/i18n/language-context";
+import { useCurrency } from "@/i18n/currency-context";
 import { useCart } from "@/lib/store";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -28,6 +29,7 @@ const FLAT_SHIPPING = 80;
 
 export default function CartPage() {
   const { t } = useLanguage();
+  const { formatPrice } = useCurrency();
   const router = useRouter();
   const { items, updateQuantity, removeItem, clearCart, getSubtotal } = useCart();
   const [couponCode, setCouponCode] = React.useState("");

@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Save, Store, Truck, Mail, Loader2, Image as ImageIcon } from "lucide-react";
+import { Save, Store, Truck, Mail, Loader2, Image as ImageIcon, DollarSign } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -35,6 +35,10 @@ export default function AdminSettingsPage() {
     free_shipping_threshold: "2000",
     cod_inside_dhaka: "70",
     cod_outside_dhaka: "120",
+    // Currency conversion: 1 USD = how many BDT
+    // Used by the currency toggle on the site header to convert prices.
+    // Example: if rate is 110, a ৳1100 product shows as $10.00.
+    usd_rate: "110",
   });
 
   // Load settings from DB
@@ -249,6 +253,50 @@ export default function AdminSettingsPage() {
                 value={form.cod_outside_dhaka}
                 onChange={(e) => update("cod_outside_dhaka", e.target.value)}
               />
+            </div>
+          </div>
+        </div>
+
+        {/* Currency Conversion — USD rate for header currency toggle */}
+        <div className="rounded-lg border border-border/60 bg-background p-6">
+          <div className="mb-4 flex items-center gap-2">
+            <DollarSign className="h-5 w-5 text-accent-text" />
+            <h2 className="font-serif text-lg font-medium">Currency Conversion</h2>
+          </div>
+          <p className="mb-4 text-xs text-muted-foreground">
+            Set the exchange rate for converting BDT prices to USD. When a customer
+            toggles the currency switch in the site header, product prices are
+            converted using this rate. Only affects display — orders are still
+            processed in BDT.
+          </p>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-2">
+              <Label htmlFor="usdRate">USD Exchange Rate (1 USD = ? ৳)</Label>
+              <Input
+                id="usdRate"
+                type="number"
+                step="0.01"
+                min="1"
+                value={form.usd_rate}
+                onChange={(e) => update("usd_rate", e.target.value)}
+                placeholder="e.g. 110"
+              />
+              <p className="text-[10px] text-muted-foreground">
+                Current: 1 USD = ৳{form.usd_rate || "110"}. A ৳1100 product will
+                show as ${(1100 / Number(form.usd_rate || 110)).toFixed(2)} when
+                user switches to USD.
+              </p>
+            </div>
+            <div className="flex items-end">
+              <div className="rounded-lg bg-muted/40 p-3 text-xs text-muted-foreground">
+                <p className="font-medium text-foreground">How it works</p>
+                <ul className="mt-1 list-disc space-y-1 pl-4">
+                  <li>Default currency: BDT (৳)</li>
+                  <li>Customer can switch to USD ($) in the header</li>
+                  <li>Prices convert using the rate above</li>
+                  <li>Cart, checkout, orders still use BDT</li>
+                </ul>
+              </div>
             </div>
           </div>
         </div>

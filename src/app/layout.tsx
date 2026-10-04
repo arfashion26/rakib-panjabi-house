@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AppShell } from "@/components/layout/app-shell";
 import { LanguageProvider } from "@/i18n/language-context";
+import { CurrencyProvider } from "@/i18n/currency-context";
 import { getCustomCode } from "@/lib/services/custom-code";
 import { getBrandAssets } from "@/lib/services/settings";
 
@@ -202,8 +203,10 @@ export default async function RootLayout({
           disableTransitionOnChange
         >
           <LanguageProvider>
-            <AppShell>{children}</AppShell>
-            <Toaster />
+            <CurrencyProvider>
+              <AppShell>{children}</AppShell>
+              <Toaster />
+            </CurrencyProvider>
           </LanguageProvider>
         </ThemeProvider>
         {/* Custom tracking code for bottom of <body> (chat widgets, conversion pixels) */}
