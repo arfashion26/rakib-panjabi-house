@@ -334,7 +334,7 @@ function DesktopHeader() {
                               className={cn(
                                 navigationMenuTriggerStyle(),
                                 "h-9 bg-transparent px-4 text-sm font-medium tracking-wide text-primary-foreground/80 hover:bg-accent hover:text-accent-foreground",
-                                pathname === item.href && "text-accent-text"
+                                pathname === item.href && "text-accent"
                               )}
                             >
                               {locale === "bn" && item.label_bn ? item.label_bn : item.label}
