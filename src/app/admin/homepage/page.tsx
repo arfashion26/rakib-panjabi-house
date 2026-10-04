@@ -88,7 +88,8 @@ export default function AdminHomepagePage() {
   React.useEffect(() => {
     async function fetchContent() {
       try {
-        const res = await fetch("/api/admin/homepage");
+        // Cache-busting: add timestamp so we always get fresh data
+        const res = await fetch(`/api/admin/homepage?_t=${Date.now()}`);
         const data = await res.json();
         if (data.success) {
           setContent(data.content);

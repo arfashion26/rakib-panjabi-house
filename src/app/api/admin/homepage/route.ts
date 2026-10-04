@@ -69,8 +69,12 @@ async function verifyAdmin() {
 
 /**
  * GET /api/admin/homepage
- * Fetch homepage content from settings table
+ * Fetch homepage content from settings table.
+ * Always returns fresh data (no caching) so admin sees the latest
+ * saved content.
  */
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   try {
     const admin = createAdminClient();

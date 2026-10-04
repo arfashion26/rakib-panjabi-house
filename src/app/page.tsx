@@ -17,8 +17,11 @@ import { BlogPosts } from "@/components/home/blog-posts";
 // so changes appear immediately. This hourly revalidate is a fallback.
 export const revalidate = 3600;
 
+// Always render dynamically — ensures admin changes are visible immediately
+// on the homepage without waiting for ISR cache expiry.
+export const dynamic = "force-dynamic";
+
 // Cache homepage at the CDN/edge level for fast repeat visits.
-// In dev mode, Next.js automatically bypasses caching.
 export const fetchCache = "force-cache";
 
 export default async function Home() {
