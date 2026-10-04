@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Search, Eye, Trash2, Loader2, ChevronDown } from "lucide-react";
+import { Search, Eye, Trash2, Loader2, ChevronDown, Calendar, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -71,6 +71,9 @@ export default function AdminOrdersPage() {
   const [loading, setLoading] = React.useState(true);
   const [search, setSearch] = React.useState("");
   const [statusFilter, setStatusFilter] = React.useState("ALL");
+  // Date range filter — empty string means 'no filter'
+  const [fromDate, setFromDate] = React.useState("");
+  const [toDate, setToDate] = React.useState("");
   const [viewOrder, setViewOrder] = React.useState<Order | null>(null);
   const [deleteConfirm, setDeleteConfirm] = React.useState<Order | null>(null);
   const [deleting, setDeleting] = React.useState(false);
@@ -78,7 +81,13 @@ export default function AdminOrdersPage() {
   const loadOrders = React.useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/admin/orders");
+      // Build URL with date filters if provided
+      const params = new URLSearchParams();
+      if (fromDate) params.set("fromDate", fromDate);
+      if (toDate) params.set("toDate", toDate);
+      const qs = params.toString();
+      const url = qs ? `/api/admin/orders?${qs}` : "/api/admin/orders";
+      const res = await fetch(url);
       const data = await res.json();
       if (data.success) {
         setOrders(data.orders);
@@ -90,7 +99,8 @@ export default function AdminOrdersPage() {
     } finally {
       setLoading(false);
     }
-  }, []);
+    // Reload when date range changes
+  }, [fromDate, toDate]);
 
   React.useEffect(() => {
     loadOrders();
@@ -104,6 +114,13 @@ export default function AdminOrdersPage() {
     const matchesStatus = statusFilter === "ALL" || o.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
+
+  // Helper: clear date filter
+  function clearDateFilter() {
+    setFromDate("");
+    setToDate("");
+  }
+  const hasDateFilter = !!(fromDate || toDate);
 
   async function updateOrderStatus(order: Order, newStatus: string) {
     try {
@@ -155,29 +172,71 @@ export default function AdminOrdersPage() {
       </div>
 
       {/* Filters */}
-      <div className="mb-6 flex flex-wrap items-center gap-3">
-        <div className="relative min-w-[200px] flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            placeholder="Search by order #, customer name, or phone..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-10"
-          />
+      <div className="mb-6 space-y-3">
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="relative min-w-[200px] flex-1">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              placeholder="Search by order #, customer name, or phone..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="w-[150px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="ALL">All Status</SelectItem>
+              {statusOptions.map((s) => (
+                <SelectItem key={s.value} value={s.value}>
+                  {s.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
-        <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-[150px]">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="ALL">All Status</SelectItem>
-            {statusOptions.map((s) => (
-              <SelectItem key={s.value} value={s.value}>
-                {s.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+
+        {/* Date range filter row */}
+        <div className="flex flex-wrap items-center gap-2 rounded-lg border border-border/60 bg-muted/30 p-3">
+          <Calendar className="h-4 w-4 text-muted-foreground" />
+          <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+            Date Range:
+          </span>
+          <Input
+            type="date"
+            value={fromDate}
+            onChange={(e) => setFromDate(e.target.value)}
+            className="h-9 w-[150px]"
+            aria-label="From date"
+          />
+          <span className="text-xs text-muted-foreground">to</span>
+          <Input
+            type="date"
+            value={toDate}
+            onChange={(e) => setToDate(e.target.value)}
+            className="h-9 w-[150px]"
+            aria-label="To date"
+          />
+          {hasDateFilter && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-9"
+              onClick={clearDateFilter}
+              title="Clear date filter"
+            >
+              <X className="mr-1 h-3.5 w-3.5" />
+              Clear
+            </Button>
+          )}
+          {hasDateFilter && (
+            <span className="ml-auto text-xs text-muted-foreground">
+              Showing {orders.length} order{orders.length === 1 ? "" : "s"} in range
+            </span>
+          )}
+        </div>
       </div>
 
       {/* Orders */}

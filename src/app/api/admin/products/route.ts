@@ -50,10 +50,11 @@ export async function GET() {
       return NextResponse.json({ success: false, error: error.message }, { status: 500 });
     }
 
-    // For each product, fetch its sizes, colors, images, and specifications
+    // For each product, fetch its sizes, colors, images, specifications,
+    // and order count (how many orders include this product)
     const productsWithVariants = await Promise.all(
       (products || []).map(async (product) => {
-        const [sizesRes, colorsRes, imagesRes, specsRes] = await Promise.all([
+        const [sizesRes, colorsRes, imagesRes, specsRes, ordersRes] = await Promise.all([
           admin
             .from("product_sizes")
             .select("*")
@@ -72,6 +73,13 @@ export async function GET() {
             .from("product_specifications")
             .select("name, value")
             .eq("product_id", product.id),
+          // Count orders that include this product (order_items.product_id may be
+          // NULL after product deletion, but for existing products it'll be set).
+          // We count unique order_ids to get total order count for this product.
+          admin
+            .from("order_items")
+            .select("order_id", { count: "exact", head: true })
+            .eq("product_id", product.id),
         ]);
 
         return {
@@ -80,6 +88,7 @@ export async function GET() {
           colors: colorsRes.data || [],
           images: imagesRes.data || [],
           specifications: (specsRes.data || []).map((s: any) => ({ key: s.name, value: s.value })),
+          order_count: ordersRes.count || 0,
         };
       })
     );

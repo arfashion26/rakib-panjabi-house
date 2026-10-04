@@ -66,6 +66,8 @@ interface Product {
   weight_unit?: string;
   // Product-level stock (for items without sizes/colors)
   stock?: number;
+  // Total order count for this product (how many orders include it)
+  order_count?: number;
   // SEO fields
   meta_title?: string;
   meta_description?: string;
@@ -334,13 +336,14 @@ export default function AdminProductsPage() {
       ) : (
         <div className="overflow-hidden rounded-lg border border-border/60 bg-background">
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[700px]">
+            <table className="w-full min-w-[800px]">
               <thead className="border-b border-border bg-muted/30">
                 <tr>
                   <th className="p-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Product</th>
                   <th className="p-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">SKU</th>
                   <th className="p-3 text-right text-xs font-semibold uppercase tracking-wider text-muted-foreground">Price</th>
                   <th className="p-3 text-center text-xs font-semibold uppercase tracking-wider text-muted-foreground">Stock</th>
+                  <th className="p-3 text-center text-xs font-semibold uppercase tracking-wider text-muted-foreground">Orders</th>
                   <th className="p-3 text-center text-xs font-semibold uppercase tracking-wider text-muted-foreground">Status</th>
                   <th className="p-3 text-right text-xs font-semibold uppercase tracking-wider text-muted-foreground">Actions</th>
                 </tr>
@@ -384,6 +387,15 @@ export default function AdminProductsPage() {
                           </span>
                         ) : (
                           <Badge variant="secondary" className="bg-red-100 text-red-700">Out</Badge>
+                        )}
+                      </td>
+                      <td className="p-3 text-center text-sm">
+                        {product.order_count != null && product.order_count > 0 ? (
+                          <span className="font-medium text-foreground" title="Total orders containing this product">
+                            {product.order_count}
+                          </span>
+                        ) : (
+                          <span className="text-muted-foreground/50" title="No orders yet">—</span>
                         )}
                       </td>
                       <td className="p-3 text-center">

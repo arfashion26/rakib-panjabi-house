@@ -24,20 +24,36 @@ async function verifyAdmin() {
 
 /**
  * GET /api/admin/orders
- * Fetch all orders with items
+ * Fetch all orders with items.
+ * Optional query params:
+ *   - fromDate: ISO date string (inclusive) — orders placed on or after this date
+ *   - toDate:   ISO date string (inclusive) — orders placed on or before this date (end of day)
  */
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     const adminProfile = await verifyAdmin();
     if (!adminProfile) {
       return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
     }
 
+    const { searchParams } = new URL(request.url);
+    const fromDate = searchParams.get("fromDate");
+    const toDate = searchParams.get("toDate");
+
     const admin = createAdminClient();
-    const { data: orders, error } = await admin
-      .from("orders")
-      .select("*")
-      .order("placed_at", { ascending: false });
+
+    // Build query — apply date filters if provided
+    let query = admin.from("orders").select("*");
+    if (fromDate) {
+      query = query.gte("placed_at", fromDate);
+    }
+    if (toDate) {
+      // 'toDate' is a date string like '2026-01-31' — include the entire day
+      // by appending 'T23:59:59.999Z'
+      const endOfDay = toDate.length === 10 ? `${toDate}T23:59:59.999Z` : toDate;
+      query = query.lte("placed_at", endOfDay);
+    }
+    const { data: orders, error } = await query.order("placed_at", { ascending: false });
 
     if (error) {
       return NextResponse.json({ success: false, error: error.message }, { status: 500 });
