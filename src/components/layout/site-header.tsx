@@ -306,20 +306,10 @@ function DesktopHeader() {
   return (
     <div className="hidden md:block">
       {/* Navigation row — dark background, at the very top (as before).
-          Includes 'Track My Order' link (left, prominent) + DB-driven nav
-          + language toggle + currency toggle. */}
+          Layout: DB-driven nav (left) | language + currency + Track My Order (right) */}
       <div className="bg-primary text-primary-foreground">
         <div className="mx-auto max-w-7xl px-4 lg:px-6">
           <div className="flex h-11 items-center justify-between gap-3">
-            {/* Track My Order — prominent link at the very start */}
-            <Link
-              href="/track-order"
-              className="flex shrink-0 items-center gap-1.5 rounded-md bg-accent px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-accent-foreground transition-colors hover:bg-accent/90"
-            >
-              <Package className="h-3.5 w-3.5" />
-              Track My Order
-            </Link>
-
             <nav className="flex-1 overflow-hidden">
               <NavigationMenu>
                 <NavigationMenuList className="flex-wrap justify-start gap-1">
@@ -364,7 +354,7 @@ function DesktopHeader() {
               </NavigationMenu>
             </nav>
 
-            {/* Right: language toggle + currency toggle (in nav row) */}
+            {/* Right: language toggle + currency toggle + Track My Order (rightmost) */}
             <div className="flex shrink-0 items-center gap-2">
               {/* Language toggle */}
               <div className="flex items-center gap-1 rounded-full bg-primary-foreground/10 px-1 py-0.5">
@@ -413,6 +403,15 @@ function DesktopHeader() {
                   USD
                 </span>
               </button>
+
+              {/* Track My Order — prominent link at the far right */}
+              <Link
+                href="/track-order"
+                className="flex shrink-0 items-center gap-1.5 rounded-md bg-accent px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-accent-foreground transition-colors hover:bg-accent/90"
+              >
+                <Package className="h-3.5 w-3.5" />
+                Track My Order
+              </Link>
             </div>
           </div>
         </div>
