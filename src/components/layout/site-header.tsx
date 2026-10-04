@@ -422,17 +422,19 @@ function DesktopHeader() {
               <BigSearchBar />
             </div>
 
-            {/* Right: Cart button only (wishlist + account removed per request) */}
+            {/* Right: Cart button only (wishlist + account removed per request).
+                Bigger, with a distinct background so it stands out on the gold
+                main bar. Uses bg-background (white) so it's clearly visible. */}
             <div className="flex shrink-0 items-center">
               <Button
                 variant="ghost"
                 aria-label="Cart"
-                className="relative h-14 w-14 gap-2 rounded-lg text-accent-foreground hover:bg-accent-foreground hover:text-accent"
+                className="relative h-16 w-16 gap-1 rounded-lg border border-accent-foreground/15 bg-background text-accent-foreground shadow-sm hover:bg-accent-foreground hover:text-accent"
                 onClick={openCart}
               >
-                <ShoppingBag className="h-6 w-6" />
+                <ShoppingBag className="h-7 w-7" />
                 {totalItems > 0 && (
-                  <span className="absolute -right-1 -top-1 flex h-6 min-w-6 items-center justify-center rounded-full bg-accent-foreground px-1 text-xs font-bold text-accent">
+                  <span className="absolute -right-1.5 -top-1.5 flex h-7 min-w-7 items-center justify-center rounded-full bg-accent-foreground px-1.5 text-xs font-bold text-accent shadow ring-2 ring-background">
                     {totalItems > 99 ? "99+" : totalItems}
                   </span>
                 )}
@@ -448,6 +450,7 @@ function DesktopHeader() {
 /**
  * Big rectangular search bar — visible in the desktop header (gold bg).
  * Larger and rectangular (not pill-shaped) per user request.
+ * No placeholder text (per request) — just the search icon + input.
  * Routes to /shop?q=QUERY on submit.
  */
 function BigSearchBar() {
@@ -461,16 +464,18 @@ function BigSearchBar() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="relative flex h-14 items-stretch">
-      <input
-        type="search"
-        value={q}
-        onChange={(e) => setQ(e.target.value)}
-        placeholder="Search for panjabis, shirts, pants, accessories..."
-        className="h-full w-full rounded-l-md border border-r-0 border-accent-foreground/15 bg-background pl-5 text-sm shadow-sm transition-shadow focus:border-accent-foreground focus:bg-background focus:outline-none sm:text-base"
-        aria-label="Search products"
-      />
-      <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+    <form onSubmit={onSubmit} className="flex h-14 items-stretch">
+      {/* Input — has the search icon inside, no placeholder text */}
+      <div className="relative flex flex-1 items-stretch">
+        <Search className="pointer-events-none absolute left-4 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+        <input
+          type="search"
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          className="h-full w-full rounded-l-md border border-r-0 border-accent-foreground/15 bg-background pl-12 text-sm shadow-sm transition-shadow focus:border-accent-foreground focus:bg-background focus:outline-none sm:text-base"
+          aria-label="Search products"
+        />
+      </div>
       <button
         type="submit"
         className="flex h-full items-center gap-2 rounded-r-md bg-accent-foreground px-6 text-sm font-semibold uppercase tracking-wider text-accent transition-colors hover:bg-accent-foreground/90"
