@@ -101,15 +101,18 @@ export function MegaHero({ slides, categories, announcement }: MegaHeroProps) {
         </div>
       )}
 
-      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
+      {/* Hero takes full viewport height (minus announcement bar + site header offset).
+          min-h-[calc(100vh-Xrem)] ensures the hero fills the first screen so users
+          see only the hero on initial load, then scroll to see other sections. */}
+      <div className="mx-auto flex max-w-7xl flex-col px-4 py-4 sm:px-6 lg:px-8 lg:py-6 min-h-[calc(100vh-9rem)]">
         {/* Search bar — full width, prominent */}
-        <form onSubmit={handleSearch} className="relative mb-5">
+        <form onSubmit={handleSearch} className="relative mb-4">
           <input
             type="search"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search for panjabis, shirts, pants, accessories..."
-            className="h-14 sm:h-16 w-full rounded-full border border-border bg-background pl-14 pr-32 text-sm shadow-sm transition-shadow focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30 sm:text-base"
+            className="h-12 sm:h-14 w-full rounded-full border border-border bg-background pl-14 pr-32 text-sm shadow-sm transition-shadow focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30 sm:text-base"
             aria-label="Search products"
           />
           <Search className="pointer-events-none absolute left-5 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
@@ -121,17 +124,20 @@ export function MegaHero({ slides, categories, announcement }: MegaHeroProps) {
           </button>
         </form>
 
-        {/* 2-column layout: categories (left) + slider (right) */}
-        <div className="grid gap-3 lg:grid-cols-[280px_1fr]">
-          {/* Categories sidebar — hidden on mobile, shown on lg+ */}
+        {/* 2-column layout: categories (left) + slider (right).
+            flex-1 makes this fill remaining vertical space so the slider
+            can grow tall and fill the viewport. */}
+        <div className="grid min-h-0 flex-1 gap-3 lg:grid-cols-[280px_1fr]">
+          {/* Categories sidebar — hidden on mobile, shown on lg+.
+              h-full so it stretches to match the slider's height. */}
           <aside className="hidden lg:block">
-            <div className="overflow-hidden rounded-lg border border-border/60 bg-background">
+            <div className="flex h-full flex-col overflow-hidden rounded-lg border border-border/60 bg-background">
               <div className="border-b border-border bg-muted/30 px-4 py-2.5">
                 <h2 className="text-xs font-semibold uppercase tracking-wider text-foreground">
                   All Categories
                 </h2>
               </div>
-              <ul>
+              <ul className="flex-1 overflow-y-auto">
                 {visibleCategories.length === 0 ? (
                   <li className="px-4 py-6 text-center text-xs text-muted-foreground">
                     No categories yet
@@ -176,18 +182,20 @@ export function MegaHero({ slides, categories, announcement }: MegaHeroProps) {
             </div>
           </aside>
 
-          {/* Slider — fixed aspect ratio */}
-          <div className="relative overflow-hidden rounded-lg border border-border/60 bg-muted">
+          {/* Slider — fills available height (h-full) so the hero takes
+              the full first viewport. On mobile we use aspect ratio as fallback
+              since the categories sidebar is hidden. */}
+          <div className="relative h-full min-h-[300px] overflow-hidden rounded-lg border border-border/60 bg-muted">
             {/* Slides */}
             {total === 0 ? (
-              <div className="flex aspect-[16/9] items-center justify-center bg-gradient-to-br from-primary via-primary to-primary/80 text-center text-primary-foreground/70">
+              <div className="flex h-full min-h-[300px] items-center justify-center bg-gradient-to-br from-primary via-primary to-primary/80 text-center text-primary-foreground/70">
                 <div>
                   <p className="text-sm font-medium">No hero slides yet</p>
                   <p className="mt-1 text-xs">Add slides from Admin → Homepage</p>
                 </div>
               </div>
             ) : (
-              <div className="relative aspect-[16/10] sm:aspect-[16/8] lg:aspect-[16/7]">
+              <div className="relative h-full min-h-[300px] aspect-[16/10] sm:aspect-auto">
                 {slides.map((slide, idx) => (
                   <div
                     key={slide.id || idx}
