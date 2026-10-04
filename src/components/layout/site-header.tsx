@@ -247,7 +247,7 @@ function ShopMegaMenu() {
  */
 function HeaderLogo({ size = "md" }: { size?: "sm" | "md" }) {
   const logoUrl = useLogoUrl();
-  const height = size === "sm" ? "h-9 sm:h-10" : "h-12 sm:h-14";
+  const height = size === "sm" ? "h-12 sm:h-14" : "h-16 sm:h-20";
   return (
     <Link href="/" aria-label="Al-Rakib .com - Home" className="flex items-center group">
       <div className={cn("relative shrink-0 overflow-hidden aspect-[2/1] transition-transform group-hover:scale-105", height)}>
@@ -582,7 +582,7 @@ function MobileHeader() {
             <SheetContent side="left" className="w-[300px] overflow-y-auto bg-background p-0">
               <SheetHeader className="border-b border-border bg-primary px-4 py-4">
                 <SheetTitle className="flex items-center justify-between">
-                  <div className="relative h-8 overflow-hidden aspect-[2/1]">
+                  <div className="relative h-12 overflow-hidden aspect-[2/1]">
                     <img
                       src={logoUrl}
                       alt="Al-Rakib .com"
@@ -713,7 +713,7 @@ function MobileHeader() {
 
           {/* Center: Logo (rectangular, no text label) */}
           <Link href="/" aria-label="Home" className="absolute left-1/2 -translate-x-1/2">
-            <div className="relative h-9 overflow-hidden aspect-[2/1]">
+            <div className="relative h-12 overflow-hidden aspect-[2/1]">
               <img
                 src={logoUrl}
                 alt="Al-Rakib .com"

@@ -69,9 +69,9 @@ export function Logo({
   // Rectangular logo: 2:1 aspect ratio (width = 2 × height)
   // Sizes are height-based; width is 2× the height via aspect-[2/1]
   const sizes = {
-    sm: "h-8 sm:h-10",      // small: 32-40px tall
-    md: "h-10 sm:h-12",     // medium: 40-48px tall
-    lg: "h-14 sm:h-16",     // large: 56-64px tall
+    sm: "h-10 sm:h-12",      // small: 40-48px tall
+    md: "h-12 sm:h-16",     // medium: 48-64px tall
+    lg: "h-16 sm:h-20",     // large: 64-80px tall
   };
 
   return (
@@ -97,7 +97,7 @@ export function LogoMark({ className }: { className?: string }) {
   const logoUrl = useLogoUrl();
 
   return (
-    <div className={cn("relative h-8 shrink-0 overflow-hidden aspect-[2/1]", className)}>
+    <div className={cn("relative h-10 shrink-0 overflow-hidden aspect-[2/1]", className)}>
       <img
         src={logoUrl}
         alt="Al-Rakib .com"

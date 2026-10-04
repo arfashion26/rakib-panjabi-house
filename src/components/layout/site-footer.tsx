@@ -55,7 +55,7 @@ export function SiteFooter() {
           {/* Column 1: Brand + Contact */}
           <div className="col-span-2 md:col-span-1">
             <Link href="/" aria-label="Al-Rakib .com - Home" className="mb-5 block">
-              <div className="relative h-12 overflow-hidden aspect-[2/1] md:h-14">
+              <div className="relative h-16 overflow-hidden aspect-[2/1] md:h-20">
                 <img
                   src={logoUrl}
                   alt="Al-Rakib .com"

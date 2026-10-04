@@ -88,7 +88,7 @@ export default function AdminLayout({
       {/* Logo / Brand — rectangular logo, no text label */}
       <div className="border-b border-primary-foreground/10 p-5">
         <Link href="/admin" className="block">
-          <div className="relative h-10 overflow-hidden aspect-[2/1]">
+          <div className="relative h-14 overflow-hidden aspect-[2/1]">
             <img
               src="/logo.png"
               alt="Al-Rakib .com"
@@ -188,7 +188,7 @@ export default function AdminLayout({
           </SheetContent>
         </Sheet>
         <div className="flex items-center gap-2">
-          <div className="relative h-6 overflow-hidden aspect-[2/1]">
+          <div className="relative h-8 overflow-hidden aspect-[2/1]">
             <img
               src="/logo.png"
               alt="Al-Rakib .com"
