@@ -175,23 +175,20 @@ export function MegaHero({ slides, categories, announcement }: MegaHeroProps) {
             </div>
           </aside>
 
-          {/* Slider — fills available height (h-full) so the hero takes
-              the full first viewport. Uses object-contain so the FULL
-              image is visible on ALL devices without cropping.
-              Black background (bg-primary) fills any empty space around
-              the image when the container's aspect ratio differs from
-              the image's aspect ratio. */}
-          <div className="relative h-full min-h-[220px] overflow-hidden rounded-lg border border-border/60 bg-primary">
+          {/* Slider — fixed 2:1 aspect ratio on ALL devices.
+              Admin uploads a 1600×800px image → it shows identically
+              on desktop, tablet, and mobile. No cropping, no black bg. */}
+          <div className="relative overflow-hidden rounded-lg border border-border/60 bg-muted">
             {/* Slides */}
             {total === 0 ? (
-              <div className="flex h-full min-h-[220px] items-center justify-center bg-gradient-to-br from-primary via-primary to-primary/80 text-center text-primary-foreground/70">
+              <div className="flex aspect-[2/1] items-center justify-center bg-gradient-to-br from-primary via-primary to-primary/80 text-center text-primary-foreground/70">
                 <div>
                   <p className="text-sm font-medium">No hero slides yet</p>
                   <p className="mt-1 text-xs">Add slides from Admin → Homepage</p>
                 </div>
               </div>
             ) : (
-              <div className="relative h-full min-h-[220px]">
+              <div className="relative aspect-[2/1]">
                 {slides.map((slide, idx) => (
                   <div
                     key={slide.id || idx}
@@ -200,13 +197,13 @@ export function MegaHero({ slides, categories, announcement }: MegaHeroProps) {
                       idx === current ? "opacity-100" : "opacity-0 pointer-events-none"
                     )}
                   >
-                    {/* Use the SAME image on all devices. object-contain
-                        ensures the full image is visible without cropping.
-                        The container bg-primary (black) fills empty space. */}
+                    {/* Single image, object-cover on 2:1 container.
+                        Same size on all devices — no cropping if the
+                        uploaded image matches 2:1 ratio. */}
                     <img
                       src={slide.image || slide.mobileImage}
                       alt={slide.title || `Slide ${idx + 1}`}
-                      className="h-full w-full object-contain"
+                      className="h-full w-full object-cover"
                       loading={idx === 0 ? "eager" : "lazy"}
                       fetchPriority={idx === 0 ? "high" : "low"}
                       decoding="async"

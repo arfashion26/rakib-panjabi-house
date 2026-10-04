@@ -238,10 +238,10 @@ export default function AdminHomepagePage() {
         {sectionWrapper("🖼️ Hero Slider Slides", (
           <>
             <p className="text-xs text-muted-foreground">
-              Upload a single banner image per slide. It will automatically
-              adapt to all screen sizes (desktop, tablet, mobile). Recommended
-              size: 1920×960px (2:1 ratio). Add optional title, subtitle, and
-              a call-to-action button.
+              Upload a single banner image per slide (2:1 ratio). It will
+              show identically on desktop, tablet, and mobile — no cropping.
+              <strong> Recommended size: 1600×800px</strong>. Add optional
+              title, subtitle, and a call-to-action button.
             </p>
             {(content.heroSlides || []).map((slide, idx) => (
               <div key={slide.id || idx} className="rounded-md border border-border p-4 space-y-3">
@@ -272,7 +272,7 @@ export default function AdminHomepagePage() {
                   }}
                   folder="hero"
                   aspectRatio="aspect-[2/1]"
-                  hint="Recommended: 1920×960px (2:1 ratio). Same image on all devices."
+                  hint="Required: 1600×800px (2:1 ratio). Same image on all devices."
                 />
                 <div className="grid gap-3 sm:grid-cols-2">
                   <div className="space-y-2">
