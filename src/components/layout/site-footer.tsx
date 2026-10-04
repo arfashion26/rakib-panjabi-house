@@ -67,16 +67,16 @@ export function SiteFooter() {
                 </div>
                 <div className="leading-none">
                   <p className="font-serif text-lg font-semibold md:text-xl">Al-Rakib</p>
-                  <p className="text-[10px] uppercase tracking-[0.2em] text-accent-text md:text-xs">.com</p>
+                  <p className="text-[10px] uppercase tracking-[0.2em] text-accent md:text-xs">.com</p>
                 </div>
               </div>
             </Link>
             <div className="space-y-2 text-xs text-primary-foreground/60">
-              <a href={`mailto:${siteConfig.email}`} className="flex items-center gap-2 transition-colors hover:text-accent-text">
+              <a href={`mailto:${siteConfig.email}`} className="flex items-center gap-2 transition-colors hover:text-accent">
                 <Mail className="h-3.5 w-3.5 shrink-0" />
                 {siteConfig.email}
               </a>
-              <a href={`tel:${siteConfig.phone}`} className="flex items-center gap-2 transition-colors hover:text-accent-text">
+              <a href={`tel:${siteConfig.phone}`} className="flex items-center gap-2 transition-colors hover:text-accent">
                 <Phone className="h-3.5 w-3.5 shrink-0" />
                 {siteConfig.phone}
               </a>
@@ -108,7 +108,7 @@ export function SiteFooter() {
 
           {/* Column 2: Shop */}
           <div>
-            <h3 className="mb-4 text-xs font-bold uppercase tracking-[0.15em] text-accent-text">
+            <h3 className="mb-4 text-xs font-bold uppercase tracking-[0.15em] text-accent">
               {footerNav.shop.title}
             </h3>
             <ul className="space-y-2.5">
@@ -116,7 +116,7 @@ export function SiteFooter() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm text-primary-foreground/60 transition-colors hover:text-accent-text"
+                    className="text-sm text-primary-foreground/60 transition-colors hover:text-accent"
                   >
                     {link.title}
                   </Link>
@@ -127,7 +127,7 @@ export function SiteFooter() {
 
           {/* Column 3: Customer Service */}
           <div>
-            <h3 className="mb-4 text-xs font-bold uppercase tracking-[0.15em] text-accent-text">
+            <h3 className="mb-4 text-xs font-bold uppercase tracking-[0.15em] text-accent">
               {footerNav.customer.title}
             </h3>
             <ul className="space-y-2.5">
@@ -135,7 +135,7 @@ export function SiteFooter() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm text-primary-foreground/60 transition-colors hover:text-accent-text"
+                    className="text-sm text-primary-foreground/60 transition-colors hover:text-accent"
                   >
                     {link.title}
                   </Link>
@@ -146,7 +146,7 @@ export function SiteFooter() {
 
           {/* Column 4: Policies + Social */}
           <div>
-            <h3 className="mb-4 text-xs font-bold uppercase tracking-[0.15em] text-accent-text">
+            <h3 className="mb-4 text-xs font-bold uppercase tracking-[0.15em] text-accent">
               {footerNav.policies.title}
             </h3>
             <ul className="space-y-2.5">
@@ -154,7 +154,7 @@ export function SiteFooter() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm text-primary-foreground/60 transition-colors hover:text-accent-text"
+                    className="text-sm text-primary-foreground/60 transition-colors hover:text-accent"
                   >
                     {link.title}
                   </Link>
@@ -175,7 +175,7 @@ export function SiteFooter() {
                 href="https://cynlex.com/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-medium text-accent-text hover:underline"
+                className="font-medium text-accent hover:underline"
               >
                 Managed by Cynlex Digital
               </a>
