@@ -180,9 +180,6 @@ export function SiteFooter() {
                 Managed by Cynlex Digital
               </a>
             </p>
-            <p className="text-[10px] uppercase tracking-wider text-primary-foreground/30">
-              Cash on Delivery · Inside Dhaka ৳70 · Outside ৳120
-            </p>
           </div>
 
           {/* Design & Developed by Cynlex Digital — with logo */}
