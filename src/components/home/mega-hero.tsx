@@ -209,10 +209,9 @@ export function MegaHero({ slides, categories, announcement }: MegaHeroProps) {
                       decoding="async"
                     />
 
-                    {/* Gradient overlay for text readability */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-primary/80 via-primary/20 to-transparent" />
-
-                    {/* Slide text + CTA */}
+                    {/* Slide text + CTA — no gradient overlay, original
+                        image shows as-is. Text has drop-shadow for
+                        readability on bright backgrounds. */}
                     {(slide.title || slide.subtitle) && (
                       <div
                         className={cn(
@@ -223,12 +222,12 @@ export function MegaHero({ slides, categories, announcement }: MegaHeroProps) {
                         )}
                       >
                         {slide.title && (
-                          <h2 className="font-serif text-base font-semibold text-white sm:text-xl lg:text-3xl">
+                          <h2 className="font-serif text-base font-semibold text-white drop-shadow-lg sm:text-xl lg:text-3xl">
                             {slide.title}
                           </h2>
                         )}
                         {slide.subtitle && (
-                          <p className="mt-1.5 max-w-md text-xs text-white/80 sm:mt-2 sm:text-sm lg:text-base">
+                          <p className="mt-1.5 max-w-md text-xs text-white drop-shadow-md sm:mt-2 sm:text-sm lg:text-base">
                             {slide.subtitle}
                           </p>
                         )}

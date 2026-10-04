@@ -713,7 +713,7 @@ function MobileHeader() {
 
           {/* Center: Logo (rectangular, no text label) */}
           <Link href="/" aria-label="Home" className="absolute left-1/2 -translate-x-1/2">
-            <div className="relative h-12 overflow-hidden aspect-[2/1]">
+            <div className="relative h-16 overflow-hidden aspect-[2/1]">
               <img
                 src={logoUrl}
                 alt="Al-Rakib .com"
@@ -724,17 +724,17 @@ function MobileHeader() {
 
           {/* Right: Cart only (search removed per request) */}
           <div className="flex items-center gap-1">
-            {/* Cart — big, prominent. Gold bg stands out on dark main bar. */}
+            {/* Cart — smaller on mobile, fits better with bigger logo */}
             <Button
               variant="ghost"
               size="icon"
               aria-label="Cart"
-              className="relative h-12 w-12 rounded-lg border border-accent/30 bg-accent text-accent-foreground hover:bg-accent/90"
+              className="relative h-10 w-10 rounded-lg border border-accent/30 bg-accent text-accent-foreground hover:bg-accent/90"
               onClick={openCart}
             >
-              <ShoppingBag className="h-5 w-5" />
+              <ShoppingBag className="h-4 w-4" />
               {totalItems > 0 && (
-                <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-accent ring-2 ring-primary">
+                <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[9px] font-bold text-accent ring-2 ring-primary">
                   {totalItems > 99 ? "99+" : totalItems}
                 </span>
               )}
