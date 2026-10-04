@@ -542,8 +542,6 @@ function SearchBar() {
  */
 function MobileHeader() {
   const [open, setOpen] = React.useState(false);
-  const [searchOpen, setSearchOpen] = React.useState(false);
-  const [search, setSearch] = React.useState("");
   const pathname = usePathname();
   const totalItems = useCart((s) => s.getTotalItems());
   const openCart = useCart((s) => s.openCart);
@@ -571,13 +569,6 @@ function MobileHeader() {
       })
       .catch(() => {});
   }, []);
-
-  function handleSearch(e: React.FormEvent) {
-    e.preventDefault();
-    const q = search.trim();
-    if (q) window.location.href = `/shop?q=${encodeURIComponent(q)}`;
-    else window.location.href = "/shop";
-  }
 
   return (
     <div className="md:hidden">
@@ -756,19 +747,8 @@ function MobileHeader() {
             </div>
           </Link>
 
-          {/* Right: Search toggle + Cart */}
+          {/* Right: Cart only (search removed per request) */}
           <div className="flex items-center gap-1">
-            {/* Search toggle button */}
-            <Button
-              variant="ghost"
-              size="icon"
-              aria-label="Search"
-              className="h-11 w-11 text-accent-foreground hover:bg-accent-foreground hover:text-accent"
-              onClick={() => setSearchOpen(!searchOpen)}
-            >
-              <Search className="h-5 w-5" />
-            </Button>
-
             {/* Cart — big, prominent */}
             <Button
               variant="ghost"
@@ -786,30 +766,6 @@ function MobileHeader() {
             </Button>
           </div>
         </div>
-
-        {/* Expandable search bar (mobile) */}
-        {searchOpen && (
-          <form onSubmit={handleSearch} className="border-t border-accent-foreground/10 px-3 pb-3">
-            <div className="relative flex h-12 items-stretch">
-              <Search className="pointer-events-none absolute left-4 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <input
-                type="search"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search products..."
-                autoFocus
-                className="h-full w-full rounded-l-md border border-r-0 border-accent-foreground/15 bg-background pl-11 text-sm focus:outline-none"
-                aria-label="Search products"
-              />
-              <button
-                type="submit"
-                className="flex h-full items-center gap-1 rounded-r-md bg-accent-foreground px-4 text-xs font-semibold uppercase tracking-wider text-accent"
-              >
-                Go
-              </button>
-            </div>
-          </form>
-        )}
       </div>
     </div>
   );
