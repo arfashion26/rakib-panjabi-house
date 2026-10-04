@@ -85,26 +85,15 @@ export default function AdminLayout({
 
   const sidebarContent = (
     <div className="flex h-full flex-col bg-primary text-primary-foreground">
-      {/* Logo / Brand */}
+      {/* Logo / Brand — rectangular logo, no text label */}
       <div className="border-b border-primary-foreground/10 p-5">
-        <Link href="/admin" className="flex items-center gap-3">
-          {/* Logo image */}
-          <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full ring-2 ring-accent/30">
+        <Link href="/admin" className="block">
+          <div className="relative h-10 overflow-hidden aspect-[2/1]">
             <img
-              src="/logo.jpg"
+              src="/logo.png"
               alt="Al-Rakib .com"
-              className="h-full w-full object-cover"
-              width={48}
-              height={48}
+              className="h-full w-full object-contain"
             />
-          </div>
-          <div>
-            <p className="font-serif text-sm font-semibold leading-tight">
-              Al-Rakib
-            </p>
-            <p className="text-[10px] uppercase tracking-[0.25em] text-primary-foreground/50">
-              .com
-            </p>
           </div>
         </Link>
       </div>
@@ -199,13 +188,11 @@ export default function AdminLayout({
           </SheetContent>
         </Sheet>
         <div className="flex items-center gap-2">
-          <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-full ring-1 ring-accent/30">
+          <div className="relative h-6 overflow-hidden aspect-[2/1]">
             <img
-              src="/logo.jpg"
+              src="/logo.png"
               alt="Al-Rakib .com"
-              className="h-full w-full object-cover"
-              width={32}
-              height={32}
+              className="h-full w-full object-contain"
             />
           </div>
           <span className="font-serif text-base font-medium">{pageTitle}</span>

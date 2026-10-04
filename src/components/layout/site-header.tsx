@@ -242,29 +242,20 @@ function ShopMegaMenu() {
 }
 
 /**
- * Logo component — circular logo image
+ * Logo component — rectangular logo image (2:1 aspect ratio).
+ * No separate text label — the logo contains the full brand identity.
  */
 function HeaderLogo({ size = "md" }: { size?: "sm" | "md" }) {
-  const dim = size === "sm" ? "h-10 w-10" : "h-12 w-12";
   const logoUrl = useLogoUrl();
+  const height = size === "sm" ? "h-9 sm:h-10" : "h-12 sm:h-14";
   return (
-    <Link href="/" aria-label="Al-Rakib Panjabi House - Home" className="flex items-center gap-2.5 group">
-      <div className={cn("relative shrink-0 overflow-hidden rounded-full ring-2 ring-accent/40 transition-transform group-hover:scale-105", dim)}>
+    <Link href="/" aria-label="Al-Rakib .com - Home" className="flex items-center group">
+      <div className={cn("relative shrink-0 overflow-hidden aspect-[2/1] transition-transform group-hover:scale-105", height)}>
         <img
           src={logoUrl}
-          alt="Al-Rakib Panjabi House"
-          className="h-full w-full object-cover"
-          width={size === "sm" ? 40 : 48}
-          height={size === "sm" ? 40 : 48}
+          alt="Al-Rakib .com"
+          className="h-full w-full object-contain"
         />
-      </div>
-      <div className="hidden flex-col leading-none sm:flex">
-        <span className="font-serif text-sm font-semibold text-accent-foreground">
-          Al-Rakib
-        </span>
-        <span className="text-[9px] uppercase tracking-[0.2em] text-accent-foreground/70">
-          .com
-        </span>
       </div>
     </Link>
   );
@@ -591,20 +582,12 @@ function MobileHeader() {
             <SheetContent side="left" className="w-[300px] overflow-y-auto bg-background p-0">
               <SheetHeader className="border-b border-border bg-primary px-4 py-4">
                 <SheetTitle className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-full ring-2 ring-accent/40">
-                      <img
-                        src={logoUrl}
-                        alt="Al-Rakib"
-                        className="h-full w-full object-cover"
-                        width={36}
-                        height={36}
-                      />
-                    </div>
-                    <div className="leading-none">
-                      <span className="font-serif text-sm font-semibold text-primary-foreground">Al-Rakib</span>
-                      <span className="ml-1 text-[9px] uppercase tracking-[0.2em] text-accent">.com</span>
-                    </div>
+                  <div className="relative h-8 overflow-hidden aspect-[2/1]">
+                    <img
+                      src={logoUrl}
+                      alt="Al-Rakib .com"
+                      className="h-full w-full object-contain"
+                    />
                   </div>
                   <Button
                     variant="ghost"
@@ -728,22 +711,14 @@ function MobileHeader() {
             </SheetContent>
           </Sheet>
 
-          {/* Center: Logo */}
+          {/* Center: Logo (rectangular, no text label) */}
           <Link href="/" aria-label="Home" className="absolute left-1/2 -translate-x-1/2">
-            <div className="flex items-center gap-2">
-              <div className="relative h-10 w-10 overflow-hidden rounded-full ring-2 ring-accent-foreground/20">
-                <img
-                  src={logoUrl}
-                  alt="Al-Rakib"
-                  className="h-full w-full object-cover"
-                  width={40}
-                  height={40}
-                />
-              </div>
-              <div className="flex flex-col leading-none">
-                <span className="font-serif text-sm font-semibold text-accent-foreground">Al-Rakib</span>
-                <span className="text-[8px] uppercase tracking-[0.2em] text-accent-foreground/70">.com</span>
-              </div>
+            <div className="relative h-9 overflow-hidden aspect-[2/1]">
+              <img
+                src={logoUrl}
+                alt="Al-Rakib .com"
+                className="h-full w-full object-contain"
+              />
             </div>
           </Link>
 

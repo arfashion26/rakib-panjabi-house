@@ -20,12 +20,12 @@ async function fetchLogoUrl(): Promise<string> {
   fetchPromise = fetch("/api/brand-assets")
     .then((r) => r.json())
     .then((data) => {
-      const url = data?.logoUrl || "/logo.jpg";
+      const url = data?.logoUrl || "/logo.png";
       cachedLogoUrl = url;
       return url;
     })
     .catch(() => {
-      cachedLogoUrl = "/logo.jpg";
+      cachedLogoUrl = "/logo.png";
       return cachedLogoUrl;
     });
   return fetchPromise;
@@ -34,10 +34,10 @@ async function fetchLogoUrl(): Promise<string> {
 /**
  * Hook to fetch the brand logo URL on the client.
  * Uses an in-memory cache so all components share one fetch.
- * Falls back to /logo.jpg if the API is unreachable.
+ * Falls back to /logo.png if the API is unreachable.
  */
 export function useLogoUrl(): string {
-  const [logoUrl, setLogoUrl] = React.useState<string>(cachedLogoUrl || "/logo.jpg");
+  const [logoUrl, setLogoUrl] = React.useState<string>(cachedLogoUrl || "/logo.png");
   React.useEffect(() => {
     if (!cachedLogoUrl) {
       fetchLogoUrl().then(setLogoUrl);
@@ -51,82 +51,57 @@ export function useLogoUrl(): string {
 /**
  * Brand logo component.
  *
- * Fetches the logo URL from /api/brand-assets (DB-driven). Falls back to
- * /logo.jpg if the API is unreachable or no custom logo is set.
+ * Uses the rectangular logo image (2:1 aspect ratio) which contains
+ * the full brand identity (Al-Rakib .com + crest + tagline).
+ * No separate text label is shown — the logo image IS the brand.
  *
- * The logo is a circular crest. Since the logo itself has a black background,
- * we display it WITHOUT any border or ring so it blends seamlessly with
- * the dark background behind it.
+ * The `showText` prop is kept for backward compatibility but is a no-op
+ * (the new rectangular logo already contains all the text).
  */
 export function Logo({
   variant = "default",
-  showText = false,
+  showText = false, // kept for backward compat, no-op
   size = "md",
   className,
 }: LogoProps) {
   const logoUrl = useLogoUrl();
 
+  // Rectangular logo: 2:1 aspect ratio (width = 2 × height)
+  // Sizes are height-based; width is 2× the height via aspect-[2/1]
   const sizes = {
-    sm: { container: "h-12 w-12 sm:h-14 sm:w-14", text: "text-xs" },
-    md: { container: "h-20 w-20 md:h-24 md:w-24", text: "text-sm" },
-    lg: { container: "h-28 w-28 md:h-32 md:w-32", text: "text-base" },
+    sm: "h-8 sm:h-10",      // small: 32-40px tall
+    md: "h-10 sm:h-12",     // medium: 40-48px tall
+    lg: "h-14 sm:h-16",     // large: 56-64px tall
   };
 
-  const s = sizes[size];
-
   return (
-    <div className={cn("flex items-center gap-3", className)}>
-      {/* Logo image — circular crest, no border (blends with bg) */}
-      <div className={cn("relative shrink-0 overflow-hidden rounded-full", s.container)}>
+    <div className={cn("flex items-center", className)}>
+      {/* Rectangular logo — aspect-[2/1], object-contain so the full
+          logo is visible without cropping. */}
+      <div className={cn("relative shrink-0 overflow-hidden aspect-[2/1]", sizes[size])}>
         <img
           src={logoUrl}
-          alt="Al-Rakib Panjabi House Logo"
-          className="h-full w-full object-cover"
-          width={128}
-          height={128}
+          alt="Al-Rakib .com"
+          className="h-full w-full object-contain"
         />
       </div>
-
-      {showText && (
-        <div className="flex flex-col leading-none">
-          <span
-            className={cn(
-              "font-serif font-semibold tracking-tight",
-              s.text,
-              variant === "light" ? "text-white" : "text-foreground"
-            )}
-          >
-            Al-Rakib
-          </span>
-          <span
-            className={cn(
-              "font-sans uppercase tracking-[0.2em]",
-              size === "sm" ? "text-[8px]" : "text-[10px]",
-              variant === "light" ? "text-accent-text" : "text-muted-foreground"
-            )}
-          >
-            .com
-          </span>
-        </div>
-      )}
     </div>
   );
 }
 
 /**
- * Compact logo mark — icon only, for mobile header
+ * Compact logo mark — rectangular logo, smaller size
+ * (was circular mark, now uses the same rectangular logo)
  */
 export function LogoMark({ className }: { className?: string }) {
   const logoUrl = useLogoUrl();
 
   return (
-    <div className={cn("relative h-10 w-10 shrink-0 overflow-hidden rounded-full", className)}>
+    <div className={cn("relative h-8 shrink-0 overflow-hidden aspect-[2/1]", className)}>
       <img
         src={logoUrl}
-        alt="Al-Rakib Panjabi House"
-        className="h-full w-full object-cover"
-        width={40}
-        height={40}
+        alt="Al-Rakib .com"
+        className="h-full w-full object-contain"
       />
     </div>
   );

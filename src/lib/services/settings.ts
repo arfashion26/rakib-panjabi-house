@@ -47,7 +47,7 @@ export async function getBrandAssets(): Promise<{
   faviconUrl: string;
   usdRate: number;
 }> {
-  const DEFAULTS = { logoUrl: "/logo.jpg", faviconUrl: "/favicon.ico", usdRate: 110 };
+  const DEFAULTS = { logoUrl: "/logo.png", faviconUrl: "/logo.png", usdRate: 110 };
   try {
     const supabase = createAdminClient();
     const { data, error } = await supabase
