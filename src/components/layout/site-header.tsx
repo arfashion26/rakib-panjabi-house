@@ -46,15 +46,27 @@ import { useLogoUrl } from "@/components/logo";
 import { useCurrency } from "@/i18n/currency-context";
 
 /**
- * Top announcement bar (above header) — gold accent
- * Shows phone, announcement text, language toggle, currency
+ * Top utility bar — gold accent
+ * Layout: phone (left) | quick links (center) | language + currency (right)
+ * Combines the old announcement bar with quick page links so customers
+ * can reach important pages from anywhere.
  */
-function AnnouncementBar() {
+function TopBar() {
   const { locale, setLocale, t } = useLanguage();
   const { currency, toggleCurrency } = useCurrency();
+  const pathname = usePathname();
+
+  // Quick links shown in the top bar (right side, before lang/currency)
+  const quickLinks = [
+    { href: "/about", label: "About" },
+    { href: "/contact", label: "Contact" },
+    { href: "/track-order", label: "Track Order" },
+    { href: "/blog", label: "Blog" },
+  ];
+
   return (
     <div className="bg-accent text-accent-foreground">
-      <div className="mx-auto max-w-7xl px-4">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-9 items-center justify-between text-xs">
           {/* Left: phone (desktop only) */}
           <div className="hidden items-center gap-2 md:flex">
@@ -62,15 +74,33 @@ function AnnouncementBar() {
             <span className="font-medium">{siteConfig.phone}</span>
           </div>
 
-          {/* Center: announcement text */}
+          {/* Center: announcement text (mobile shows just this) */}
           <div className="flex-1 text-center md:flex-none">
             <span className="font-medium tracking-wide">
               {t("announcement.text")}
             </span>
           </div>
 
-          {/* Right: language toggle + currency (desktop only) */}
+          {/* Right: quick links + language + currency (desktop only) */}
           <div className="hidden items-center gap-3 md:flex">
+            {/* Quick page links */}
+            <nav className="flex items-center gap-3">
+              {quickLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={cn(
+                    "font-medium transition-colors hover:text-accent-foreground/70",
+                    pathname === link.href && "underline underline-offset-2"
+                  )}
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </nav>
+            <span className="text-accent-foreground/40">|</span>
+
+            {/* Language toggle */}
             <div className="flex items-center gap-1 rounded-full bg-accent-foreground/10 px-1 py-0.5">
               <button
                 onClick={() => setLocale("en")}
@@ -96,9 +126,8 @@ function AnnouncementBar() {
               </button>
             </div>
             <span className="text-accent-foreground/40">|</span>
-            {/* Currency toggle — switches between BDT and USD.
-                Click cycles through BDT → USD → BDT. Persisted to localStorage
-                via CurrencyProvider so it stays after page reload. */}
+
+            {/* Currency toggle */}
             <button
               onClick={toggleCurrency}
               className="flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium transition-colors hover:bg-accent-foreground/10"
@@ -240,8 +269,9 @@ function HeaderLogo({ size = "md" }: { size?: "sm" | "md" }) {
 }
 
 /**
- * Desktop header — single row on black background
- * Layout: Logo (left) | Navigation (center, wider spacing) | Search + Actions (right)
+ * Desktop header — white background, two rows
+ * Row 1: Logo (left) | Big search bar (center) | Cart + wishlist + account (right)
+ * Row 2: Navigation menu (full width, dark accent line)
  */
 function DesktopHeader() {
   const pathname = usePathname();
@@ -272,18 +302,75 @@ function DesktopHeader() {
   }, []);
 
   return (
-    <div className="hidden border-b border-primary-foreground/10 bg-primary md:block">
-      <div className="mx-auto max-w-7xl px-4 lg:px-6">
-        <div className="flex h-16 items-center justify-between gap-6">
-          {/* Left: Logo */}
-          <div className="flex items-center">
-            <HeaderLogo size="md" />
-          </div>
+    <div className="hidden md:block">
+      {/* Main bar — white background */}
+      <div className="border-b border-border bg-background">
+        <div className="mx-auto max-w-7xl px-4 lg:px-6">
+          <div className="flex h-20 items-center justify-between gap-6">
+            {/* Left: Logo */}
+            <div className="flex shrink-0 items-center">
+              <HeaderLogo size="md" />
+            </div>
 
-          {/* Center: Navigation — wider spacing */}
-          <nav className="flex-1">
+            {/* Center: Big search bar (takes most of the space) */}
+            <div className="flex-1 max-w-2xl">
+              <BigSearchBar />
+            </div>
+
+            {/* Right: Action icons */}
+            <div className="flex shrink-0 items-center gap-1">
+              {/* Wishlist */}
+              <Button
+                variant="ghost"
+                size="icon"
+                asChild
+                aria-label="Wishlist"
+                className="h-10 w-10 text-foreground/80 hover:bg-accent hover:text-accent-foreground"
+              >
+                <Link href="/wishlist">
+                  <Heart className="h-5 w-5" />
+                </Link>
+              </Button>
+
+              {/* Account */}
+              <Button
+                variant="ghost"
+                size="icon"
+                asChild
+                aria-label="Account"
+                className="h-10 w-10 text-foreground/80 hover:bg-accent hover:text-accent-foreground"
+              >
+                <Link href="/dashboard">
+                  <User className="h-5 w-5" />
+                </Link>
+              </Button>
+
+              {/* Cart — prominent */}
+              <Button
+                variant="ghost"
+                size="icon"
+                aria-label="Cart"
+                className="relative h-10 w-10 text-foreground/80 hover:bg-accent hover:text-accent-foreground"
+                onClick={openCart}
+              >
+                <ShoppingBag className="h-5 w-5" />
+                {totalItems > 0 && (
+                  <span className="absolute -right-0.5 -top-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-accent px-1 text-[10px] font-bold text-accent-foreground">
+                    {totalItems > 99 ? "99+" : totalItems}
+                  </span>
+                )}
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Navigation row — dark background, full width */}
+      <div className="bg-primary text-primary-foreground">
+        <div className="mx-auto max-w-7xl px-4 lg:px-6">
+          <nav className="flex h-11 items-center">
             <NavigationMenu>
-              <NavigationMenuList className="flex-wrap justify-center gap-1">
+              <NavigationMenuList className="flex-wrap justify-start gap-1">
                 {navItems.length > 0 ? (
                   navItems.map((item) =>
                     item.href === "/shop" ? (
@@ -315,7 +402,6 @@ function DesktopHeader() {
                     )
                   )
                 ) : (
-                  // Fallback: static nav while loading
                   <NavigationMenuItem>
                     <NavigationMenuLink className={cn(navigationMenuTriggerStyle(), "h-9 bg-transparent px-4 text-sm text-primary-foreground/50")}>
                       Loading...
@@ -325,60 +411,44 @@ function DesktopHeader() {
               </NavigationMenuList>
             </NavigationMenu>
           </nav>
-
-          {/* Right: Search + Actions */}
-          <div className="flex items-center gap-1">
-            {/* Search */}
-            <SearchBar />
-
-            {/* Divider */}
-            <div className="mx-1 h-6 w-px bg-primary-foreground/15" />
-
-            {/* Wishlist */}
-            <Button
-              variant="ghost"
-              size="icon"
-              asChild
-              aria-label="Wishlist"
-              className="h-9 w-9 text-primary-foreground/80 hover:bg-accent hover:text-accent-foreground"
-            >
-              <Link href="/wishlist">
-                <Heart className="h-[18px] w-[18px]" />
-              </Link>
-            </Button>
-
-            {/* Account */}
-            <Button
-              variant="ghost"
-              size="icon"
-              asChild
-              aria-label="Account"
-              className="h-9 w-9 text-primary-foreground/80 hover:bg-accent hover:text-accent-foreground"
-            >
-              <Link href="/dashboard">
-                <User className="h-[18px] w-[18px]" />
-              </Link>
-            </Button>
-
-            {/* Cart */}
-            <Button
-              variant="ghost"
-              size="icon"
-              aria-label="Cart"
-              className="relative h-9 w-9 text-primary-foreground/80 hover:bg-accent hover:text-accent-foreground"
-              onClick={openCart}
-            >
-              <ShoppingBag className="h-[18px] w-[18px]" />
-              {totalItems > 0 && (
-                <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-accent px-1 text-[10px] font-bold text-accent-foreground">
-                  {totalItems > 99 ? "99+" : totalItems}
-                </span>
-              )}
-            </Button>
-          </div>
         </div>
       </div>
     </div>
+  );
+}
+
+/**
+ * Big search bar — visible in the desktop header (white bg).
+ * Routes to /shop?q=QUERY on submit.
+ */
+function BigSearchBar() {
+  const [q, setQ] = React.useState("");
+
+  function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    const query = q.trim();
+    const url = query ? `/shop?q=${encodeURIComponent(query)}` : "/shop";
+    window.location.href = url;
+  }
+
+  return (
+    <form onSubmit={onSubmit} className="relative">
+      <input
+        type="search"
+        value={q}
+        onChange={(e) => setQ(e.target.value)}
+        placeholder="Search for panjabis, shirts, pants, accessories..."
+        className="h-12 w-full rounded-full border border-border bg-muted/30 pl-12 pr-28 text-sm shadow-sm transition-shadow focus:border-accent focus:bg-background focus:outline-none focus:ring-2 focus:ring-accent/30"
+        aria-label="Search products"
+      />
+      <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+      <button
+        type="submit"
+        className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded-full bg-accent px-5 py-2 text-xs font-semibold uppercase tracking-wider text-accent-foreground transition-colors hover:bg-accent/90"
+      >
+        Search
+      </button>
+    </form>
   );
 }
 
@@ -621,12 +691,12 @@ function MobileHeader() {
 }
 
 /**
- * Site Header - composed of AnnouncementBar + Desktop/Mobile headers
+ * Site Header - composed of TopBar + Desktop/Mobile headers + CartDrawer
  */
 export function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 w-full">
-      <AnnouncementBar />
+      <TopBar />
       <DesktopHeader />
       <MobileHeader />
       <CartDrawer />

@@ -90,23 +90,12 @@ export function MegaHero({ slides, categories, announcement }: MegaHeroProps) {
 
   return (
     <section className="relative bg-background">
-      {/* Announcement bar (optional, hidden if disabled or empty) */}
-      {announcement?.enabled && announcement.text && (
-        <div className="bg-accent text-accent-foreground">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="flex h-9 items-center justify-center text-center text-xs">
-              <span className="font-medium tracking-wide">{announcement.text}</span>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Hero takes full viewport height (minus announcement bar + site header offset).
-          min-h-[calc(100vh-Xrem)] ensures the hero fills the first screen so users
-          see only the hero on initial load, then scroll to see other sections. */}
-      <div className="mx-auto flex max-w-7xl flex-col px-4 py-4 sm:px-6 lg:px-8 lg:py-6 min-h-[calc(100vh-9rem)]">
+      {/* Hero takes full viewport height (minus header offset).
+          Announcement bar is now in the site header, so we don't
+          duplicate it here. */}
+      <div className="mx-auto flex max-w-7xl flex-col px-4 py-4 sm:px-6 lg:px-8 lg:py-6 min-h-[calc(100vh-13rem)]">
         {/* Search bar — full width, prominent */}
-        <form onSubmit={handleSearch} className="relative mb-4">
+        <form onSubmit={handleSearch} className="relative mb-4 lg:hidden">
           <input
             type="search"
             value={search}
