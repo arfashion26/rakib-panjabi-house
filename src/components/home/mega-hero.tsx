@@ -189,11 +189,14 @@ export function MegaHero({ slides, categories, announcement }: MegaHeroProps) {
               </div>
             ) : (
               <div className="relative aspect-[2/1]">
-                {slides.map((slide, idx) => (
-                  <div
+                {slides.map((slide, idx) => {
+                  const slideLink = slide.link || "#";
+                  return (
+                  <Link
                     key={slide.id || idx}
+                    href={slideLink}
                     className={cn(
-                      "absolute inset-0 transition-opacity duration-700 ease-in-out",
+                      "absolute inset-0 block transition-opacity duration-700 ease-in-out",
                       idx === current ? "opacity-100" : "opacity-0 pointer-events-none"
                     )}
                   >
@@ -231,19 +234,17 @@ export function MegaHero({ slides, categories, announcement }: MegaHeroProps) {
                             {slide.subtitle}
                           </p>
                         )}
-                        {slide.link && slide.buttonText && (
-                          <Link
-                            href={slide.link}
-                            className="mt-3 inline-flex items-center gap-2 rounded-md bg-accent px-4 py-2 text-[11px] font-semibold uppercase tracking-wider text-accent-foreground transition-colors hover:bg-accent/90 sm:mt-4 sm:px-5 sm:py-2.5 sm:text-sm"
-                          >
+                        {slide.buttonText && (
+                          <span className="mt-3 inline-flex items-center gap-2 rounded-md bg-accent px-4 py-2 text-[11px] font-semibold uppercase tracking-wider text-accent-foreground transition-colors hover:bg-accent/90 sm:mt-4 sm:px-5 sm:py-2.5 sm:text-sm">
                             {slide.buttonText}
                             <ArrowRight className="h-3 w-3 sm:h-4 sm:w-4" />
-                          </Link>
+                          </span>
                         )}
                       </div>
                     )}
-                  </div>
-                ))}
+                  </Link>
+                  );
+                })}
 
                 {/* Arrow controls — visible on all screen sizes.
                     Smaller on mobile, larger on desktop. */}
