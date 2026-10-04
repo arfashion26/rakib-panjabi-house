@@ -273,27 +273,9 @@ function DesktopHeader() {
   const { locale, setLocale, t } = useLanguage();
   const { currency, toggleCurrency } = useCurrency();
 
-  // Fetch DB-driven nav items
-  const [navItems, setNavItems] = React.useState<Array<{
-    id: string;
-    label: string;
-    label_bn: string;
-    href: string;
-    sort_order: number;
-    is_active: boolean;
-    open_in_new_tab: boolean;
-  }>>([]);
-
-  React.useEffect(() => {
-    fetch(`/api/nav-menu?_t=${Date.now()}`)
-      .then((r) => r.json())
-      .then((data) => {
-        if (data.success && data.items?.length > 0) {
-          setNavItems(data.items);
-        }
-      })
-      .catch(() => {});
-  }, []);
+  // Static nav items — no DB fetch needed (fast, always available).
+  // These pages rarely change, so hardcoded is better than API call.
+  const navItems = mainNav;
 
   return (
     <div className="hidden md:block">
@@ -305,28 +287,21 @@ function DesktopHeader() {
             <nav className="flex-1 overflow-hidden">
               <NavigationMenu>
                 <NavigationMenuList className="flex-wrap justify-start gap-1">
-                  {navItems.length > 0 ? (
-                    navItems.map((item) => (
-                      <NavigationMenuItem key={item.id}>
-                        <Link
-                          href={item.href}
-                          legacyBehavior
-                          passHref
-                          target={item.open_in_new_tab ? "_blank" : undefined}
+                  {navItems.map((item) => (
+                    <NavigationMenuItem key={item.href}>
+                      <Link href={item.href} legacyBehavior passHref>
+                        <NavigationMenuLink
+                          className={cn(
+                            navigationMenuTriggerStyle(),
+                            "h-9 bg-transparent px-4 text-sm font-medium tracking-wide text-accent-foreground/80 hover:bg-accent-foreground hover:text-accent",
+                            pathname === item.href && "text-accent-foreground font-semibold underline underline-offset-4"
+                          )}
                         >
-                          <NavigationMenuLink
-                            className={cn(
-                              navigationMenuTriggerStyle(),
-                              "h-9 bg-transparent px-4 text-sm font-medium tracking-wide text-accent-foreground/80 hover:bg-accent-foreground hover:text-accent",
-                              pathname === item.href && "text-accent-foreground font-semibold underline underline-offset-4"
-                            )}
-                          >
-                            {locale === "bn" && item.label_bn ? item.label_bn : item.label}
-                          </NavigationMenuLink>
-                        </Link>
-                      </NavigationMenuItem>
-                    ))
-                  ) : null}
+                          {item.title}
+                        </NavigationMenuLink>
+                      </Link>
+                    </NavigationMenuItem>
+                  ))}
                 </NavigationMenuList>
               </NavigationMenu>
             </nav>
@@ -525,26 +500,8 @@ function MobileHeader() {
   const { currency, toggleCurrency } = useCurrency();
   const logoUrl = useLogoUrl();
 
-  // Fetch DB-driven nav items
-  const [navItems, setNavItems] = React.useState<Array<{
-    id: string;
-    label: string;
-    label_bn: string;
-    href: string;
-    is_active: boolean;
-    open_in_new_tab: boolean;
-  }>>([]);
-
-  React.useEffect(() => {
-    fetch("/api/nav-menu")
-      .then((r) => r.json())
-      .then((data) => {
-        if (data.success && data.items?.length > 0) {
-          setNavItems(data.items);
-        }
-      })
-      .catch(() => {});
-  }, []);
+  // Static nav items — same as desktop, no DB fetch needed.
+  const navItems = mainNav;
 
   return (
     <div className="md:hidden">
@@ -585,14 +542,13 @@ function MobileHeader() {
                 </SheetTitle>
               </SheetHeader>
 
-              {/* Mobile nav — DB-driven */}
+              {/* Mobile nav — static */}
               <div className="flex flex-col gap-0.5 p-3">
                 {navItems.map((item) => (
                   <Link
-                    key={item.id}
+                    key={item.href}
                     href={item.href}
                     onClick={() => setOpen(false)}
-                    target={item.open_in_new_tab ? "_blank" : undefined}
                     className={cn(
                       "flex items-center justify-between rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
                       pathname === item.href
@@ -600,7 +556,7 @@ function MobileHeader() {
                         : "text-foreground hover:bg-accent/5"
                     )}
                   >
-                    {locale === "bn" && item.label_bn ? item.label_bn : item.label}
+                    {item.title}
                   </Link>
                 ))}
 
