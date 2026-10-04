@@ -15,9 +15,29 @@ import { siteConfig, footerNav } from "@/lib/brand";
 import { useLanguage } from "@/i18n/language-context";
 
 const socials = [
-  { icon: Facebook, href: siteConfig.social.facebook, label: "Facebook" },
-  { icon: Instagram, href: siteConfig.social.instagram, label: "Instagram" },
-  { icon: Youtube, href: siteConfig.social.youtube, label: "YouTube" },
+  {
+    icon: Facebook,
+    href: siteConfig.social.facebook,
+    label: "Facebook",
+    /** Brand color — applies on hover */
+    hoverClass: "hover:border-[#1877F2] hover:bg-[#1877F2] hover:text-white",
+    /** Static icon color (always visible) */
+    iconClass: "text-[#1877F2]",
+  },
+  {
+    icon: Instagram,
+    href: siteConfig.social.instagram,
+    label: "Instagram",
+    hoverClass: "hover:border-[#E4405F] hover:bg-[#E4405F] hover:text-white",
+    iconClass: "text-[#E4405F]",
+  },
+  {
+    icon: Youtube,
+    href: siteConfig.social.youtube,
+    label: "YouTube",
+    hoverClass: "hover:border-[#FF0000] hover:bg-[#FF0000] hover:text-white",
+    iconClass: "text-[#FF0000]",
+  },
 ].filter((s) => s.href);
 
 /**
@@ -131,18 +151,21 @@ export function SiteFooter() {
             {t("footer.followUs")}
           </p>
           <div className="flex items-center gap-3">
-            {socials.map((social) => (
-              <a
-                key={social.label}
-                href={social.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={social.label}
-                className="group flex h-11 w-11 items-center justify-center rounded-full border border-primary-foreground/20 text-primary-foreground/70 transition-all hover:border-accent hover:bg-accent hover:text-accent-foreground hover:scale-110 active:scale-95"
-              >
-                <social.icon className="h-5 w-5 transition-transform group-hover:scale-110" />
-              </a>
-            ))}
+            {socials.map((social) => {
+              const Icon = social.icon;
+              return (
+                <a
+                  key={social.label}
+                  href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={social.label}
+                  className={`group flex h-11 w-11 items-center justify-center rounded-full border border-primary-foreground/20 bg-primary-foreground/5 transition-all hover:scale-110 active:scale-95 ${social.hoverClass}`}
+                >
+                  <Icon className={`h-5 w-5 transition-transform group-hover:scale-110 group-hover:text-white ${social.iconClass}`} />
+                </a>
+              );
+            })}
           </div>
         </div>
       </div>
