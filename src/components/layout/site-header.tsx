@@ -334,27 +334,33 @@ function DesktopHeader() {
                 </button>
               </div>
 
-              {/* Currency toggle */}
-              <button
-                onClick={toggleCurrency}
-                className="flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium transition-colors hover:bg-accent-foreground/10"
-                title={`Switch to ${currency === "BDT" ? "USD" : "BDT"}`}
-                aria-label={`Switch currency (current: ${currency})`}
-              >
-                <span className={currency === "BDT" ? "text-accent-foreground font-semibold" : "text-accent-foreground/50"}>
-                  ৳
-                </span>
-                <span className={currency === "BDT" ? "text-accent-foreground" : "text-accent-foreground/50"}>
-                  BDT
-                </span>
-                <span className="text-accent-foreground/30">/</span>
-                <span className={currency === "USD" ? "text-accent-foreground font-semibold" : "text-accent-foreground/50"}>
-                  $
-                </span>
-                <span className={currency === "USD" ? "text-accent-foreground" : "text-accent-foreground/50"}>
-                  USD
-                </span>
-              </button>
+              {/* Currency toggle — premium pill-style toggle */}
+              <div className="flex items-center gap-0.5 rounded-full bg-accent-foreground/10 p-0.5">
+                <button
+                  onClick={() => currency !== "BDT" && toggleCurrency()}
+                  className={cn(
+                    "flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium transition-all",
+                    currency === "BDT"
+                      ? "bg-accent-foreground text-accent shadow-sm"
+                      : "text-accent-foreground/60 hover:text-accent-foreground"
+                  )}
+                  title="Bangladeshi Taka"
+                >
+                  ৳ BDT
+                </button>
+                <button
+                  onClick={() => currency !== "USD" && toggleCurrency()}
+                  className={cn(
+                    "flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium transition-all",
+                    currency === "USD"
+                      ? "bg-accent-foreground text-accent shadow-sm"
+                      : "text-accent-foreground/60 hover:text-accent-foreground"
+                  )}
+                  title="US Dollar"
+                >
+                  $ USD
+                </button>
+              </div>
 
               {/* Track My Order — prominent link at the far right */}
               <Link
