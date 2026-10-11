@@ -35,17 +35,22 @@ export default async function Home() {
 
   return (
     <>
-      <MegaHero
-        slides={content.heroSlides || []}
-        categories={categories.map((c) => ({
-          id: c.id,
-          name: c.name,
-          slug: c.slug,
-          image: c.image,
-        }))}
-        announcement={content.announcement}
-      />
-      <TrustBadges />
+      {/* Hero + TrustBadges — wrapped together so they fill the first
+          viewport. TrustBadges (Free Shipping etc.) sits right below
+          the slider, both visible on initial screen. */}
+      <div className="min-h-[calc(100vh-11rem)] lg:min-h-[calc(100vh-13rem)] flex flex-col">
+        <MegaHero
+          slides={content.heroSlides || []}
+          categories={categories.map((c) => ({
+            id: c.id,
+            name: c.name,
+            slug: c.slug,
+            image: c.image,
+          }))}
+          announcement={content.announcement}
+        />
+        <TrustBadges />
+      </div>
       <FeaturedCategories />
       <NewArrivals />
       <FlashSale />

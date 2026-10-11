@@ -40,7 +40,7 @@ const badges: Badge[] = [
 
 export function TrustBadges() {
   return (
-    <section className="bg-primary py-6 text-primary-foreground md:py-8">
+    <section className="bg-primary py-4 text-primary-foreground md:py-6">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4 md:gap-5">
           {badges.map((badge) => {
