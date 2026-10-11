@@ -514,7 +514,7 @@ function MobileHeader() {
       {/* Main bar — dark background (logo is gold, needs contrast).
           Layout: Menu (left) | Logo (center) | Cart (right) */}
       <div className="bg-primary text-primary-foreground">
-        <div className="flex h-16 items-center justify-between px-3">
+        <div className="flex h-20 items-center justify-between px-3">
           {/* Left: Menu button */}
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
@@ -660,7 +660,7 @@ function MobileHeader() {
 
           {/* Center: Logo (rectangular, no text label) */}
           <Link href="/" aria-label="Home" className="absolute left-1/2 -translate-x-1/2">
-            <div className="relative h-16 overflow-hidden aspect-[2/1]">
+            <div className="relative h-20 overflow-hidden aspect-[2/1]">
               <img
                 src={logoUrl}
                 alt="Al-Rakib .com"
