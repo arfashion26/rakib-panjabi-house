@@ -92,10 +92,11 @@ export function MegaHero({ slides, categories, announcement }: MegaHeroProps) {
   const visibleCategories = categories.slice(0, 8);
 
   return (
-    <section className="relative bg-background">
-      {/* Hero section — slider uses fixed 2:1 aspect ratio on ALL devices.
-          No min-height tricks → no empty space below the image. */}
-      <div className="mx-auto max-w-7xl px-3 py-3 sm:px-6 sm:py-4 lg:px-8 lg:py-6">
+    <section className="relative flex flex-1 flex-col bg-background">
+      {/* Hero section — fills remaining viewport height (flex-1).
+          Slider uses object-cover so the image fills the entire
+          container without empty space. */}
+      <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col px-3 py-3 sm:px-6 sm:py-4 lg:px-8 lg:py-6">
         {/* Search bar — mobile/tablet only. Desktop header already has
             its own big search bar, so we hide this on lg+ to avoid
             duplication. */}
@@ -118,9 +119,8 @@ export function MegaHero({ slides, categories, announcement }: MegaHeroProps) {
         </form>
 
         {/* 2-column layout: categories (left, desktop only) + slider (right).
-            On mobile, only the slider shows (categories become chips below).
-            No flex-1 or min-h → slider's aspect-[2/1] determines its height. */}
-        <div className="grid gap-3 lg:grid-cols-[280px_1fr]">
+            flex-1 so the slider fills remaining vertical space. */}
+        <div className="grid min-h-0 flex-1 gap-3 lg:grid-cols-[280px_1fr]">
           {/* Categories sidebar — hidden on mobile, shown on lg+.
               Matches slider height via self-stretch (items-stretch on grid). */}
           <aside className="hidden lg:block">
@@ -175,20 +175,20 @@ export function MegaHero({ slides, categories, announcement }: MegaHeroProps) {
             </div>
           </aside>
 
-          {/* Slider — fixed 2:1 aspect ratio on ALL devices.
-              Admin uploads a 1600×800px image → it shows identically
-              on desktop, tablet, and mobile. No cropping, no black bg. */}
-          <div className="relative overflow-hidden rounded-lg border border-border/60 bg-muted">
+          {/* Slider — fills available height (flex-1). object-cover
+              fills the entire container. No fixed aspect ratio —
+              height is determined by the viewport. */}
+          <div className="relative h-full min-h-[220px] overflow-hidden rounded-lg border border-border/60 bg-muted">
             {/* Slides */}
             {total === 0 ? (
-              <div className="flex aspect-[2/1] items-center justify-center bg-gradient-to-br from-primary via-primary to-primary/80 text-center text-primary-foreground/70">
+              <div className="flex h-full min-h-[220px] items-center justify-center bg-gradient-to-br from-primary via-primary to-primary/80 text-center text-primary-foreground/70">
                 <div>
                   <p className="text-sm font-medium">No hero slides yet</p>
                   <p className="mt-1 text-xs">Add slides from Admin → Homepage</p>
                 </div>
               </div>
             ) : (
-              <div className="relative aspect-[2/1]">
+              <div className="relative h-full min-h-[220px]">
                 {slides.map((slide, idx) => {
                   const slideLink = slide.link || "#";
                   return (
