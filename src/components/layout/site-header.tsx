@@ -247,7 +247,7 @@ function ShopMegaMenu() {
  */
 function HeaderLogo({ size = "md" }: { size?: "sm" | "md" }) {
   const logoUrl = useLogoUrl();
-  const height = size === "sm" ? "h-12 sm:h-14" : "h-16 sm:h-20";
+  const height = size === "sm" ? "h-12 sm:h-14" : "h-20 sm:h-28";
   return (
     <Link href="/" aria-label="Al-Rakib .com - Home" className="flex items-center group">
       <div className={cn("relative shrink-0 overflow-hidden aspect-[2/1] transition-transform group-hover:scale-105", height)}>
@@ -379,7 +379,7 @@ function DesktopHeader() {
           Logo (left) | Big rectangular search bar (center) | Cart button (right) */}
       <div className="border-b border-primary-foreground/10 bg-primary text-primary-foreground">
         <div className="mx-auto max-w-7xl px-4 lg:px-6">
-          <div className="flex h-24 items-center justify-between gap-6">
+          <div className="flex h-32 items-center justify-between gap-6">
             {/* Left: Logo */}
             <div className="flex shrink-0 items-center">
               <HeaderLogo size="md" />
