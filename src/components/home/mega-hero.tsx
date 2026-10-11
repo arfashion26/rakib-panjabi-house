@@ -92,11 +92,10 @@ export function MegaHero({ slides, categories, announcement }: MegaHeroProps) {
   const visibleCategories = categories.slice(0, 8);
 
   return (
-    <section className="relative flex flex-1 flex-col bg-background">
-      {/* Hero section — fills remaining viewport height (flex-1).
-          Slider uses object-cover so the image fills the entire
-          container without empty space. */}
-      <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col px-3 py-3 sm:px-6 sm:py-4 lg:px-8 lg:py-6">
+    <section className="relative bg-background">
+      {/* Hero section — slider uses fixed 2:1 aspect ratio (1600×800px).
+          Same image shows perfectly on desktop and mobile. */}
+      <div className="mx-auto max-w-7xl px-3 py-3 sm:px-6 sm:py-4 lg:px-8 lg:py-6">
         {/* Search bar — mobile/tablet only. Desktop header already has
             its own big search bar, so we hide this on lg+ to avoid
             duplication. */}
@@ -118,9 +117,8 @@ export function MegaHero({ slides, categories, announcement }: MegaHeroProps) {
           </button>
         </form>
 
-        {/* 2-column layout: categories (left, desktop only) + slider (right).
-            flex-1 so the slider fills remaining vertical space. */}
-        <div className="grid min-h-0 flex-1 gap-3 lg:grid-cols-[280px_1fr]">
+        {/* 2-column layout: categories (left, desktop only) + slider (right). */}
+        <div className="grid gap-3 lg:grid-cols-[280px_1fr]">
           {/* Categories sidebar — hidden on mobile, shown on lg+.
               Matches slider height via self-stretch (items-stretch on grid). */}
           <aside className="hidden lg:block">
@@ -175,20 +173,21 @@ export function MegaHero({ slides, categories, announcement }: MegaHeroProps) {
             </div>
           </aside>
 
-          {/* Slider — fills available height (flex-1). object-cover
-              fills the entire container. No fixed aspect ratio —
-              height is determined by the viewport. */}
-          <div className="relative h-full min-h-[220px] overflow-hidden rounded-lg border border-border/60 bg-background">
+          {/* Slider — fixed 2:1 aspect ratio (1600×800px).
+              Same image shows perfectly on desktop and mobile.
+              object-cover fills the 2:1 box exactly — no cropping
+              if the uploaded image is also 2:1. */}
+          <div className="relative overflow-hidden rounded-lg border border-border/60 bg-muted">
             {/* Slides */}
             {total === 0 ? (
-              <div className="flex h-full min-h-[220px] items-center justify-center bg-gradient-to-br from-primary via-primary to-primary/80 text-center text-primary-foreground/70">
+              <div className="flex aspect-[2/1] items-center justify-center bg-gradient-to-br from-primary via-primary to-primary/80 text-center text-primary-foreground/70">
                 <div>
                   <p className="text-sm font-medium">No hero slides yet</p>
                   <p className="mt-1 text-xs">Add slides from Admin → Homepage</p>
                 </div>
               </div>
             ) : (
-              <div className="relative h-full min-h-[220px]">
+              <div className="relative aspect-[2/1]">
                 {slides.map((slide, idx) => {
                   const slideLink = slide.link || "#";
                   return (
@@ -200,13 +199,10 @@ export function MegaHero({ slides, categories, announcement }: MegaHeroProps) {
                       idx === current ? "opacity-100" : "opacity-0 pointer-events-none"
                     )}
                   >
-                    {/* Single image on all devices. object-contain = no
-                        cropping. Full image always visible. Background
-                        bg-background fills any empty space. */}
                     <img
                       src={slide.image || slide.mobileImage}
                       alt={slide.title || `Slide ${idx + 1}`}
-                      className="h-full w-full object-contain"
+                      className="h-full w-full object-cover"
                       loading={idx === 0 ? "eager" : "lazy"}
                       fetchPriority={idx === 0 ? "high" : "low"}
                       decoding="async"
