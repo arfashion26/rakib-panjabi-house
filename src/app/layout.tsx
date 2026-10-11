@@ -23,6 +23,7 @@ const siteUrl = "https://alrakib.com";
 // settings from DB on every request. Without this, Next.js caches
 // the metadata and admin changes don't appear until cache expires.
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 /**
  * Generate metadata dynamically — fetches custom favicon/logo URL from DB.

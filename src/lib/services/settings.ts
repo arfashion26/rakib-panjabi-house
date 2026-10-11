@@ -73,7 +73,10 @@ export async function getBrandAssets(): Promise<{
         "og_title", "og_description",
       ]);
 
-    if (error || !data) return DEFAULTS;
+    if (error || !data) {
+      console.error("getBrandAssets DB error:", error);
+      return DEFAULTS;
+    }
 
     const out: any = { ...DEFAULTS };
     for (const row of data) {
@@ -90,7 +93,8 @@ export async function getBrandAssets(): Promise<{
       if (row.key === "og_description" && row.value) out.ogDescription = row.value;
     }
     return out;
-  } catch {
+  } catch (e: any) {
+    console.error("getBrandAssets catch error:", e?.message);
     return DEFAULTS;
   }
 }
