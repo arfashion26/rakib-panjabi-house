@@ -166,7 +166,7 @@ export function ProductCard({
         {/* Price (left) + Cart button (right, horizontal pill) */}
         <div className="mt-auto flex items-center justify-between gap-2">
           <div className="flex flex-col">
-            <span className="text-base font-bold text-accent">
+            <span className="text-base font-extrabold text-primary">
               {formatPrice(finalPrice)}
             </span>
             {product.discount_price && (
