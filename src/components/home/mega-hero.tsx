@@ -178,7 +178,7 @@ export function MegaHero({ slides, categories, announcement }: MegaHeroProps) {
           {/* Slider — fills available height (flex-1). object-cover
               fills the entire container. No fixed aspect ratio —
               height is determined by the viewport. */}
-          <div className="relative h-full min-h-[220px] overflow-hidden rounded-lg border border-border/60 bg-muted">
+          <div className="relative h-full min-h-[220px] overflow-hidden rounded-lg border border-border/60 bg-background">
             {/* Slides */}
             {total === 0 ? (
               <div className="flex h-full min-h-[220px] items-center justify-center bg-gradient-to-br from-primary via-primary to-primary/80 text-center text-primary-foreground/70">
@@ -200,13 +200,13 @@ export function MegaHero({ slides, categories, announcement }: MegaHeroProps) {
                       idx === current ? "opacity-100" : "opacity-0 pointer-events-none"
                     )}
                   >
-                    {/* Single image, object-cover on 2:1 container.
-                        Same size on all devices — no cropping if the
-                        uploaded image matches 2:1 ratio. */}
+                    {/* Single image on all devices. object-contain = no
+                        cropping. Full image always visible. Background
+                        bg-background fills any empty space. */}
                     <img
                       src={slide.image || slide.mobileImage}
                       alt={slide.title || `Slide ${idx + 1}`}
-                      className="h-full w-full object-cover"
+                      className="h-full w-full object-contain"
                       loading={idx === 0 ? "eager" : "lazy"}
                       fetchPriority={idx === 0 ? "high" : "low"}
                       decoding="async"
