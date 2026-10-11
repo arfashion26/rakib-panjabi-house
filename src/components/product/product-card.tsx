@@ -51,10 +51,6 @@ export function ProductCard({
   const discount = calculateDiscount(product.price, product.discount_price ?? null);
   const hasImageUrl = images.length > 0 && images[0];
 
-  const bgGradient = product.is_flash_sale
-    ? "linear-gradient(135deg, #fee2e2, #fecaca)"
-    : "linear-gradient(135deg, #f5f5f0, #e5e5e0)";
-
   function handleAddToCart(e: React.MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
@@ -88,7 +84,7 @@ export function ProductCard({
   return (
     <div
       className={cn(
-        "group relative flex flex-col overflow-hidden rounded-xl border-2 border-red-500/80 bg-white shadow-sm transition-all duration-300 hover:shadow-lg hover:border-red-600",
+        "group relative flex flex-col overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition-all duration-300 hover:shadow-xl hover:border-accent/50",
         className
       )}
     >
@@ -105,10 +101,7 @@ export function ProductCard({
             />
           ) : (
             <>
-              <div
-                className="absolute inset-0"
-                style={{ background: bgGradient }}
-              />
+              <div className="absolute inset-0 bg-gradient-to-br from-gray-100 to-gray-200" />
               <div className="absolute inset-0 flex items-center justify-center">
                 <span className="font-serif text-4xl font-light text-gray-300">RPH</span>
               </div>
@@ -119,12 +112,12 @@ export function ProductCard({
         {/* Badges — top left */}
         <div className="absolute left-2 top-2 flex flex-col gap-1">
           {product.is_new_arrival && (
-            <span className="rounded bg-blue-600 px-1.5 py-0.5 text-[9px] font-bold text-white">
+            <span className="rounded bg-accent px-1.5 py-0.5 text-[9px] font-bold text-accent-foreground">
               NEW
             </span>
           )}
           {product.is_best_seller && (
-            <span className="rounded bg-amber-500 px-1.5 py-0.5 text-[9px] font-bold text-white">
+            <span className="rounded bg-primary px-1.5 py-0.5 text-[9px] font-bold text-primary-foreground">
               BEST
             </span>
           )}
@@ -132,6 +125,11 @@ export function ProductCard({
             <span className="flex items-center gap-0.5 rounded bg-red-600 px-1.5 py-0.5 text-[9px] font-bold text-white">
               <Zap className="h-2 w-2" />
               SALE
+            </span>
+          )}
+          {discount > 0 && (
+            <span className="rounded bg-accent px-1.5 py-0.5 text-[9px] font-bold text-accent-foreground">
+              -{discount}%
             </span>
           )}
         </div>
@@ -146,42 +144,42 @@ export function ProductCard({
         </button>
       </div>
 
-      {/* Info section — product name + price + cart button in one row */}
-      <div className="flex flex-1 flex-col justify-between p-2.5">
+      {/* Info section — dark bg with brand gold accents */}
+      <div className="flex flex-1 flex-col bg-gradient-to-br from-primary to-primary/95 p-2.5 text-primary-foreground">
         {/* Rating */}
         {rating !== undefined && (
           <div className="mb-1 flex items-center gap-1 text-[10px]">
-            <Star className="h-2.5 w-2.5 fill-amber-400 text-amber-400" />
-            <span className="font-bold text-gray-800">{rating}</span>
-            <span className="text-gray-400">({reviewCount || 0})</span>
+            <Star className="h-2.5 w-2.5 fill-accent text-accent" />
+            <span className="font-bold text-accent">{rating}</span>
+            <span className="text-primary-foreground/50">({reviewCount || 0})</span>
           </div>
         )}
 
         {/* Product name */}
         <Link
           href={`/product/${product.slug}`}
-          className="mb-1.5 line-clamp-2 text-xs font-medium leading-tight text-gray-800 hover:text-red-600"
+          className="mb-1.5 line-clamp-2 text-xs font-medium leading-tight text-primary-foreground hover:text-accent"
         >
           {product.name}
         </Link>
 
-        {/* Price + Cart button — SAME ROW */}
-        <div className="flex items-center justify-between gap-2">
+        {/* Price + Cart button — same row */}
+        <div className="mt-auto flex items-center justify-between gap-2 pt-1">
           <div className="flex flex-col">
-            <span className="text-sm font-bold text-gray-900">
+            <span className="text-sm font-bold text-accent">
               {formatPrice(finalPrice)}
             </span>
             {product.discount_price && (
-              <span className="text-[10px] text-gray-400 line-through">
+              <span className="text-[10px] text-primary-foreground/40 line-through">
                 {formatPrice(product.price)}
               </span>
             )}
           </div>
 
-          {/* Cart button — right side of price */}
+          {/* Cart button — gold circle, right side of price */}
           <button
             onClick={handleAddToCart}
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-red-500 text-white shadow-md transition-all hover:bg-red-600 hover:scale-110 active:scale-95"
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent text-accent-foreground shadow-md transition-all hover:bg-accent/90 hover:scale-110 active:scale-95"
             aria-label="Add to cart"
           >
             <ShoppingBag className="h-4 w-4" />
