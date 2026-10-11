@@ -95,7 +95,7 @@ export function MegaHero({ slides, categories, announcement }: MegaHeroProps) {
     <section className="relative bg-background">
       {/* Hero section — slider uses fixed 2:1 aspect ratio (1600×800px).
           Same image shows perfectly on desktop and mobile. */}
-      <div className="mx-auto max-w-7xl px-0 sm:px-6 lg:px-8 lg:py-6">
+      <div className="mx-auto max-w-7xl px-0 pt-3 sm:px-6 sm:pt-4 lg:px-8 lg:py-6">
         {/* Search bar — mobile/tablet only. Desktop header already has
             its own big search bar, so we hide this on lg+ to avoid
             duplication. */}
