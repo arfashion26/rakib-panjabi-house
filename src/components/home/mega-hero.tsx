@@ -100,21 +100,26 @@ export function MegaHero({ slides, categories, announcement }: MegaHeroProps) {
             its own big search bar, so we hide this on lg+ to avoid
             duplication. */}
         <form onSubmit={handleSearch} className="relative mb-3 px-3 sm:mb-4 sm:px-0 lg:hidden">
-          <input
-            type="search"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search for panjabis, shirts, pants, accessories..."
-            className="h-11 sm:h-12 w-full rounded-full border border-border bg-background pl-11 pr-24 text-sm text-foreground shadow-sm transition-shadow placeholder:text-muted-foreground focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30 sm:pr-28 sm:text-base"
-            aria-label="Search products"
-          />
-          <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground sm:h-5 sm:w-5" />
-          <button
-            type="submit"
-            className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded-full bg-accent px-4 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-accent-foreground transition-colors hover:bg-accent/90 sm:px-6 sm:py-2 sm:text-sm"
-          >
-            Search
-          </button>
+          <div className="flex h-14 items-stretch shadow-md">
+            <div className="relative flex flex-1 items-stretch">
+              <Search className="pointer-events-none absolute left-4 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+              <input
+                type="search"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search products..."
+                className="h-full w-full rounded-l-lg border border-r-0 border-border bg-background pl-12 text-sm text-foreground transition-shadow placeholder:text-muted-foreground focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30"
+                aria-label="Search products"
+              />
+            </div>
+            <button
+              type="submit"
+              className="flex h-full items-center gap-2 rounded-r-lg bg-accent px-5 text-xs font-semibold uppercase tracking-wider text-accent-foreground transition-colors hover:bg-accent/90 sm:text-sm"
+            >
+              <Search className="h-4 w-4" />
+              Search
+            </button>
+          </div>
         </form>
 
         {/* 2-column layout: categories (left, desktop only) + slider (right). */}
