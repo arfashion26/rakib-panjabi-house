@@ -95,11 +95,11 @@ export function MegaHero({ slides, categories, announcement }: MegaHeroProps) {
     <section className="relative bg-background">
       {/* Hero section — slider uses fixed 2:1 aspect ratio (1600×800px).
           Same image shows perfectly on desktop and mobile. */}
-      <div className="mx-auto max-w-7xl px-3 py-3 sm:px-6 sm:py-4 lg:px-8 lg:py-6">
+      <div className="mx-auto max-w-7xl px-0 sm:px-6 lg:px-8 lg:py-6">
         {/* Search bar — mobile/tablet only. Desktop header already has
             its own big search bar, so we hide this on lg+ to avoid
             duplication. */}
-        <form onSubmit={handleSearch} className="relative mb-3 sm:mb-4 lg:hidden">
+        <form onSubmit={handleSearch} className="relative mb-3 px-3 sm:mb-4 sm:px-0 lg:hidden">
           <input
             type="search"
             value={search}
@@ -177,7 +177,7 @@ export function MegaHero({ slides, categories, announcement }: MegaHeroProps) {
               Same image shows perfectly on desktop and mobile.
               object-cover fills the 2:1 box exactly — no cropping
               if the uploaded image is also 2:1. */}
-          <div className="relative overflow-hidden rounded-lg border border-border/60 bg-muted">
+          <div className="relative overflow-hidden rounded-none sm:rounded-lg border border-border/60 bg-muted">
             {/* Slides */}
             {total === 0 ? (
               <div className="flex aspect-[2/1] items-center justify-center bg-gradient-to-br from-primary via-primary to-primary/80 text-center text-primary-foreground/70">
@@ -288,7 +288,7 @@ export function MegaHero({ slides, categories, announcement }: MegaHeroProps) {
 
         {/* Mobile category chips — visible only on mobile (replaces sidebar).
             Horizontal scroll for compact display. */}
-        <div className="mt-3 flex gap-2 overflow-x-auto pb-2 lg:hidden [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="mt-3 flex gap-2 overflow-x-auto px-3 pb-2 lg:hidden [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {visibleCategories.map((cat) => (
             <Link
               key={cat.id}
