@@ -84,12 +84,12 @@ export function ProductCard({
   return (
     <div
       className={cn(
-        "group relative flex flex-col overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition-all duration-300 hover:shadow-xl hover:border-accent/50",
+        "group relative flex flex-col overflow-hidden rounded-xl bg-white shadow-sm transition-all duration-300 hover:shadow-xl",
         className
       )}
     >
-      {/* Image section */}
-      <div className="relative aspect-square overflow-hidden bg-gray-50">
+      {/* Image section — with brand-colored border */}
+      <div className="relative aspect-square overflow-hidden border-b-2 border-accent bg-gray-50">
         <Link href={`/product/${product.slug}`} aria-label={product.name}>
           {hasImageUrl ? (
             <img
@@ -144,45 +144,46 @@ export function ProductCard({
         </button>
       </div>
 
-      {/* Info section — dark bg with brand gold accents */}
-      <div className="flex flex-1 flex-col bg-gradient-to-br from-primary to-primary/95 p-2.5 text-primary-foreground">
+      {/* Info section — white bg, brand-colored text */}
+      <div className="flex flex-1 flex-col p-3">
         {/* Rating */}
         {rating !== undefined && (
           <div className="mb-1 flex items-center gap-1 text-[10px]">
             <Star className="h-2.5 w-2.5 fill-accent text-accent" />
-            <span className="font-bold text-accent">{rating}</span>
-            <span className="text-primary-foreground/50">({reviewCount || 0})</span>
+            <span className="font-bold text-primary">{rating}</span>
+            <span className="text-gray-400">({reviewCount || 0})</span>
           </div>
         )}
 
         {/* Product name */}
         <Link
           href={`/product/${product.slug}`}
-          className="mb-1.5 line-clamp-2 text-xs font-medium leading-tight text-primary-foreground hover:text-accent"
+          className="mb-2 line-clamp-2 text-xs font-medium leading-tight text-primary hover:text-accent"
         >
           {product.name}
         </Link>
 
-        {/* Price + Cart button — same row */}
-        <div className="mt-auto flex items-center justify-between gap-2 pt-1">
+        {/* Price (left) + Cart button (right, horizontal pill) */}
+        <div className="mt-auto flex items-center justify-between gap-2">
           <div className="flex flex-col">
-            <span className="text-sm font-bold text-accent">
+            <span className="text-base font-bold text-accent">
               {formatPrice(finalPrice)}
             </span>
             {product.discount_price && (
-              <span className="text-[10px] text-primary-foreground/40 line-through">
+              <span className="text-[10px] text-gray-400 line-through">
                 {formatPrice(product.price)}
               </span>
             )}
           </div>
 
-          {/* Cart button — gold circle, right side of price */}
+          {/* Cart button — horizontal pill shape, brand gold */}
           <button
             onClick={handleAddToCart}
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent text-accent-foreground shadow-md transition-all hover:bg-accent/90 hover:scale-110 active:scale-95"
+            className="flex h-8 items-center gap-1.5 rounded-full bg-accent px-3 text-[11px] font-bold text-accent-foreground shadow-md transition-all hover:bg-accent/90 hover:scale-105 active:scale-95"
             aria-label="Add to cart"
           >
-            <ShoppingBag className="h-4 w-4" />
+            <ShoppingBag className="h-3.5 w-3.5" />
+            Add
           </button>
         </div>
       </div>
