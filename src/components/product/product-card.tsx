@@ -175,15 +175,15 @@ export function ProductCard({
         </div>
       </Link>
 
-      {/* Info section — separated from image with a top border */}
-      <div className="flex flex-1 flex-col border-t border-border bg-card p-3">
+      {/* Info section — premium gradient bg, separated from image */}
+      <div className="flex flex-1 flex-col bg-gradient-to-br from-primary to-primary/95 p-3 text-primary-foreground">
         {/* Rating */}
         {rating !== undefined && (
           <div className="mb-1.5 flex items-center gap-1 text-xs">
-            <Star className="h-3 w-3 fill-accent text-accent-text" />
-            <span className="font-semibold text-foreground">{rating}</span>
+            <Star className="h-3 w-3 fill-accent text-accent" />
+            <span className="font-semibold text-accent">{rating}</span>
             {reviewCount !== undefined && (
-              <span className="text-muted-foreground">({reviewCount})</span>
+              <span className="text-primary-foreground/50">({reviewCount})</span>
             )}
           </div>
         )}
@@ -191,7 +191,7 @@ export function ProductCard({
         {/* Name */}
         <Link
           href={`/product/${product.slug}`}
-          className="line-clamp-2 text-sm font-medium leading-snug text-foreground transition-colors hover:text-accent-text"
+          className="line-clamp-2 text-sm font-medium leading-snug text-primary-foreground transition-colors hover:text-accent"
         >
           {product.name}
         </Link>
@@ -202,13 +202,13 @@ export function ProductCard({
             {colors.slice(0, 4).map((color, i) => (
               <span
                 key={i}
-                className="h-3 w-3 rounded-full border border-border/60 ring-1 ring-white/50"
+                className="h-3 w-3 rounded-full border border-primary-foreground/20 ring-1 ring-white/30"
                 style={{ backgroundColor: color.hex_value }}
                 title={color.name}
               />
             ))}
             {colors.length > 4 && (
-              <span className="text-[10px] font-medium text-muted-foreground">
+              <span className="text-[10px] font-medium text-primary-foreground/50">
                 +{colors.length - 4}
               </span>
             )}
@@ -217,16 +217,16 @@ export function ProductCard({
 
         {/* Price */}
         <div className="mt-2.5 flex items-baseline gap-2">
-          <span className="text-base font-bold text-foreground">
+          <span className="text-base font-bold text-accent">
             {formatPrice(finalPrice)}
           </span>
           {product.discount_price && (
-            <span className="text-xs text-muted-foreground line-through">
+            <span className="text-xs text-primary-foreground/40 line-through">
               {formatPrice(product.price)}
             </span>
           )}
           {discount > 0 && (
-            <span className="ml-auto rounded bg-red-50 px-1.5 py-0.5 text-[10px] font-bold text-red-600">
+            <span className="ml-auto rounded bg-accent/20 px-1.5 py-0.5 text-[10px] font-bold text-accent">
               -{discount}%
             </span>
           )}
