@@ -19,6 +19,11 @@ const poppins = Poppins({
 
 const siteUrl = "https://alrakib.com";
 
+// Always render dynamically so generateMetadata fetches fresh SEO
+// settings from DB on every request. Without this, Next.js caches
+// the metadata and admin changes don't appear until cache expires.
+export const dynamic = "force-dynamic";
+
 /**
  * Generate metadata dynamically — fetches custom favicon/logo URL from DB.
  * Falls back to /logo.jpg if DB is unreachable or no custom logo is set.
