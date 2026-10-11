@@ -33,6 +33,8 @@ export async function GET() {
       .select("key, value")
       .in("key", [
         "site_name", "tagline", "site_description",
+        "meta_title", "meta_description", "meta_keywords",
+        "og_title", "og_description",
         "logo_url", "favicon_url",
         "contact_email", "contact_phone", "whatsapp_number", "address",
         "facebook_url", "instagram_url", "youtube_url", "twitter_url",
@@ -77,6 +79,11 @@ export async function PUT(req: NextRequest) {
       site_name: "text",
       tagline: "text",
       site_description: "text",
+      meta_title: "text",
+      meta_description: "text",
+      meta_keywords: "text",
+      og_title: "text",
+      og_description: "text",
       logo_url: "text",
       favicon_url: "text",
       contact_email: "text",

@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Save, Store, Truck, Mail, Loader2, Image as ImageIcon, DollarSign } from "lucide-react";
+import { Save, Store, Truck, Mail, Loader2, Image as ImageIcon, DollarSign, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -22,6 +22,12 @@ export default function AdminSettingsPage() {
     site_name: "Rakib Panjabi House",
     tagline: "Premium Panjabi & Fashion for the Modern Gentleman",
     site_description: "Premium quality Panjabis, shirts, pants, and ethnic wear with timeless elegance and modern designs.",
+    // SEO / Site Identity
+    meta_title: "Rakib Panjabi House — Premium Panjabi & Fashion for Men",
+    meta_description: "Discover premium quality Panjabis, shirts, pants, and ethnic wear at Rakib Panjabi House. Shop the latest collections with timeless elegance and modern designs. Free shipping across Bangladesh.",
+    meta_keywords: "Panjabi, Men's fashion, Panjabi House, Bangladesh fashion, Ethnic wear, Sherwani, Kurta, Panjabi online shop, Rakib Panjabi House, Premium fashion",
+    og_title: "Rakib Panjabi House — Premium Panjabi & Fashion for Men",
+    og_description: "Premium quality Panjabis, shirts, and ethnic wear with timeless elegance and modern designs.",
     logo_url: "",
     favicon_url: "",
     contact_email: "info@alrakib.com",
@@ -173,6 +179,89 @@ export default function AdminSettingsPage() {
                 value={form.site_description}
                 onChange={(e) => update("site_description", e.target.value)}
               />
+            </div>
+          </div>
+        </div>
+
+        {/* SEO / Site Identity */}
+        <div className="rounded-lg border border-border/60 bg-background p-6">
+          <div className="mb-4 flex items-center gap-2">
+            <Search className="h-5 w-5 text-accent-text" />
+            <h2 className="font-serif text-lg font-medium">SEO & Site Identity</h2>
+          </div>
+          <p className="mb-4 text-xs text-muted-foreground">
+            These settings control how your site appears in search engines
+            (Google, Bing) and social media (Facebook, WhatsApp, Twitter).
+            Optimized for the homepage.
+          </p>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="metaTitle">Meta Title (Google search result title)</Label>
+              <Input
+                id="metaTitle"
+                value={form.meta_title}
+                onChange={(e) => update("meta_title", e.target.value)}
+                placeholder="Rakib Panjabi House — Premium Panjabi & Fashion"
+                maxLength={70}
+              />
+              <p className="text-[10px] text-muted-foreground">
+                {form.meta_title?.length || 0}/70 characters — shown as the blue
+                clickable title in Google search results.
+              </p>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="metaDesc">Meta Description (Google search snippet)</Label>
+              <Textarea
+                id="metaDesc"
+                rows={3}
+                value={form.meta_description}
+                onChange={(e) => update("meta_description", e.target.value)}
+                placeholder="Brief description of your store shown below the title in search results."
+                maxLength={160}
+              />
+              <p className="text-[10px] text-muted-foreground">
+                {form.meta_description?.length || 0}/160 characters — shown as the
+                gray text below the title in Google search results.
+              </p>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="metaKeywords">Meta Keywords (comma-separated)</Label>
+              <Input
+                id="metaKeywords"
+                value={form.meta_keywords}
+                onChange={(e) => update("meta_keywords", e.target.value)}
+                placeholder="Panjabi, fashion, Bangladesh, ethnic wear"
+              />
+              <p className="text-[10px] text-muted-foreground">
+                Keywords that help search engines understand your site. Separate
+                with commas. (Less important for Google, but helps some search engines.)
+              </p>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="ogTitle">Open Graph Title (Social media share title)</Label>
+              <Input
+                id="ogTitle"
+                value={form.og_title}
+                onChange={(e) => update("og_title", e.target.value)}
+                placeholder="Title shown when someone shares your site on Facebook/WhatsApp"
+              />
+              <p className="text-[10px] text-muted-foreground">
+                Shown as the title when someone shares your homepage link on
+                Facebook, WhatsApp, Twitter, etc.
+              </p>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="ogDesc">Open Graph Description (Social media share description)</Label>
+              <Textarea
+                id="ogDesc"
+                rows={2}
+                value={form.og_description}
+                onChange={(e) => update("og_description", e.target.value)}
+                placeholder="Description shown when sharing your site on social media"
+              />
+              <p className="text-[10px] text-muted-foreground">
+                Shown below the OG title when sharing your link on social media.
+              </p>
             </div>
           </div>
         </div>

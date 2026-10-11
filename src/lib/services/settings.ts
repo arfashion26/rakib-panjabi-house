@@ -46,18 +46,36 @@ export async function getBrandAssets(): Promise<{
   logoUrl: string;
   faviconUrl: string;
   usdRate: number;
+  metaTitle?: string;
+  metaDescription?: string;
+  metaKeywords?: string;
+  ogTitle?: string;
+  ogDescription?: string;
 }> {
-  const DEFAULTS = { logoUrl: "/logo.png", faviconUrl: "/logo.png", usdRate: 110 };
+  const DEFAULTS = {
+    logoUrl: "/logo.png",
+    faviconUrl: "/logo.png",
+    usdRate: 110,
+    metaTitle: "Rakib Panjabi House — Premium Panjabi & Fashion for Men",
+    metaDescription: "Discover premium quality Panjabis, shirts, pants, and ethnic wear at Rakib Panjabi House. Shop the latest collections with timeless elegance and modern designs. Free shipping across Bangladesh.",
+    metaKeywords: "Panjabi, Men's fashion, Panjabi House, Bangladesh fashion, Ethnic wear, Sherwani, Kurta, Panjabi online shop, Rakib Panjabi House, Premium fashion",
+    ogTitle: "Rakib Panjabi House — Premium Panjabi & Fashion for Men",
+    ogDescription: "Premium quality Panjabis, shirts, and ethnic wear with timeless elegance and modern designs.",
+  };
   try {
     const supabase = createAdminClient();
     const { data, error } = await supabase
       .from("settings")
       .select("key, value")
-      .in("key", ["logo_url", "favicon_url", "usd_rate"]);
+      .in("key", [
+        "logo_url", "favicon_url", "usd_rate",
+        "meta_title", "meta_description", "meta_keywords",
+        "og_title", "og_description",
+      ]);
 
     if (error || !data) return DEFAULTS;
 
-    const out = { ...DEFAULTS };
+    const out: any = { ...DEFAULTS };
     for (const row of data) {
       if (row.key === "logo_url" && row.value) out.logoUrl = row.value;
       if (row.key === "favicon_url" && row.value) out.faviconUrl = row.value;
@@ -65,6 +83,11 @@ export async function getBrandAssets(): Promise<{
         const n = parseFloat(row.value);
         if (!isNaN(n) && n > 0) out.usdRate = n;
       }
+      if (row.key === "meta_title" && row.value) out.metaTitle = row.value;
+      if (row.key === "meta_description" && row.value) out.metaDescription = row.value;
+      if (row.key === "meta_keywords" && row.value) out.metaKeywords = row.value;
+      if (row.key === "og_title" && row.value) out.ogTitle = row.value;
+      if (row.key === "og_description" && row.value) out.ogDescription = row.value;
     }
     return out;
   } catch {

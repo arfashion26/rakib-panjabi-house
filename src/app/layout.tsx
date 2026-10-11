@@ -24,28 +24,21 @@ const siteUrl = "https://alrakib.com";
  * Falls back to /logo.jpg if DB is unreachable or no custom logo is set.
  */
 export async function generateMetadata(): Promise<Metadata> {
-  const { faviconUrl, logoUrl } = await getBrandAssets();
+  const assets = await getBrandAssets();
+  const { faviconUrl, logoUrl, metaTitle, metaDescription, metaKeywords, ogTitle, ogDescription } = assets;
   const iconUrl = faviconUrl || logoUrl;
 
   return {
     metadataBase: new URL(siteUrl),
     title: {
-      default: "Rakib Panjabi House — Premium Panjabi & Fashion for Men",
+      default: metaTitle || "Rakib Panjabi House — Premium Panjabi & Fashion for Men",
       template: "%s | Rakib Panjabi House",
     },
-    description:
-      "Discover premium quality Panjabis, shirts, pants, and ethnic wear at Rakib Panjabi House. Shop the latest collections with timeless elegance, modern designs, and superior craftsmanship. Free shipping across Bangladesh.",
-    keywords: [
-      "Panjabi",
-      "Men's fashion",
-      "Panjabi House",
-      "Bangladesh fashion",
-      "Ethnic wear",
-      "Sherwani",
-      "Kurta",
-      "Panjabi online shop",
-      "Rakib Panjabi House",
-      "Premium fashion",
+    description: metaDescription || "Discover premium quality Panjabis, shirts, pants, and ethnic wear at Rakib Panjabi House.",
+    keywords: metaKeywords ? metaKeywords.split(",").map((k: string) => k.trim()) : [
+      "Panjabi", "Men's fashion", "Panjabi House", "Bangladesh fashion",
+      "Ethnic wear", "Sherwani", "Kurta", "Panjabi online shop",
+      "Rakib Panjabi House", "Premium fashion",
     ],
     authors: [{ name: "Rakib Panjabi House" }],
     creator: "Rakib Panjabi House",
@@ -64,9 +57,8 @@ export async function generateMetadata(): Promise<Metadata> {
     locale: "en_US",
     url: siteUrl,
     siteName: "Rakib Panjabi House",
-    title: "Rakib Panjabi House — Premium Panjabi & Fashion",
-    description:
-      "Premium quality Panjabis, shirts, and ethnic wear with timeless elegance and modern designs.",
+    title: ogTitle || "Rakib Panjabi House — Premium Panjabi & Fashion",
+    description: ogDescription || "Premium quality Panjabis, shirts, and ethnic wear with timeless elegance and modern designs.",
     images: [
       {
         url: "/og-image.jpg",
