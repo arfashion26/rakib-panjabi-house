@@ -91,8 +91,10 @@ export function MegaHero({ slides, categories, announcement }: MegaHeroProps) {
 
   return (
     <section className="relative bg-white">
-      {/* Category bar — horizontal, below header */}
-      <div className="border-b border-border bg-white">
+      {/* Category bar — horizontal, below header.
+          This bar + slider are in a relative container so dropdowns
+          can overlap the slider with glass effect. */}
+      <div className="relative z-20 border-b border-border bg-white">
         <div className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8">
           <div className="flex items-center gap-1 overflow-x-auto py-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {/* All Categories link */}
@@ -115,7 +117,12 @@ export function MegaHero({ slides, categories, announcement }: MegaHeroProps) {
                 >
                   <Link
                     href={`/shop/${cat.slug}`}
-                    className="flex items-center gap-1 rounded-md px-3 py-1.5 text-sm font-medium text-primary hover:bg-accent hover:text-accent-foreground"
+                    className={cn(
+                      "flex items-center gap-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
+                      hoveredCategory === cat.id
+                        ? "bg-accent text-accent-foreground"
+                        : "text-primary hover:bg-accent hover:text-accent-foreground"
+                    )}
                   >
                     {cat.name}
                     {subs.length > 0 && (
@@ -123,16 +130,29 @@ export function MegaHero({ slides, categories, announcement }: MegaHeroProps) {
                     )}
                   </Link>
 
-                  {/* Dropdown — shows sub-categories on hover.
-                      z-[100] ensures it appears above the slider. */}
+                  {/* Dropdown — glass effect, overlaps slider.
+                      z-[100] + absolute top-full makes it float above
+                      the slider with a semi-transparent backdrop blur. */}
                   {subs.length > 0 && hoveredCategory === cat.id && (
-                    <div className="absolute left-0 top-full z-[100] min-w-[200px] rounded-lg border border-border bg-white py-1.5 shadow-xl">
+                    <div className="absolute left-0 top-full z-[100] min-w-[220px] rounded-xl border border-white/20 bg-white/80 py-2 shadow-2xl backdrop-blur-xl">
+                      <div className="px-4 py-1.5">
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400">
+                          {cat.name}
+                        </p>
+                      </div>
                       {subs.map((sub) => (
                         <Link
                           key={sub.id}
                           href={`/shop/${sub.slug}`}
-                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-accent/10 hover:text-accent"
+                          className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-accent/20 hover:text-accent"
                         >
+                          {sub.image && (
+                            <img
+                              src={sub.image}
+                              alt=""
+                              className="h-5 w-5 rounded-full object-cover"
+                            />
+                          )}
                           {sub.name}
                         </Link>
                       ))}
