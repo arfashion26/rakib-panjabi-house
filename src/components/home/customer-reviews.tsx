@@ -43,7 +43,7 @@ export function CustomerReviews() {
         <SectionHeading
           eyebrow="Loved by Thousands"
           title="What Our Customers Say"
-          subtitle="Real reviews from real customers who have experienced the Rakib Panjabi House difference."
+          subtitle="Real reviews from real customers who have experienced the alrakib.com difference."
         />
 
         <div className="grid gap-6 md:grid-cols-3">

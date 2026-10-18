@@ -10,7 +10,7 @@ export default function TermsPage() {
     {
       title: "Acceptance of Terms",
       content: [
-        "By accessing and using the Rakib Panjabi House website (rakibpanjabihouse.com), you accept and agree to be bound by these Terms and Conditions. If you do not agree to these terms, please do not use our website or services.",
+        "By accessing and using the alrakib.com website (rakibpanjabihouse.com), you accept and agree to be bound by these Terms and Conditions. If you do not agree to these terms, please do not use our website or services.",
         "These terms apply to all visitors, users, and others who access or use our services.",
       ],
     },
@@ -57,14 +57,14 @@ export default function TermsPage() {
     {
       title: "Intellectual Property",
       content: [
-        "All content on this website, including text, graphics, logos, images, and software, is the property of Rakib Panjabi House or its content suppliers and is protected by Bangladesh and international copyright laws.",
+        "All content on this website, including text, graphics, logos, images, and software, is the property of alrakib.com or its content suppliers and is protected by Bangladesh and international copyright laws.",
         "You may not reproduce, distribute, modify, or otherwise use any content from this website without our express written permission.",
       ],
     },
     {
       title: "Limitation of Liability",
       content: [
-        "Rakib Panjabi House shall not be liable for any indirect, incidental, special, or consequential damages arising from your use of our website or products.",
+        "alrakib.com shall not be liable for any indirect, incidental, special, or consequential damages arising from your use of our website or products.",
         "Our total liability for any claim arising from your use of our services shall not exceed the amount you paid us for the relevant product or service.",
       ],
     },

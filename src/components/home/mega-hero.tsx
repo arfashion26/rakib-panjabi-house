@@ -98,7 +98,7 @@ export function MegaHero({ slides, categories, announcement }: MegaHeroProps) {
             {/* All Categories link */}
             <Link
               href="/shop"
-              className="shrink-0 rounded-md px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-primary hover:bg-accent hover:text-accent-foreground"
+              className="shrink-0 rounded-md px-3 py-1.5 text-sm font-semibold uppercase tracking-wide text-primary hover:bg-accent hover:text-accent-foreground"
             >
               All
             </Link>
@@ -115,22 +115,23 @@ export function MegaHero({ slides, categories, announcement }: MegaHeroProps) {
                 >
                   <Link
                     href={`/shop/${cat.slug}`}
-                    className="flex items-center gap-1 rounded-md px-3 py-1.5 text-xs font-medium text-primary hover:bg-accent hover:text-accent-foreground"
+                    className="flex items-center gap-1 rounded-md px-3 py-1.5 text-sm font-medium text-primary hover:bg-accent hover:text-accent-foreground"
                   >
                     {cat.name}
                     {subs.length > 0 && (
-                      <ChevronDown className="h-3 w-3" />
+                      <ChevronDown className="h-3.5 w-3.5" />
                     )}
                   </Link>
 
-                  {/* Dropdown — shows sub-categories on hover */}
+                  {/* Dropdown — shows sub-categories on hover.
+                      z-[100] ensures it appears above the slider. */}
                   {subs.length > 0 && hoveredCategory === cat.id && (
-                    <div className="absolute left-0 top-full z-50 min-w-[180px] rounded-lg border border-border bg-white py-1 shadow-lg">
+                    <div className="absolute left-0 top-full z-[100] min-w-[200px] rounded-lg border border-border bg-white py-1.5 shadow-xl">
                       {subs.map((sub) => (
                         <Link
                           key={sub.id}
                           href={`/shop/${sub.slug}`}
-                          className="block px-4 py-2 text-xs text-gray-700 hover:bg-accent/10 hover:text-accent"
+                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-accent/10 hover:text-accent"
                         >
                           {sub.name}
                         </Link>

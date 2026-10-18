@@ -1,5 +1,5 @@
 // ============================================
-// Types for Rakib Panjabi House
+// Types for alrakib.com
 // ============================================
 
 export type UserRole =

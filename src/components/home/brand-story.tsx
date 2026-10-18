@@ -8,7 +8,7 @@ import { Award, Heart, Sparkles, Users } from "lucide-react";
 /**
  * Brand Story Section
  *
- * Highlights the heritage and craftsmanship behind Rakib Panjabi House
+ * Highlights the heritage and craftsmanship behind alrakib.com
  */
 export function BrandStory() {
   const values = [
@@ -80,7 +80,7 @@ export function BrandStory() {
             <SectionHeading
               eyebrow="Our Story"
               title="A Legacy of Craftsmanship"
-              subtitle="Rakib Panjabi House was founded with a singular vision — to bring premium quality ethnic and contemporary fashion to the modern Bangladeshi gentleman."
+              subtitle="alrakib.com was founded with a singular vision — to bring premium quality ethnic and contemporary fashion to the modern Bangladeshi gentleman."
               align="left"
               className="mb-6"
             />

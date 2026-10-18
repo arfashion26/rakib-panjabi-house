@@ -37,18 +37,18 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     metadataBase: new URL(siteUrl),
     title: {
-      default: metaTitle || "Rakib Panjabi House — Premium Panjabi & Fashion for Men",
-      template: "%s | Rakib Panjabi House",
+      default: metaTitle || "alrakib.com — Premium Panjabi & Fashion for Men",
+      template: "%s | alrakib.com",
     },
-    description: metaDescription || "Discover premium quality Panjabis, shirts, pants, and ethnic wear at Rakib Panjabi House.",
+    description: metaDescription || "Discover premium quality Panjabis, shirts, pants, and ethnic wear at alrakib.com.",
     keywords: metaKeywords ? metaKeywords.split(",").map((k: string) => k.trim()) : [
       "Panjabi", "Men's fashion", "Panjabi House", "Bangladesh fashion",
       "Ethnic wear", "Sherwani", "Kurta", "Panjabi online shop",
-      "Rakib Panjabi House", "Premium fashion",
+      "alrakib.com", "Premium fashion",
     ],
-    authors: [{ name: "Rakib Panjabi House" }],
-    creator: "Rakib Panjabi House",
-    publisher: "Rakib Panjabi House",
+    authors: [{ name: "alrakib.com" }],
+    creator: "alrakib.com",
+    publisher: "alrakib.com",
     icons: {
       icon: iconUrl,
       shortcut: iconUrl,
@@ -62,21 +62,21 @@ export async function generateMetadata(): Promise<Metadata> {
     type: "website",
     locale: "en_US",
     url: siteUrl,
-    siteName: "Rakib Panjabi House",
-    title: ogTitle || "Rakib Panjabi House — Premium Panjabi & Fashion",
+    siteName: "alrakib.com",
+    title: ogTitle || "alrakib.com — Premium Panjabi & Fashion",
     description: ogDescription || "Premium quality Panjabis, shirts, and ethnic wear with timeless elegance and modern designs.",
     images: [
       {
         url: "/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: "Rakib Panjabi House",
+        alt: "alrakib.com",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Rakib Panjabi House — Premium Panjabi & Fashion",
+    title: "alrakib.com — Premium Panjabi & Fashion",
     description:
       "Premium quality Panjabis, shirts, and ethnic wear with timeless elegance.",
     images: ["/og-image.jpg"],
@@ -135,7 +135,7 @@ export default async function RootLayout({
   const orgJsonLd = {
     "@context": "https://schema.org",
     "@type": "Organization",
-    name: "Rakib Panjabi House",
+    name: "alrakib.com",
     alternateName: "RPH",
     url: siteUrl,
     logo: `${siteUrl}/logo.svg`,
@@ -162,7 +162,7 @@ export default async function RootLayout({
   const websiteJsonLd = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    name: "Rakib Panjabi House",
+    name: "alrakib.com",
     url: siteUrl,
     potentialAction: {
       "@type": "SearchAction",

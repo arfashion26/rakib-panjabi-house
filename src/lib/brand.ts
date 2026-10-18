@@ -1,10 +1,10 @@
 /**
- * Rakib Panjabi House - Brand Configuration
+ * alrakib.com - Brand Configuration
  * Central source of truth for brand identity, navigation, and categories
  */
 
 export const siteConfig = {
-  name: "Rakib Panjabi House",
+  name: "alrakib.com",
   shortName: "Rakib",
   tagline: "Premium Panjabi & Fashion for the Modern Gentleman",
   description:

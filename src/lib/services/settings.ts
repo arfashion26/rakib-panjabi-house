@@ -56,10 +56,10 @@ export async function getBrandAssets(): Promise<{
     logoUrl: "/logo.png",
     faviconUrl: "/logo.png",
     usdRate: 110,
-    metaTitle: "Rakib Panjabi House — Premium Panjabi & Fashion for Men",
-    metaDescription: "Discover premium quality Panjabis, shirts, pants, and ethnic wear at Rakib Panjabi House. Shop the latest collections with timeless elegance and modern designs. Free shipping across Bangladesh.",
-    metaKeywords: "Panjabi, Men's fashion, Panjabi House, Bangladesh fashion, Ethnic wear, Sherwani, Kurta, Panjabi online shop, Rakib Panjabi House, Premium fashion",
-    ogTitle: "Rakib Panjabi House — Premium Panjabi & Fashion for Men",
+    metaTitle: "alrakib.com — Premium Panjabi & Fashion for Men",
+    metaDescription: "Discover premium quality Panjabis, shirts, pants, and ethnic wear at alrakib.com. Shop the latest collections with timeless elegance and modern designs. Free shipping across Bangladesh.",
+    metaKeywords: "Panjabi, Men's fashion, Panjabi House, Bangladesh fashion, Ethnic wear, Sherwani, Kurta, Panjabi online shop, alrakib.com, Premium fashion",
+    ogTitle: "alrakib.com — Premium Panjabi & Fashion for Men",
     ogDescription: "Premium quality Panjabis, shirts, and ethnic wear with timeless elegance and modern designs.",
   };
   try {

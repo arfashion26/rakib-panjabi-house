@@ -33,7 +33,7 @@ export async function getPageMetadata(slug: PageSlug): Promise<Metadata> {
 
   return {
     // Use 'absolute' to prevent the root layout's title template from
-    // appending "| Rakib Panjabi House" (our titles already include it)
+    // appending "| alrakib.com" (our titles already include it)
     title: { absolute: metaTitle },
     description: metaDescription,
     alternates: { canonical: url },

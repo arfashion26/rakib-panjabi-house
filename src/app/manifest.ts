@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Rakib Panjabi House",
+    name: "alrakib.com",
     short_name: "Rakib PH",
     description:
       "Premium Panjabi & Fashion for the Modern Gentleman. Shop premium quality Panjabis, shirts, pants, and ethnic wear.",

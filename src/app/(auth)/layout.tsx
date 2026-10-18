@@ -26,7 +26,7 @@ export default function AuthLayout({
       <footer className="border-t border-border/60 bg-background py-6">
         <div className="mx-auto max-w-md px-4 text-center">
           <p className="text-xs text-muted-foreground">
-            © {new Date().getFullYear()} Rakib Panjabi House. All rights reserved.
+            © {new Date().getFullYear()} alrakib.com. All rights reserved.
           </p>
         </div>
       </footer>

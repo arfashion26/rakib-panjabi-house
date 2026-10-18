@@ -19,14 +19,14 @@ export default function AdminSettingsPage() {
 
   // Form state — controlled inputs
   const [form, setForm] = React.useState({
-    site_name: "Rakib Panjabi House",
+    site_name: "alrakib.com",
     tagline: "Premium Panjabi & Fashion for the Modern Gentleman",
     site_description: "Premium quality Panjabis, shirts, pants, and ethnic wear with timeless elegance and modern designs.",
     // SEO / Site Identity
-    meta_title: "Rakib Panjabi House — Premium Panjabi & Fashion for Men",
-    meta_description: "Discover premium quality Panjabis, shirts, pants, and ethnic wear at Rakib Panjabi House. Shop the latest collections with timeless elegance and modern designs. Free shipping across Bangladesh.",
-    meta_keywords: "Panjabi, Men's fashion, Panjabi House, Bangladesh fashion, Ethnic wear, Sherwani, Kurta, Panjabi online shop, Rakib Panjabi House, Premium fashion",
-    og_title: "Rakib Panjabi House — Premium Panjabi & Fashion for Men",
+    meta_title: "alrakib.com — Premium Panjabi & Fashion for Men",
+    meta_description: "Discover premium quality Panjabis, shirts, pants, and ethnic wear at alrakib.com. Shop the latest collections with timeless elegance and modern designs. Free shipping across Bangladesh.",
+    meta_keywords: "Panjabi, Men's fashion, Panjabi House, Bangladesh fashion, Ethnic wear, Sherwani, Kurta, Panjabi online shop, alrakib.com, Premium fashion",
+    og_title: "alrakib.com — Premium Panjabi & Fashion for Men",
     og_description: "Premium quality Panjabis, shirts, and ethnic wear with timeless elegance and modern designs.",
     logo_url: "",
     favicon_url: "",
@@ -201,7 +201,7 @@ export default function AdminSettingsPage() {
                 id="metaTitle"
                 value={form.meta_title}
                 onChange={(e) => update("meta_title", e.target.value)}
-                placeholder="Rakib Panjabi House — Premium Panjabi & Fashion"
+                placeholder="alrakib.com — Premium Panjabi & Fashion"
                 maxLength={70}
               />
               <p className="text-[10px] text-muted-foreground">

@@ -17,7 +17,7 @@ import { X } from "lucide-react";
 
 const WHATSAPP_NUMBER = "8801716243949"; // +880 1716-243949
 const WHATSAPP_DEFAULT_MESSAGE =
-  "Hello Al-Rakib Panjabi House! I have a question about your products.";
+  "Hello Al-alrakib.com! I have a question about your products.";
 
 // Facebook page username for Messenger deep link (m.me/<username>)
 // Derived from https://www.facebook.com/Alrakibfashionhouse/
