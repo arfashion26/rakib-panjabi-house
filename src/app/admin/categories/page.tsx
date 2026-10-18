@@ -27,6 +27,7 @@ interface Category {
   order: number;
   is_featured: boolean;
   is_active: boolean;
+  parent_id?: string | null;
 }
 
 export default function AdminCategoriesPage() {
@@ -69,6 +70,7 @@ export default function AdminCategoriesPage() {
       order: categories.length + 1,
       is_featured: false,
       is_active: true,
+      parent_id: null,
     });
     setIsOpen(true);
   }
@@ -97,6 +99,7 @@ export default function AdminCategoriesPage() {
           order: category.order,
           isFeatured: category.is_featured,
           isActive: category.is_active,
+          parentId: category.parent_id || null,
         }),
       });
       const data = await res.json();
@@ -243,6 +246,30 @@ export default function AdminCategoriesPage() {
               <DialogTitle>{editing.id ? "Edit Category" : "Add New Category"}</DialogTitle>
             </DialogHeader>
             <div className="space-y-4 py-4">
+              {/* Parent Category selector — for sub-categories */}
+              <div className="space-y-2">
+                <Label htmlFor="cat-parent">Parent Category (leave empty for main category)</Label>
+                <select
+                  id="cat-parent"
+                  value={editing.parent_id || ""}
+                  onChange={(e) => setEditing({ ...editing, parent_id: e.target.value || null })}
+                  className="h-9 w-full rounded-md border border-border bg-background px-3 text-sm"
+                >
+                  <option value="">— Main Category (no parent) —</option>
+                  {categories
+                    .filter((c) => !c.parent_id) // only main categories can be parents
+                    .filter((c) => c.id !== editing.id) // can't be own parent
+                    .map((cat) => (
+                      <option key={cat.id} value={cat.id}>
+                        {cat.name}
+                      </option>
+                    ))}
+                </select>
+                <p className="text-[10px] text-muted-foreground">
+                  Select a parent category to make this a sub-category. Sub-categories
+                  appear as dropdown items under their parent in the navigation menu.
+                </p>
+              </div>
               <div className="space-y-2">
                 <Label htmlFor="cat-name">Category Name *</Label>
                 <Input

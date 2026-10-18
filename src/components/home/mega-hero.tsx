@@ -8,6 +8,7 @@ import {
   ChevronRight,
   ChevronLeft,
   ArrowRight,
+  ChevronDown,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -27,6 +28,7 @@ interface CategoryItem {
   name: string;
   slug: string;
   image?: string | null;
+  parent_id?: string | null;
 }
 
 interface MegaHeroProps {
@@ -36,32 +38,31 @@ interface MegaHeroProps {
 }
 
 /**
- * Mega Hero Section — fully mobile responsive.
+ * Mega Hero Section — full-screen slider + category bar.
  *
- * Layout:
+ * Layout (reference: sailor.com):
  *   ┌───────────────────────────────────────────────┐
- *   │            [ Search bar (full width) ]        │
- *   ├──────────────┬────────────────────────────────┤
- *   │  Categories  │     Image Slider               │
- *   │  (vertical)  │     (auto-rotating)            │
- *   │              │                                 │
- *   └──────────────┴────────────────────────────────┘
+ *   │  [Category bar with dropdowns]                │
+ *   ├───────────────────────────────────────────────┤
+ *   │                                               │
+ *   │         [ Full-screen Image Slider ]          │
+ *   │                                               │
+ *   └───────────────────────────────────────────────┘
  *
- * Mobile:
- *   - Search bar at top (compact)
- *   - Slider fills remaining viewport (uses desktop image at full size)
- *   - Category chips below slider (horizontal scroll)
- *
- * Desktop (lg+):
- *   - Same search bar (bigger)
- *   - Left sidebar with categories (vertical list)
- *   - Right slider (fills remaining height)
+ * - Category bar: horizontal list of main categories.
+ *   Hover a category → dropdown shows sub-categories.
+ * - Slider: fills remaining viewport height, auto-rotates.
  */
 export function MegaHero({ slides, categories, announcement }: MegaHeroProps) {
   const router = useRouter();
   const [current, setCurrent] = React.useState(0);
   const [search, setSearch] = React.useState("");
+  const [hoveredCategory, setHoveredCategory] = React.useState<string | null>(null);
   const total = slides.length;
+
+  // Separate main categories and sub-categories
+  const mainCategories = categories.filter((c) => !c.parent_id);
+  const subCategories = categories.filter((c) => c.parent_id);
 
   // Auto-rotate slides every 5s
   React.useEffect(() => {
@@ -88,114 +89,100 @@ export function MegaHero({ slides, categories, announcement }: MegaHeroProps) {
     else router.push("/shop");
   }
 
-  // Limit to 8 categories for clean layout
-  const visibleCategories = categories.slice(0, 8);
-
   return (
-    <section className="relative bg-background">
-      {/* Hero section — slider uses fixed 2:1 aspect ratio (1600×800px).
-          Same image shows perfectly on desktop and mobile. */}
-      <div className="mx-auto max-w-7xl px-0 pt-3 sm:px-6 sm:pt-4 lg:px-8 lg:py-6">
-        {/* Search bar — mobile/tablet only. Desktop header already has
-            its own big search bar, so we hide this on lg+ to avoid
-            duplication. */}
-        <form onSubmit={handleSearch} className="relative mb-3 px-3 sm:mb-4 sm:px-0 lg:hidden">
-          <div className="flex h-14 items-stretch shadow-md">
-            <div className="relative flex flex-1 items-stretch">
-              <Search className="pointer-events-none absolute left-4 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
-              <input
-                type="search"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search products..."
-                className="h-full w-full rounded-l-lg border border-r-0 border-border bg-background pl-12 text-sm text-foreground transition-shadow placeholder:text-muted-foreground focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30"
-                aria-label="Search products"
-              />
-            </div>
-            <button
-              type="submit"
-              className="flex h-full items-center gap-2 rounded-r-lg bg-accent px-5 text-xs font-semibold uppercase tracking-wider text-accent-foreground transition-colors hover:bg-accent/90 sm:text-sm"
+    <section className="relative bg-white">
+      {/* Category bar — horizontal, below header */}
+      <div className="border-b border-border bg-white">
+        <div className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8">
+          <div className="flex items-center gap-1 overflow-x-auto py-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {/* All Categories link */}
+            <Link
+              href="/shop"
+              className="shrink-0 rounded-md px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-primary hover:bg-accent hover:text-accent-foreground"
             >
-              <Search className="h-4 w-4" />
-              Search
-            </button>
-          </div>
-        </form>
+              All
+            </Link>
 
-        {/* 2-column layout: categories (left, desktop only) + slider (right). */}
-        <div className="grid gap-3 lg:grid-cols-[280px_1fr]">
-          {/* Categories sidebar — hidden on mobile, shown on lg+.
-              Matches slider height via self-stretch (items-stretch on grid). */}
-          <aside className="hidden lg:block">
-            <div className="flex h-full flex-col overflow-hidden rounded-lg border border-border/60 bg-background">
-              <div className="border-b border-border bg-muted/30 px-4 py-2.5">
-                <h2 className="text-xs font-semibold uppercase tracking-wider text-foreground">
-                  All Categories
-                </h2>
-              </div>
-              <ul className="flex-1 overflow-y-auto">
-                {visibleCategories.length === 0 ? (
-                  <li className="px-4 py-6 text-center text-xs text-muted-foreground">
-                    No categories yet
-                  </li>
-                ) : (
-                  visibleCategories.map((cat) => (
-                    <li key={cat.id}>
-                      <Link
-                        href={`/shop/${cat.slug}`}
-                        className="group flex items-center gap-3 px-3 py-2.5 transition-colors hover:bg-accent/10"
-                      >
-                        {cat.image ? (
-                          <img
-                            src={cat.image}
-                            alt={cat.name}
-                            className="h-9 w-9 shrink-0 rounded-md object-cover"
-                            loading="lazy"
-                            decoding="async"
-                          />
-                        ) : (
-                          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-muted text-[10px] font-medium text-muted-foreground">
-                            {cat.name.slice(0, 2).toUpperCase()}
-                          </div>
-                        )}
-                        <span className="flex-1 text-sm font-medium text-foreground group-hover:text-accent-text">
-                          {cat.name}
-                        </span>
-                        <ChevronRight className="h-4 w-4 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-accent-text" />
-                      </Link>
-                    </li>
-                  ))
-                )}
-              </ul>
-              {categories.length > 8 && (
-                <Link
-                  href="/shop"
-                  className="block border-t border-border bg-muted/20 px-4 py-2 text-center text-xs font-medium text-accent-text hover:bg-accent/10"
+            {/* Main categories with dropdown for sub-categories */}
+            {mainCategories.map((cat) => {
+              const subs = subCategories.filter((s) => s.parent_id === cat.id);
+              return (
+                <div
+                  key={cat.id}
+                  className="relative shrink-0"
+                  onMouseEnter={() => setHoveredCategory(cat.id)}
+                  onMouseLeave={() => setHoveredCategory(null)}
                 >
-                  View All Categories →
-                </Link>
-              )}
-            </div>
-          </aside>
+                  <Link
+                    href={`/shop/${cat.slug}`}
+                    className="flex items-center gap-1 rounded-md px-3 py-1.5 text-xs font-medium text-primary hover:bg-accent hover:text-accent-foreground"
+                  >
+                    {cat.name}
+                    {subs.length > 0 && (
+                      <ChevronDown className="h-3 w-3" />
+                    )}
+                  </Link>
 
-          {/* Slider — fixed 2:1 aspect ratio (1600×800px).
-              Same image shows perfectly on desktop and mobile.
-              object-cover fills the 2:1 box exactly — no cropping
-              if the uploaded image is also 2:1. */}
-          <div className="relative overflow-hidden rounded-none sm:rounded-lg border border-border/60 bg-muted">
-            {/* Slides */}
-            {total === 0 ? (
-              <div className="flex aspect-[2/1] items-center justify-center bg-gradient-to-br from-primary via-primary to-primary/80 text-center text-primary-foreground/70">
-                <div>
-                  <p className="text-sm font-medium">No hero slides yet</p>
-                  <p className="mt-1 text-xs">Add slides from Admin → Homepage</p>
+                  {/* Dropdown — shows sub-categories on hover */}
+                  {subs.length > 0 && hoveredCategory === cat.id && (
+                    <div className="absolute left-0 top-full z-50 min-w-[180px] rounded-lg border border-border bg-white py-1 shadow-lg">
+                      {subs.map((sub) => (
+                        <Link
+                          key={sub.id}
+                          href={`/shop/${sub.slug}`}
+                          className="block px-4 py-2 text-xs text-gray-700 hover:bg-accent/10 hover:text-accent"
+                        >
+                          {sub.name}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
                 </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* Search bar — mobile only */}
+      <form onSubmit={handleSearch} className="relative mx-auto max-w-7xl px-3 pt-3 sm:px-6 lg:hidden">
+        <div className="flex h-12 items-stretch shadow-md">
+          <div className="relative flex flex-1 items-stretch">
+            <Search className="pointer-events-none absolute left-4 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <input
+              type="search"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search products..."
+              className="h-full w-full rounded-l-lg border border-r-0 border-border bg-background pl-11 text-sm text-foreground placeholder:text-muted-foreground focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30"
+              aria-label="Search products"
+            />
+          </div>
+          <button
+            type="submit"
+            className="flex h-full items-center gap-2 rounded-r-lg bg-accent px-5 text-xs font-semibold uppercase tracking-wider text-accent-foreground hover:bg-accent/90"
+          >
+            <Search className="h-4 w-4" />
+            Search
+          </button>
+        </div>
+      </form>
+
+      {/* Full-screen slider — fills remaining viewport */}
+      <div className="relative mx-auto max-w-7xl px-0 sm:px-6 lg:px-8">
+        <div className="relative overflow-hidden sm:rounded-lg border border-border/60 bg-muted">
+          {total === 0 ? (
+            <div className="flex aspect-[2/1] items-center justify-center bg-gradient-to-br from-primary via-primary to-primary/80 text-center text-primary-foreground/70">
+              <div>
+                <p className="text-sm font-medium">No hero slides yet</p>
+                <p className="mt-1 text-xs">Add slides from Admin → Homepage</p>
               </div>
-            ) : (
-              <div className="relative aspect-[2/1]">
-                {slides.map((slide, idx) => {
-                  const slideLink = slide.link || "#";
-                  return (
+            </div>
+          ) : (
+            <div className="relative aspect-[2/1]">
+              {slides.map((slide, idx) => {
+                const slideLink = slide.link || "#";
+                return (
                   <Link
                     key={slide.id || idx}
                     href={slideLink}
@@ -213,9 +200,7 @@ export function MegaHero({ slides, categories, announcement }: MegaHeroProps) {
                       decoding="async"
                     />
 
-                    {/* Slide text + CTA — no gradient overlay, original
-                        image shows as-is. Text has drop-shadow for
-                        readability on bright backgrounds. */}
+                    {/* Slide text + CTA */}
                     {(slide.title || slide.subtitle) && (
                       <div
                         className={cn(
@@ -236,7 +221,7 @@ export function MegaHero({ slides, categories, announcement }: MegaHeroProps) {
                           </p>
                         )}
                         {slide.buttonText && (
-                          <span className="mt-3 inline-flex items-center gap-2 rounded-md bg-accent px-4 py-2 text-[11px] font-semibold uppercase tracking-wider text-accent-foreground transition-colors hover:bg-accent/90 sm:mt-4 sm:px-5 sm:py-2.5 sm:text-sm">
+                          <span className="mt-3 inline-flex items-center gap-2 rounded-md bg-accent px-4 py-2 text-[11px] font-semibold uppercase tracking-wider text-accent-foreground hover:bg-accent/90 sm:mt-4 sm:px-5 sm:py-2.5 sm:text-sm">
                             {slide.buttonText}
                             <ArrowRight className="h-3 w-3 sm:h-4 sm:w-4" />
                           </span>
@@ -244,73 +229,49 @@ export function MegaHero({ slides, categories, announcement }: MegaHeroProps) {
                       </div>
                     )}
                   </Link>
-                  );
-                })}
+                );
+              })}
 
-                {/* Arrow controls — visible on all screen sizes.
-                    Smaller on mobile, larger on desktop. */}
-                {total > 1 && (
-                  <>
-                    <button
-                      onClick={goPrev}
-                      className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-background/80 p-1.5 text-foreground shadow-md transition-all hover:bg-background sm:left-3 sm:p-2"
-                      aria-label="Previous slide"
-                    >
-                      <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5" />
-                    </button>
-                    <button
-                      onClick={goNext}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-background/80 p-1.5 text-foreground shadow-md transition-all hover:bg-background sm:right-3 sm:p-2"
-                      aria-label="Next slide"
-                    >
-                      <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5" />
-                    </button>
-                  </>
-                )}
-
-                {/* Dot indicators */}
-                {total > 1 && (
-                  <div className="absolute bottom-2 left-1/2 flex -translate-x-1/2 gap-1.5 sm:bottom-3">
-                    {slides.map((_, idx) => (
-                      <button
-                        key={idx}
-                        onClick={() => setCurrent(idx)}
-                        className={cn(
-                          "h-1.5 rounded-full transition-all sm:h-2",
-                          idx === current
-                            ? "w-5 bg-accent sm:w-6"
-                            : "w-1.5 bg-white/60 hover:bg-white sm:w-2"
-                        )}
-                        aria-label={`Go to slide ${idx + 1}`}
-                      />
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Mobile category chips — visible only on mobile (replaces sidebar).
-            Horizontal scroll for compact display. */}
-        <div className="mt-3 flex gap-2 overflow-x-auto px-3 pb-2 lg:hidden [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          {visibleCategories.map((cat) => (
-            <Link
-              key={cat.id}
-              href={`/shop/${cat.slug}`}
-              className="inline-flex shrink-0 items-center gap-2 rounded-full border border-border bg-background px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:border-accent hover:bg-accent/10"
-            >
-              {cat.image && (
-                <img
-                  src={cat.image}
-                  alt=""
-                  className="h-5 w-5 rounded-full object-cover"
-                  loading="lazy"
-                />
+              {/* Arrow controls */}
+              {total > 1 && (
+                <>
+                  <button
+                    onClick={goPrev}
+                    className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-white/80 p-1.5 text-foreground shadow-md transition-all hover:bg-white sm:left-3 sm:p-2"
+                    aria-label="Previous slide"
+                  >
+                    <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5" />
+                  </button>
+                  <button
+                    onClick={goNext}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-white/80 p-1.5 text-foreground shadow-md transition-all hover:bg-white sm:right-3 sm:p-2"
+                    aria-label="Next slide"
+                  >
+                    <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5" />
+                  </button>
+                </>
               )}
-              {cat.name}
-            </Link>
-          ))}
+
+              {/* Dot indicators */}
+              {total > 1 && (
+                <div className="absolute bottom-2 left-1/2 flex -translate-x-1/2 gap-1.5 sm:bottom-3">
+                  {slides.map((_, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setCurrent(idx)}
+                      className={cn(
+                        "h-1.5 rounded-full transition-all sm:h-2",
+                        idx === current
+                          ? "w-5 bg-accent sm:w-6"
+                          : "w-1.5 bg-white/60 hover:bg-white sm:w-2"
+                      )}
+                      aria-label={`Go to slide ${idx + 1}`}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </section>

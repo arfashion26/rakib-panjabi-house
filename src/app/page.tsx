@@ -42,6 +42,7 @@ export default async function Home() {
           name: c.name,
           slug: c.slug,
           image: c.image,
+          parent_id: c.parent_id,
         }))}
         announcement={content.announcement}
       />
