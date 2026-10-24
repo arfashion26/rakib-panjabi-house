@@ -81,4 +81,4 @@ Desktop.ini
 # Temp files
 *.tmp
 *.bak
-*.cache
+*.cachetool-results/

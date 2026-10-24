@@ -44,6 +44,36 @@ export function MegaHero({ slides, categories, announcement }: MegaHeroProps) {
   const [suggestions, setSuggestions] = React.useState<Array<{id: string; name: string; slug: string; image?: string | null; price: number}>>([]);
   const [showSuggestions, setShowSuggestions] = React.useState(false);
   const [hoveredCategory, setHoveredCategory] = React.useState<string | null>(null);
+  // Ref for delayed-close: prevents the dropdown from snapping shut when the
+  // mouse briefly passes through the gap between the trigger and the panel.
+  const closeTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const openCategory = React.useCallback((id: string) => {
+    if (closeTimerRef.current) {
+      clearTimeout(closeTimerRef.current);
+      closeTimerRef.current = null;
+    }
+    setHoveredCategory(id);
+  }, []);
+
+  const scheduleClose = React.useCallback(() => {
+    // Cancel any pending open first
+    if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
+    // Delay the close so brief excursions (gap between trigger and panel,
+    // accidental mouse-out for a few ms) don't dismiss the dropdown.
+    closeTimerRef.current = setTimeout(() => {
+      setHoveredCategory(null);
+      closeTimerRef.current = null;
+    }, 150);
+  }, []);
+
+  // Cleanup on unmount
+  React.useEffect(() => {
+    return () => {
+      if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
+    };
+  }, []);
+
   const total = slides.length;
 
   const mainCategories = categories.filter((c) => !c.parent_id);
@@ -108,8 +138,14 @@ export function MegaHero({ slides, categories, announcement }: MegaHeroProps) {
 
   return (
     <section className="relative bg-white">
-      {/* Category bar — horizontal, below header */}
-      <div className="relative z-30 border-b border-border bg-white">
+      {/* Category bar — horizontal, below header.
+          The entire bar + dropdown panel is wrapped in a single hover zone
+          so the dropdown stays open while the mouse travels from the trigger
+          to the panel (no gap-induced close). */}
+      <div
+        className="relative z-30 border-b border-border bg-white"
+        onMouseLeave={scheduleClose}
+      >
         <div className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8">
           <div className="flex items-center gap-0.5 overflow-x-auto py-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:gap-1">
             <Link
@@ -125,8 +161,7 @@ export function MegaHero({ slides, categories, announcement }: MegaHeroProps) {
                 <div
                   key={cat.id}
                   className="shrink-0"
-                  onMouseEnter={() => setHoveredCategory(cat.id)}
-                  onMouseLeave={() => setHoveredCategory(null)}
+                  onMouseEnter={() => openCategory(cat.id)}
                 >
                   <Link
                     href={`/shop/${cat.slug}`}
@@ -149,10 +184,22 @@ export function MegaHero({ slides, categories, announcement }: MegaHeroProps) {
         </div>
 
         {/* Dropdown — rendered INSIDE the category bar container (z-30),
-            not inside the slider. Uses fixed positioning relative to the
-            bar, so it floats above the slider without being clipped. */}
+            not inside the slider. Uses absolute positioning so it floats
+            above the slider without being clipped.
+
+            A transparent "bridge" div fills the vertical gap between the
+            trigger row and the visible panel, so the mouse can travel
+            between them without leaving the hover zone. */}
         {activeSubs.length > 0 && activeCat && (
-          <div className="pointer-events-auto absolute left-0 top-full z-50 w-full">
+          <div
+            className="pointer-events-auto absolute left-0 top-full z-50 w-full"
+            onMouseEnter={() => openCategory(activeCat.id)}
+            onMouseLeave={scheduleClose}
+          >
+            {/* Invisible bridge — covers the 4px gap between the bottom of
+                the category bar and the top of the visible panel, so the
+                mouse never leaves the hover zone while travelling down. */}
+            <div className="h-4 w-full" aria-hidden="true" />
             <div className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8">
               <div className="w-fit min-w-[240px] rounded-xl border border-gray-200 bg-white/95 py-2 shadow-2xl backdrop-blur-xl">
                 <div className="px-4 py-1.5">
