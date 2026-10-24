@@ -378,3 +378,26 @@ Stage Summary:
 - 150ms close delay is short enough to feel responsive but long enough to
   absorb gap-crossing and accidental mouse-out flicker
 - Committed (8672480) + pushed to origin/main
+
+---
+Task ID: 19
+Agent: main
+Task: Fix — sub-category hover color too faint (was barely visible)
+
+Root cause:
+- Sub-category items used hover:bg-accent/20 (gold at 20% opacity)
+- On the white dropdown panel, 20% gold is nearly invisible
+- Text color was hover:text-accent (gold on white = poor contrast)
+
+Work Log:
+- Changed to hover:bg-accent hover:text-accent-foreground (solid gold
+  background + dark text — matches the parent trigger's active state)
+- Added rounded-lg for polished corners on each item
+- Added font-medium for better readability
+- Added ring-1 ring-black/5 on the category thumbnail for subtle
+  separation
+
+Stage Summary:
+- Hover state on sub-category items is now clearly visible — solid gold
+  background with dark text, consistent with the parent trigger style
+- Committed (98de5d0) + pushed to origin/main
