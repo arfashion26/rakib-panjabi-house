@@ -337,3 +337,44 @@ Stage Summary:
 - The /api/blog-posts endpoint is always fresh — small perf trade-off is
   acceptable for an admin-editable content list
 - Committed (3ff5e74) + pushed to origin/main
+
+---
+Task ID: 18
+Agent: main
+Task: Fix — desktop navigation dropdown was hiding before user could move mouse to the sub-category panel
+
+Root cause (in src/components/home/mega-hero.tsx):
+- Each per-category wrapper had its own onMouseEnter + onMouseLeave pair
+- The dropdown panel was rendered as a sibling at the bar-container level
+  (NOT inside the per-category wrapper)
+- When the mouse moved from the trigger button DOWN toward the dropdown panel,
+  it briefly left the per-category wrapper → onMouseLeave fired immediately
+  → dropdown closed before the user could interact with it
+- 'top-full' positioning created a small visual gap between the trigger row
+  and the visible panel
+
+Work Log:
+- Added closeTimerRef (useRef) for delayed close
+- Added openCategory(id) callback — cancels any pending close, sets hovered
+- Added scheduleClose() callback — waits 150ms before clearing hovered
+  (allows brief mouse excursions through the gap)
+- Moved onMouseLeave from per-category wrapper to OUTER category bar
+  container — single hover zone for the whole bar + dropdown panel
+- Added onMouseEnter/onMouseLeave to the dropdown panel itself:
+  * onMouseEnter calls openCategory(activeCat.id) — cancels pending close
+  * onMouseLeave calls scheduleClose — starts delayed close
+- Added a transparent 16px 'bridge' div between the bottom of the trigger
+  row and the top of the visible panel — fills the visual gap so the mouse
+  never leaves the hover zone while travelling down
+- Cleanup close timer on component unmount
+- Also gitignored the tool-results/ directory (was accidentally committed
+  in earlier commits)
+
+Stage Summary:
+- User can now hover a parent category and smoothly move the mouse down into
+  the sub-category panel without it disappearing mid-motion
+- Switching between parent categories still works (openCategory cancels any
+  pending close, so the dropdown swaps content instantly)
+- 150ms close delay is short enough to feel responsive but long enough to
+  absorb gap-crossing and accidental mouse-out flicker
+- Committed (8672480) + pushed to origin/main
