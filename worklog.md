@@ -294,3 +294,46 @@ Stage Summary:
   — text no longer gets cut off when scrolling
 - Blog detail page layout corrected: content starts right under the cover
   image, and the 'Enjoyed this article?' CTA appears AFTER the article
+
+---
+Task ID: 17
+Agent: main
+Task: Fix — deleted blog posts still appearing on homepage and /blog archive (but /blog/[slug] correctly 404s)
+
+Root cause:
+- /api/blog-posts had Cache-Control: s-maxage=3600 (1-hour CDN cache)
+- Admin delete handler called revalidatePath('/blog') and revalidatePath('/blog/[slug]'),
+  but NOT revalidatePath('/api/blog-posts') and NOT revalidatePath('/')
+- The /api/blog-posts endpoint kept returning the stale cached list (with the
+  deleted posts) for up to 1 hour
+- Both the homepage BlogPosts component and the /blog archive page fetch from
+  this endpoint client-side, so they kept showing the deleted posts
+- /blog/[slug] correctly returned 404 because it queries the DB by slug
+  directly (no cache layer in between)
+
+Work Log:
+- /api/blog-posts/route.ts:
+  * Added export const dynamic = 'force-dynamic' and revalidate = 0
+  * Changed Cache-Control from 's-maxage=3600, stale-while-revalidate=300'
+    to 'no-store, max-age=0, must-revalidate'
+- Updated revalidateBlogPaths() in src/app/api/admin/blog/route.ts (POST)
+  and src/app/api/admin/blog/[id]/route.ts (PATCH + DELETE) to also purge:
+  * revalidatePath('/') — homepage shows blog section
+  * revalidatePath('/api/blog-posts') — the public API endpoint
+- Both admin routes already revalidated /blog and /blog/[slug]; the full
+  cache chain is now covered
+
+End-to-end verification:
+- Created a test post ('TEST POST - to be deleted') directly via Supabase REST
+  → /api/blog-posts immediately returned it (no cache delay)
+- Deleted the test post via Supabase REST
+  → /api/blog-posts immediately stopped returning it
+- /blog/test-post-delete-me correctly returns 404
+- TypeScript compiles clean
+
+Stage Summary:
+- Blog post deletions now appear immediately on the homepage and /blog archive
+  page (no more stale listings)
+- The /api/blog-posts endpoint is always fresh — small perf trade-off is
+  acceptable for an admin-editable content list
+- Committed (3ff5e74) + pushed to origin/main
