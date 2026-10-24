@@ -63,6 +63,7 @@ interface Category {
   id: string;
   name: string;
   slug: string;
+  parent_id?: string | null;
 }
 
 export function ShopContent({
@@ -125,18 +126,36 @@ export function ShopContent({
           >
             {t("products.allCategories")}
           </button>
-          {categories.map((cat) => (
-            <button
-              key={cat.id}
-              onClick={() => updateParam("category", cat.slug)}
-              className={cn(
-                "block w-full rounded-md px-3 py-1.5 text-left text-sm capitalize transition-colors",
-                categoryParam === cat.slug ? "bg-accent/10 font-medium text-accent-text" : "text-muted-foreground hover:bg-accent/5 hover:text-foreground"
-              )}
-            >
-              {cat.name}
-            </button>
-          ))}
+          {/* Show main categories with their sub-categories nested */}
+          {categories.filter((c) => !c.parent_id).map((cat) => {
+            const subs = categories.filter((s) => s.parent_id === cat.id);
+            return (
+              <div key={cat.id}>
+                <button
+                  onClick={() => updateParam("category", cat.slug)}
+                  className={cn(
+                    "block w-full rounded-md px-3 py-1.5 text-left text-sm capitalize transition-colors",
+                    categoryParam === cat.slug ? "bg-accent/10 font-medium text-accent-text" : "text-muted-foreground hover:bg-accent/5 hover:text-foreground"
+                  )}
+                >
+                  {cat.name}
+                </button>
+                {/* Sub-categories — indented under parent */}
+                {subs.map((sub) => (
+                  <button
+                    key={sub.id}
+                    onClick={() => updateParam("category", sub.slug)}
+                    className={cn(
+                      "block w-full rounded-md py-1 pl-6 pr-3 text-left text-xs capitalize transition-colors",
+                      categoryParam === sub.slug ? "bg-accent/10 font-medium text-accent-text" : "text-muted-foreground hover:bg-accent/5 hover:text-foreground"
+                    )}
+                  >
+                    ↳ {sub.name}
+                  </button>
+                ))}
+              </div>
+            );
+          })}
         </div>
       </div>
 

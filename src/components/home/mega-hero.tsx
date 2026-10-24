@@ -37,22 +37,6 @@ interface MegaHeroProps {
   announcement?: { text: string; enabled: boolean };
 }
 
-/**
- * Mega Hero Section — full-screen slider + category bar.
- *
- * Layout (reference: sailor.com):
- *   ┌───────────────────────────────────────────────┐
- *   │  [Category bar with dropdowns]                │
- *   ├───────────────────────────────────────────────┤
- *   │                                               │
- *   │         [ Full-screen Image Slider ]          │
- *   │                                               │
- *   └───────────────────────────────────────────────┘
- *
- * - Category bar: horizontal list of main categories.
- *   Hover a category → dropdown shows sub-categories.
- * - Slider: fills remaining viewport height, auto-rotates.
- */
 export function MegaHero({ slides, categories, announcement }: MegaHeroProps) {
   const router = useRouter();
   const [current, setCurrent] = React.useState(0);
@@ -60,11 +44,9 @@ export function MegaHero({ slides, categories, announcement }: MegaHeroProps) {
   const [hoveredCategory, setHoveredCategory] = React.useState<string | null>(null);
   const total = slides.length;
 
-  // Separate main categories and sub-categories
   const mainCategories = categories.filter((c) => !c.parent_id);
   const subCategories = categories.filter((c) => c.parent_id);
 
-  // Auto-rotate slides every 5s
   React.useEffect(() => {
     if (total <= 1) return;
     const id = setInterval(() => {
@@ -89,14 +71,18 @@ export function MegaHero({ slides, categories, announcement }: MegaHeroProps) {
     else router.push("/shop");
   }
 
+  // Get sub-categories for the hovered category
+  const activeSubs = hoveredCategory
+    ? subCategories.filter((s) => s.parent_id === hoveredCategory)
+    : [];
+  const activeCat = mainCategories.find((c) => c.id === hoveredCategory);
+
   return (
-    <section className="relative z-0 bg-white">
-      {/* Category bar — horizontal, below header.
-          z-30 ensures dropdowns (z-40) appear above slider (z-10). */}
+    <section className="relative bg-white">
+      {/* Category bar — horizontal, below header */}
       <div className="relative z-30 border-b border-border bg-white">
         <div className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8">
           <div className="flex items-center gap-0.5 overflow-x-auto py-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:gap-1">
-            {/* All Categories link */}
             <Link
               href="/shop"
               className="shrink-0 rounded-md px-2 py-1.5 text-xs font-semibold uppercase tracking-wide text-primary hover:bg-accent hover:text-accent-foreground sm:px-3 sm:text-sm"
@@ -104,13 +90,12 @@ export function MegaHero({ slides, categories, announcement }: MegaHeroProps) {
               All
             </Link>
 
-            {/* Main categories with dropdown for sub-categories */}
             {mainCategories.map((cat) => {
               const subs = subCategories.filter((s) => s.parent_id === cat.id);
               return (
                 <div
                   key={cat.id}
-                  className="relative shrink-0"
+                  className="shrink-0"
                   onMouseEnter={() => setHoveredCategory(cat.id)}
                   onMouseLeave={() => setHoveredCategory(null)}
                 >
@@ -128,40 +113,44 @@ export function MegaHero({ slides, categories, announcement }: MegaHeroProps) {
                       <ChevronDown className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                     )}
                   </Link>
-
-                  {/* Dropdown — glass effect, overlaps slider.
-                      z-40 + absolute top-full floats above slider.
-                      No overflow-hidden on parent → dropdown visible. */}
-                  {subs.length > 0 && hoveredCategory === cat.id && (
-                    <div className="absolute left-0 top-full z-40 min-w-[220px] rounded-xl border border-gray-200 bg-white/95 py-2 shadow-2xl backdrop-blur-xl">
-                      <div className="px-4 py-1.5">
-                        <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400">
-                          {cat.name}
-                        </p>
-                      </div>
-                      {subs.map((sub) => (
-                        <Link
-                          key={sub.id}
-                          href={`/shop/${sub.slug}`}
-                          className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-accent/20 hover:text-accent"
-                        >
-                          {sub.image && (
-                            <img
-                              src={sub.image}
-                              alt=""
-                              className="h-5 w-5 rounded-full object-cover"
-                            />
-                          )}
-                          {sub.name}
-                        </Link>
-                      ))}
-                    </div>
-                  )}
                 </div>
               );
             })}
           </div>
         </div>
+
+        {/* Dropdown — rendered INSIDE the category bar container (z-30),
+            not inside the slider. Uses fixed positioning relative to the
+            bar, so it floats above the slider without being clipped. */}
+        {activeSubs.length > 0 && activeCat && (
+          <div className="pointer-events-auto absolute left-0 top-full z-50 w-full">
+            <div className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8">
+              <div className="w-fit min-w-[240px] rounded-xl border border-gray-200 bg-white/95 py-2 shadow-2xl backdrop-blur-xl">
+                <div className="px-4 py-1.5">
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400">
+                    {activeCat.name}
+                  </p>
+                </div>
+                {activeSubs.map((sub) => (
+                  <Link
+                    key={sub.id}
+                    href={`/shop/${sub.slug}`}
+                    className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-accent/20 hover:text-accent"
+                  >
+                    {sub.image && (
+                      <img
+                        src={sub.image}
+                        alt=""
+                        className="h-5 w-5 rounded-full object-cover"
+                      />
+                    )}
+                    {sub.name}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Search bar — mobile only */}
@@ -188,11 +177,9 @@ export function MegaHero({ slides, categories, announcement }: MegaHeroProps) {
         </div>
       </form>
 
-      {/* Full-screen slider — z-0 so dropdowns (z-40) appear above.
-          overflow-visible on outer wrapper so dropdowns aren't clipped.
-          Inner slider keeps overflow-hidden for rounded corners only. */}
-      <div className="relative z-0 mx-auto max-w-7xl overflow-visible px-0 sm:px-6 lg:px-8">
-        <div className="relative overflow-visible sm:rounded-lg border border-border/60 bg-muted">
+      {/* Slider — z-0 so dropdown (z-50) appears above */}
+      <div className="relative z-0 mx-auto max-w-7xl px-0 sm:px-6 lg:px-8">
+        <div className="relative overflow-hidden sm:rounded-lg border border-border/60 bg-muted">
           {total === 0 ? (
             <div className="flex aspect-[2/1] items-center justify-center bg-gradient-to-br from-primary via-primary to-primary/80 text-center text-primary-foreground/70">
               <div>
@@ -216,13 +203,12 @@ export function MegaHero({ slides, categories, announcement }: MegaHeroProps) {
                     <img
                       src={slide.image || slide.mobileImage}
                       alt={slide.title || `Slide ${idx + 1}`}
-                      className="h-full w-full object-cover sm:rounded-lg"
+                      className="h-full w-full object-cover"
                       loading={idx === 0 ? "eager" : "lazy"}
                       fetchPriority={idx === 0 ? "high" : "low"}
                       decoding="async"
                     />
 
-                    {/* Slide text + CTA */}
                     {(slide.title || slide.subtitle) && (
                       <div
                         className={cn(
@@ -254,7 +240,6 @@ export function MegaHero({ slides, categories, announcement }: MegaHeroProps) {
                 );
               })}
 
-              {/* Arrow controls */}
               {total > 1 && (
                 <>
                   <button
@@ -274,7 +259,6 @@ export function MegaHero({ slides, categories, announcement }: MegaHeroProps) {
                 </>
               )}
 
-              {/* Dot indicators */}
               {total > 1 && (
                 <div className="absolute bottom-2 left-1/2 flex -translate-x-1/2 gap-1.5 sm:bottom-3">
                   {slides.map((_, idx) => (
