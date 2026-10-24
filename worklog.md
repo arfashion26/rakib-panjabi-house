@@ -246,3 +246,51 @@ Stage Summary:
 - SEO metadata is generated server-side per post (proper og:type=article,
   og:image, canonical URL, twitter card)
 - ISR + on-demand revalidation ensures admin edits appear instantly
+
+---
+Task ID: 16
+Agent: main
+Task: Homepage blog section DB-driven + larger admin blog editor dialog + blog detail content starts immediately after feature image
+
+Work Log:
+- Found hardcoded homepage blog section in src/components/home/blog-posts.tsx
+  (3 hardcoded posts using blogSection.postNTitle translation keys)
+- Rewrote BlogPosts component to fetch real posts from /api/blog-posts:
+  * Client-side fetch on mount
+  * Sort: is_featured first, then published_at desc, top 3
+  * Renders real cover_image with gradient fallback (RPH placeholder)
+  * Real title, excerpt, category, date (formatted), read-time (computed)
+  * Each card links to /blog/[slug] (was linking to /blog)
+  * Added skeleton loading + empty state for better UX
+- Enlarged admin blog editor dialog:
+  * Was: max-w-3xl, max-h-90vh, single overflow-y-auto — text cutoff issues
+  * Now: w-[95vw] max-w-4xl, flex-col layout with 3 sticky regions
+    - Sticky header (title + close)
+    - Scrollable body (all fields, generous spacing)
+    - Sticky footer (Cancel / Create)
+  * Content textarea: 10 rows → 14 rows
+  * Excerpt textarea: 2 rows → 3 rows
+  * Meta description textarea: 2 rows → 3 rows
+  * All inputs h-10 for consistent height
+  * 2-col grids responsive (grid-cols-1 sm:grid-cols-2)
+  * Used cn() with twMerge to override default DialogContent classes
+- Restructured blog single page (src/app/blog/[slug]/page.tsx):
+  * Split BlogPostActions into BlogPostTopBar + BlogPostBottomCta
+  * Previously the single BlogPostActions rendered the 'Enjoyed this article?'
+    CTA BEFORE the article content (because all 3 elements came back-to-back)
+  * Now: top bar (back link + share/save) sits above article content,
+    bottom CTA sits after tags + separator (correct position)
+  * Reduced hero min-height from 420-480px to 360-440px
+  * Reduced article container padding from py-12/16 to py-8/12 — content
+    now starts immediately under the cover image
+  * Top bar has border-b for visual structure
+- TypeScript compiles clean
+- Verified all pages return 200 (homepage, /blog, /blog/[slug])
+- Committed (09b4cc3) + pushed to origin/main
+
+Stage Summary:
+- Homepage blog section is now 100% DB-driven (no more hardcoded posts)
+- Admin blog editor dialog is much larger and uses 3-region sticky layout
+  — text no longer gets cut off when scrolling
+- Blog detail page layout corrected: content starts right under the cover
+  image, and the 'Enjoyed this article?' CTA appears AFTER the article
