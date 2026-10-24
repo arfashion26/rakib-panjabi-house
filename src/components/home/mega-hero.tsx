@@ -71,6 +71,15 @@ export function MegaHero({ slides, categories, announcement }: MegaHeroProps) {
     else router.push("/shop");
   }
 
+  // Auto-search: navigate to /shop?q= after user stops typing for 500ms
+  React.useEffect(() => {
+    if (!search.trim()) return;
+    const timer = setTimeout(() => {
+      router.push(`/shop?q=${encodeURIComponent(search.trim())}`);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [search, router]);
+
   // Get sub-categories for the hovered category
   const activeSubs = hoveredCategory
     ? subCategories.filter((s) => s.parent_id === hoveredCategory)
@@ -153,23 +162,25 @@ export function MegaHero({ slides, categories, announcement }: MegaHeroProps) {
         )}
       </div>
 
-      {/* Search bar — mobile only */}
-      <form onSubmit={handleSearch} className="relative mx-auto max-w-7xl px-3 pt-3 sm:px-6 lg:hidden">
-        <div className="flex h-12 items-stretch shadow-md">
+      {/* Search bar — mobile only.
+          Gap above (pt-4) and below (pb-4) separates it from the
+          category bar and slider. */}
+      <form onSubmit={handleSearch} className="relative mx-auto max-w-7xl px-4 pt-4 pb-4 sm:px-6 lg:hidden">
+        <div className="flex h-14 items-stretch rounded-xl border border-gray-200 shadow-lg overflow-hidden">
           <div className="relative flex flex-1 items-stretch">
-            <Search className="pointer-events-none absolute left-4 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Search className="pointer-events-none absolute left-4 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-gray-400" />
             <input
               type="search"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search products..."
-              className="h-full w-full rounded-l-lg border border-r-0 border-border bg-background pl-11 text-sm text-foreground placeholder:text-muted-foreground focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30"
+              placeholder="Search for products..."
+              className="h-full w-full border-0 bg-white pl-12 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none"
               aria-label="Search products"
             />
           </div>
           <button
             type="submit"
-            className="flex h-full items-center gap-2 rounded-r-lg bg-accent px-5 text-xs font-semibold uppercase tracking-wider text-accent-foreground hover:bg-accent/90"
+            className="flex h-full items-center gap-2 bg-primary px-6 text-sm font-semibold uppercase tracking-wider text-primary-foreground transition-colors hover:bg-primary/90"
           >
             <Search className="h-4 w-4" />
             Search
