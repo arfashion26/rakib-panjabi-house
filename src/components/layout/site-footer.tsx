@@ -52,10 +52,10 @@ export function SiteFooter() {
       <div className="mx-auto max-w-7xl px-4 py-12 md:py-16">
         {/* 4-column grid */}
         <div className="grid grid-cols-2 gap-8 md:grid-cols-4 lg:gap-12">
-          {/* Column 1: Brand + Contact — centered on mobile */}
-          <div className="col-span-2 md:col-span-1 flex flex-col items-center text-center md:items-start md:text-left">
+          {/* Column 1: Brand + Contact */}
+          <div className="col-span-2 md:col-span-1">
             <Link href="/" aria-label="Al-Rakib .com - Home" className="mb-5 block">
-              <div className="relative h-20 overflow-hidden aspect-[2/1] md:h-24">
+              <div className="relative h-24 overflow-hidden aspect-[2/1]">
                 <img
                   src={logoUrl}
                   alt="Al-Rakib .com"
@@ -67,27 +67,27 @@ export function SiteFooter() {
               All the products & happy to serve you
             </p>
             <div className="space-y-3 text-xs text-primary-foreground/60">
-              <a href={`mailto:${siteConfig.email}`} className="flex items-center justify-center gap-2 transition-colors hover:text-accent md:justify-start">
+              <a href={`mailto:${siteConfig.email}`} className="flex items-center gap-2 transition-colors hover:text-accent">
                 <span className="flex h-7 w-7 items-center justify-center rounded-full bg-accent/10">
                   <Mail className="h-4 w-4 text-accent" />
                 </span>
                 {siteConfig.email}
               </a>
-              <a href={`tel:${siteConfig.phone}`} className="flex items-center justify-center gap-2 transition-colors hover:text-accent md:justify-start">
+              <a href={`tel:${siteConfig.phone}`} className="flex items-center gap-2 transition-colors hover:text-accent">
                 <span className="flex h-7 w-7 items-center justify-center rounded-full bg-accent/10">
                   <Phone className="h-4 w-4 text-accent" />
                 </span>
                 {siteConfig.phone}
               </a>
-              <p className="flex items-start justify-center gap-2 md:justify-start">
+              <p className="flex items-start gap-2">
                 <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-accent/10">
                   <MapPin className="h-4 w-4 text-accent" />
                 </span>
-                <span className="text-left">{siteConfig.address}</span>
+                <span>{siteConfig.address}</span>
               </p>
             </div>
 
-            {/* Social icons — bigger, centered on mobile */}
+            {/* Social icons */}
             <div className="mt-5 flex items-center gap-3">
               {socials.map((social) => {
                 const Icon = social.icon;
