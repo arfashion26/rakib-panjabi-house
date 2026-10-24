@@ -41,6 +41,8 @@ export function MegaHero({ slides, categories, announcement }: MegaHeroProps) {
   const router = useRouter();
   const [current, setCurrent] = React.useState(0);
   const [search, setSearch] = React.useState("");
+  const [suggestions, setSuggestions] = React.useState<Array<{id: string; name: string; slug: string; image?: string | null; price: number}>>([]);
+  const [showSuggestions, setShowSuggestions] = React.useState(false);
   const [hoveredCategory, setHoveredCategory] = React.useState<string | null>(null);
   const total = slides.length;
 
@@ -69,16 +71,34 @@ export function MegaHero({ slides, categories, announcement }: MegaHeroProps) {
     const q = search.trim();
     if (q) router.push(`/shop?q=${encodeURIComponent(q)}`);
     else router.push("/shop");
+    setShowSuggestions(false);
   }
 
-  // Auto-search: navigate to /shop?q= after user stops typing for 500ms
+  // Auto-suggest: fetch matching products as user types (500ms debounce)
   React.useEffect(() => {
-    if (!search.trim()) return;
-    const timer = setTimeout(() => {
-      router.push(`/shop?q=${encodeURIComponent(search.trim())}`);
-    }, 500);
+    if (!search.trim() || search.trim().length < 2) {
+      setSuggestions([]);
+      setShowSuggestions(false);
+      return;
+    }
+    const timer = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/search-suggest?q=${encodeURIComponent(search.trim())}&limit=6`);
+        const data = await res.json();
+        if (data.success && data.products) {
+          setSuggestions(data.products);
+          setShowSuggestions(true);
+        } else {
+          setSuggestions([]);
+          setShowSuggestions(false);
+        }
+      } catch {
+        setSuggestions([]);
+        setShowSuggestions(false);
+      }
+    }, 400);
     return () => clearTimeout(timer);
-  }, [search, router]);
+  }, [search]);
 
   // Get sub-categories for the hovered category
   const activeSubs = hoveredCategory
@@ -164,27 +184,67 @@ export function MegaHero({ slides, categories, announcement }: MegaHeroProps) {
 
       {/* Search bar — mobile only.
           Gap above (pt-4) and below (pb-4) separates it from the
-          category bar and slider. */}
+          category bar and slider. Shows product suggestions as user types. */}
       <form onSubmit={handleSearch} className="relative mx-auto max-w-7xl px-4 pt-4 pb-4 sm:px-6 lg:hidden">
-        <div className="flex h-14 items-stretch rounded-xl border border-gray-200 shadow-lg overflow-hidden">
-          <div className="relative flex flex-1 items-stretch">
-            <Search className="pointer-events-none absolute left-4 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-gray-400" />
-            <input
-              type="search"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search for products..."
-              className="h-full w-full border-0 bg-white pl-12 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none"
-              aria-label="Search products"
-            />
+        <div className="relative">
+          <div className="flex h-14 items-stretch rounded-xl border border-gray-200 shadow-lg overflow-hidden">
+            <div className="relative flex flex-1 items-stretch">
+              <Search className="pointer-events-none absolute left-4 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-gray-400" />
+              <input
+                type="search"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
+                onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                placeholder="Search for products..."
+                className="h-full w-full border-0 bg-white pl-12 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none"
+                aria-label="Search products"
+              />
+            </div>
+            <button
+              type="submit"
+              className="flex h-full items-center gap-2 bg-primary px-6 text-sm font-semibold uppercase tracking-wider text-primary-foreground transition-colors hover:bg-primary/90"
+            >
+              <Search className="h-4 w-4" />
+              Search
+            </button>
           </div>
-          <button
-            type="submit"
-            className="flex h-full items-center gap-2 bg-primary px-6 text-sm font-semibold uppercase tracking-wider text-primary-foreground transition-colors hover:bg-primary/90"
-          >
-            <Search className="h-4 w-4" />
-            Search
-          </button>
+
+          {/* Suggestions dropdown — shows matching products */}
+          {showSuggestions && suggestions.length > 0 && (
+            <div className="absolute left-0 right-0 top-full z-50 mt-1 max-h-[300px] overflow-y-auto rounded-xl border border-gray-200 bg-white shadow-2xl">
+              {suggestions.map((item) => (
+                <Link
+                  key={item.id}
+                  href={`/product/${item.slug}`}
+                  className="flex items-center gap-3 border-b border-gray-50 px-4 py-2.5 transition-colors last:border-0 hover:bg-accent/10"
+                >
+                  {item.image ? (
+                    <img src={item.image} alt={item.name} className="h-10 w-10 shrink-0 rounded-md object-cover" />
+                  ) : (
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-gray-100 text-[10px] font-bold text-gray-400">
+                      RPH
+                    </div>
+                  )}
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-medium text-gray-900">{item.name}</p>
+                    <p className="text-xs text-gray-500">৳{item.price}</p>
+                  </div>
+                  <ArrowRight className="h-4 w-4 shrink-0 text-gray-300" />
+                </Link>
+              ))}
+              {/* View all results */}
+              <button
+                onClick={() => {
+                  router.push(`/shop?q=${encodeURIComponent(search.trim())}`);
+                  setShowSuggestions(false);
+                }}
+                className="block w-full bg-gray-50 px-4 py-2.5 text-center text-xs font-semibold uppercase tracking-wider text-primary hover:bg-accent/10"
+              >
+                View all results for "{search}"
+              </button>
+            </div>
+          )}
         </div>
       </form>
 
