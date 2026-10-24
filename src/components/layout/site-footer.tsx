@@ -52,10 +52,10 @@ export function SiteFooter() {
       <div className="mx-auto max-w-7xl px-4 py-12 md:py-16">
         {/* 4-column grid */}
         <div className="grid grid-cols-2 gap-8 md:grid-cols-4 lg:gap-12">
-          {/* Column 1: Brand + Contact */}
-          <div className="col-span-2 md:col-span-1">
+          {/* Column 1: Brand + Contact — centered on mobile */}
+          <div className="col-span-2 md:col-span-1 flex flex-col items-center text-center md:items-start md:text-left">
             <Link href="/" aria-label="Al-Rakib .com - Home" className="mb-5 block">
-              <div className="relative h-16 overflow-hidden aspect-[2/1] md:h-20">
+              <div className="relative h-20 overflow-hidden aspect-[2/1] md:h-24">
                 <img
                   src={logoUrl}
                   alt="Al-Rakib .com"
@@ -63,23 +63,32 @@ export function SiteFooter() {
                 />
               </div>
             </Link>
-            <div className="space-y-2 text-xs text-primary-foreground/60">
-              <a href={`mailto:${siteConfig.email}`} className="flex items-center gap-2 transition-colors hover:text-accent">
-                <Mail className="h-3.5 w-3.5 shrink-0" />
+            <p className="mb-4 text-xs font-medium uppercase tracking-wider text-accent">
+              All the products & happy to serve you
+            </p>
+            <div className="space-y-3 text-xs text-primary-foreground/60">
+              <a href={`mailto:${siteConfig.email}`} className="flex items-center justify-center gap-2 transition-colors hover:text-accent md:justify-start">
+                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-accent/10">
+                  <Mail className="h-4 w-4 text-accent" />
+                </span>
                 {siteConfig.email}
               </a>
-              <a href={`tel:${siteConfig.phone}`} className="flex items-center gap-2 transition-colors hover:text-accent">
-                <Phone className="h-3.5 w-3.5 shrink-0" />
+              <a href={`tel:${siteConfig.phone}`} className="flex items-center justify-center gap-2 transition-colors hover:text-accent md:justify-start">
+                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-accent/10">
+                  <Phone className="h-4 w-4 text-accent" />
+                </span>
                 {siteConfig.phone}
               </a>
-              <p className="flex items-start gap-2">
-                <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-                <span>{siteConfig.address}</span>
+              <p className="flex items-start justify-center gap-2 md:justify-start">
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-accent/10">
+                  <MapPin className="h-4 w-4 text-accent" />
+                </span>
+                <span className="text-left">{siteConfig.address}</span>
               </p>
             </div>
 
-            {/* Small social icons — under contact info */}
-            <div className="mt-4 flex items-center gap-2">
+            {/* Social icons — bigger, centered on mobile */}
+            <div className="mt-5 flex items-center gap-3">
               {socials.map((social) => {
                 const Icon = social.icon;
                 return (
@@ -89,9 +98,9 @@ export function SiteFooter() {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={social.label}
-                    className={`group flex h-8 w-8 items-center justify-center rounded-full border border-primary-foreground/20 bg-primary-foreground/5 transition-all hover:scale-110 active:scale-95 ${social.hoverClass}`}
+                    className={`group flex h-10 w-10 items-center justify-center rounded-full border border-primary-foreground/20 bg-primary-foreground/5 transition-all hover:scale-110 active:scale-95 ${social.hoverClass}`}
                   >
-                    <Icon className={`h-3.5 w-3.5 transition-transform group-hover:scale-110 group-hover:text-white ${social.iconClass}`} />
+                    <Icon className={`h-4 w-4 transition-transform group-hover:scale-125 group-hover:text-white ${social.iconClass}`} />
                   </a>
                 );
               })}
