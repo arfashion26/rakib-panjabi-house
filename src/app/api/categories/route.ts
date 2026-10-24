@@ -14,7 +14,7 @@ export async function GET() {
     const admin = createAdminClient();
     const { data, error } = await admin
       .from("categories")
-      .select("id, name, slug, description, is_featured, is_active")
+      .select("id, name, slug, description, is_featured, is_active, parent_id, image")
       .eq("is_active", true)
       .order("order", { ascending: true });
 

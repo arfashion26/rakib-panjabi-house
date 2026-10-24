@@ -499,6 +499,7 @@ function SearchBar() {
  */
 function MobileHeader() {
   const [open, setOpen] = React.useState(false);
+  const [expandedCats, setExpandedCats] = React.useState<Set<string>>(new Set());
   const pathname = usePathname();
   const totalItems = useCart((s) => s.getTotalItems());
   const openCart = useCart((s) => s.openCart);
@@ -506,8 +507,37 @@ function MobileHeader() {
   const { currency, toggleCurrency } = useCurrency();
   const logoUrl = useLogoUrl();
 
-  // Static nav items — same as desktop, no DB fetch needed.
-  const navItems = mainNav;
+  // Fetch real categories from DB
+  const [dbCategories, setDbCategories] = React.useState<Array<{
+    id: string;
+    name: string;
+    slug: string;
+    image?: string | null;
+    parent_id?: string | null;
+  }>>([]);
+
+  React.useEffect(() => {
+    fetch("/api/categories")
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.success && data.categories) {
+          setDbCategories(data.categories);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const mainCats = dbCategories.filter((c) => !c.parent_id);
+  const subCats = dbCategories.filter((c) => c.parent_id);
+
+  function toggleCatExpand(id: string) {
+    setExpandedCats((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
 
   return (
     <div className="md:hidden">
@@ -548,9 +578,9 @@ function MobileHeader() {
                 </SheetTitle>
               </SheetHeader>
 
-              {/* Mobile nav — static */}
+              {/* Mobile nav — static page links */}
               <div className="flex flex-col gap-0.5 p-3">
-                {navItems.map((item) => (
+                {mainNav.map((item) => (
                   <Link
                     key={item.href}
                     href={item.href}
@@ -576,22 +606,53 @@ function MobileHeader() {
                   Track My Order
                 </Link>
 
-                {/* Categories section */}
+                {/* Categories section — real DB categories with sub-category tree */}
                 <div className="my-3 border-t border-border" />
                 <p className="px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                   {t("products.categories")}
                 </p>
-                <div className="mt-1 grid grid-cols-2 gap-1">
-                  {categories.slice(0, 10).map((cat) => (
-                    <Link
-                      key={cat.slug}
-                      href={cat.href}
-                      onClick={() => setOpen(false)}
-                      className="rounded-md px-3 py-2 text-xs text-muted-foreground hover:bg-accent/5 hover:text-foreground"
-                    >
-                      {cat.name}
-                    </Link>
-                  ))}
+                <div className="mt-1 space-y-0.5">
+                  {mainCats.map((cat) => {
+                    const subs = subCats.filter((s) => s.parent_id === cat.id);
+                    const isExpanded = expandedCats.has(cat.id);
+                    return (
+                      <div key={cat.id}>
+                        {subs.length > 0 ? (
+                          <button
+                            onClick={() => toggleCatExpand(cat.id)}
+                            className="flex w-full items-center justify-between rounded-md px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent/5"
+                          >
+                            <span>{cat.name}</span>
+                            <ChevronDown className={cn("h-4 w-4 text-muted-foreground transition-transform", isExpanded && "rotate-180")} />
+                          </button>
+                        ) : (
+                          <Link
+                            href={`/shop/${cat.slug}`}
+                            onClick={() => setOpen(false)}
+                            className="flex w-full items-center rounded-md px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent/5"
+                          >
+                            {cat.name}
+                          </Link>
+                        )}
+                        {/* Sub-categories — expandable */}
+                        {isExpanded && subs.length > 0 && (
+                          <div className="ml-3 border-l border-border pl-2">
+                            {subs.map((sub) => (
+                              <Link
+                                key={sub.id}
+                                href={`/shop/${sub.slug}`}
+                                onClick={() => setOpen(false)}
+                                className="flex items-center gap-2 rounded-md px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-accent/5 hover:text-foreground"
+                              >
+                                <span className="text-accent">↳</span>
+                                {sub.name}
+                              </Link>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
 
                 {/* Language + Currency toggle */}
