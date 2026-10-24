@@ -1,103 +1,193 @@
-"use client";
-
-import { useParams } from "next/navigation";
+import * as React from "react";
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import Link from "next/link";
-import { Calendar, Clock, ArrowLeft, Share2, Heart, ChevronRight } from "lucide-react";
+import { Calendar, Clock, Tag, ArrowLeft } from "lucide-react";
 import { Container } from "@/components/layout/container";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { toast } from "sonner";
-import { useLanguage } from "@/i18n/language-context";
+import { Button } from "@/components/ui/button";
+import { createAdminClient } from "@/lib/supabase";
+import { siteConfig } from "@/lib/brand";
+import { BlogPostActions } from "@/components/blog/blog-post-actions";
 
-const samplePosts: Record<string, any> = {
-  "art-of-choosing-perfect-panjabi": {
-    title: "The Art of Choosing the Perfect Panjabi",
-    category: "Style Guide",
-    date: "Aug 15, 2026",
-    readMinutes: 5,
-    gradient: "linear-gradient(135deg, #0f5132, #1a1a1f)",
-    content: [
-      "Choosing the right panjabi is both an art and a science. It's about understanding your body type, the occasion, the season, and most importantly, your personal style. In this comprehensive guide, we'll walk you through everything you need to know to make the perfect choice.",
-      "The first consideration is fabric. Cotton panjabis are versatile and comfortable, making them ideal for everyday wear and casual occasions. Silk panjabis, on the other hand, exude luxury and are perfect for weddings, festivals, and formal events. Linen offers a breathable middle ground that works beautifully in Bangladesh's warm climate.",
-      "Next, consider the fit. A well-fitted panjabi should skim your body without being too tight or too loose. The shoulder seams should align with your shoulders, and the length should fall just below the knee for a classic look. Modern slim-fit panjabis offer a more tailored silhouette for those who prefer a contemporary style.",
-      "Color and pattern selection is where you can truly express your personality. Solid colors in deep jewel tones like emerald, maroon, and navy are timeless choices that work for any occasion. For festive events, consider panjabis with subtle embroidery or contrast detailing on the collar and cuffs.",
-      "Finally, don't forget about care. Premium fabrics require proper maintenance to retain their beauty. Always check the care label, and when in doubt, opt for professional dry cleaning, especially for silk and embroidered pieces.",
-    ],
-  },
-  "styling-sherwani-wedding": {
-    title: "5 Ways to Style a Sherwani for Wedding Season",
-    category: "Fashion Tips",
-    date: "Aug 8, 2026",
-    readMinutes: 4,
-    gradient: "linear-gradient(135deg, #b8860b, #800020)",
-    content: [
-      "Wedding season in Bangladesh is a celebration of color, tradition, and style. Your sherwani is the centerpiece of your wedding look, and how you style it can make all the difference. Here are five distinct ways to style your sherwani for different wedding functions.",
-      "1. The Classic Groom Look: Pair an ivory or gold sherwani with a contrasting churidar in deep maroon or navy. Add a statement brooch, a silk dupatta, and traditional mojaris to complete the regal look.",
-      "2. Modern Minimalist: For the contemporary groom who prefers clean lines, choose a sherwani in a single color with subtle texture. Skip the heavy embroidery and opt for architectural details instead.",
-      "3. The Festive Guest: If you're attending as a guest, a lighter sherwani in pastel shades works beautifully for daytime functions. Pair with a printed stole for added character.",
-      "4. Reception Ready: For evening receptions, go bold with deep colors like midnight blue, forest green, or rich burgundy. Metallic accents in gold or silver thread work add the perfect touch of glamour.",
-      "5. Mehendi Ceremony Cool: For the casual mehendi or haldi function, a short kurta-style sherwani in vibrant colors paired with churidar or even well-fitted pants makes for a stylish, comfortable choice.",
-    ],
-  },
-  "caring-premium-ethnic-wear": {
-    title: "Caring for Your Premium Ethnic Wear",
-    category: "Care Guide",
-    date: "Aug 1, 2026",
-    readMinutes: 6,
-    gradient: "linear-gradient(135deg, #1a237e, #0d1117)",
-    content: [
-      "Premium ethnic wear is an investment — both in terms of money and the memories attached to each piece. Proper care ensures your favorite panjabis, sherwanis, and kurtas remain beautiful for years to come.",
-      "Storage is the first line of defense. Always store ethnic wear in breathable cotton garment bags, never plastic. Wooden hangers are preferable as they help maintain the garment's shape. For heavy embroidered pieces, consider folding with acid-free tissue paper between layers to prevent creasing and color transfer.",
-      "When it comes to washing, always follow the care label. As a general rule, silk and embroidered pieces should be dry cleaned only. Cotton panjabis can usually be hand washed in cold water with a mild detergent. Never wring or twist wet ethnic wear — instead, gently squeeze out excess water and dry flat in shade.",
-      "Ironing requires care too. Always iron ethnic wear inside out on a low to medium setting. For embroidered or printed fabrics, place a thin cotton cloth between the iron and the garment to prevent damage. Steam ironing is ideal for silk and delicate fabrics.",
-      "Finally, rotate your ethnic wear. Don't wear the same piece too frequently — give each garment time to breathe and recover its shape between wears. With proper care, your premium ethnic wear can last for many celebrations to come.",
-    ],
-  },
-};
+export const revalidate = 300; // 5 min ISR — refresh post data periodically
+export const dynamicParams = true; // allow new slugs to be generated on-demand
 
-export default function BlogPostPage() {
-  const params = useParams();
-  const { t } = useLanguage();
-  const slug = params.slug as string;
-  const post = samplePosts[slug] || samplePosts["art-of-choosing-perfect-panjabi"];
+interface BlogPost {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string | null;
+  content: string | null;
+  category: string | null;
+  cover_image: string | null;
+  status: string;
+  meta_title: string | null;
+  meta_description: string | null;
+  tags: string[] | null;
+  is_featured: boolean | null;
+  published_at: string | null;
+  created_at: string;
+}
 
-  function handleShare() {
-    if (navigator.share) {
-      navigator.share({
-        title: post.title,
-        url: window.location.href,
-      }).catch(() => {});
-    } else {
-      navigator.clipboard.writeText(window.location.href);
-      toast.success("Link copied to clipboard");
-    }
+async function getPostBySlug(slug: string): Promise<BlogPost | null> {
+  try {
+    const admin = createAdminClient();
+    const { data, error } = await admin
+      .from("blog_posts")
+      .select("*")
+      .eq("slug", slug)
+      .eq("status", "PUBLISHED")
+      .maybeSingle();
+    if (error || !data) return null;
+    return data as BlogPost;
+  } catch {
+    return null;
   }
+}
+
+interface PageProps {
+  params: Promise<{ slug: string }>;
+}
+
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const post = await getPostBySlug(slug);
+
+  if (!post) {
+    return {
+      title: "Post not found | alrakib.com",
+      description: "The requested blog post could not be found.",
+    };
+  }
+
+  // Fall back to post title / excerpt if meta fields are not set
+  const metaTitle = post.meta_title || `${post.title} | alrakib.com`;
+  const metaDescription =
+    post.meta_description || post.excerpt || `Read ${post.title} on alrakib.com`;
+  const url = `${siteConfig.url}/blog/${post.slug}`;
+  const ogImage = post.cover_image || undefined;
+
+  return {
+    title: { absolute: metaTitle },
+    description: metaDescription,
+    alternates: { canonical: url },
+    openGraph: {
+      type: "article",
+      url,
+      title: metaTitle,
+      description: metaDescription,
+      siteName: siteConfig.name,
+      images: ogImage ? [{ url: ogImage }] : undefined,
+      publishedTime: post.published_at || post.created_at,
+      authors: [siteConfig.name],
+      tags: Array.isArray(post.tags) ? post.tags : undefined,
+    },
+    twitter: {
+      card: ogImage ? "summary_large_image" : "summary",
+      title: metaTitle,
+      description: metaDescription,
+      images: ogImage ? [ogImage] : undefined,
+    },
+  };
+}
+
+function formatDate(dateStr: string | null) {
+  if (!dateStr) return "—";
+  try {
+    return new Date(dateStr).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  } catch {
+    return "—";
+  }
+}
+
+function getReadTime(content: string | null) {
+  if (!content) return 3;
+  const words = content.split(/\s+/).filter(Boolean).length;
+  return Math.max(2, Math.ceil(words / 200));
+}
+
+/**
+ * Render post content with paragraph spacing.
+ * Splits on double-newlines (blank line between paragraphs).
+ */
+function renderContent(content: string | null) {
+  if (!content) return null;
+  const paragraphs = content
+    .split(/\n\s*\n/)
+    .map((p) => p.trim())
+    .filter(Boolean);
+  return paragraphs.map((para, i) => (
+    <p
+      key={i}
+      className="mb-4 whitespace-pre-line text-base leading-relaxed text-foreground/90"
+    >
+      {para}
+    </p>
+  ));
+}
+
+export default async function BlogPostPage({ params }: PageProps) {
+  const { slug } = await params;
+  const post = await getPostBySlug(slug);
+
+  if (!post) {
+    notFound();
+  }
+
+  const dateStr = formatDate(post.published_at || post.created_at);
+  const readMinutes = getReadTime(post.content);
+  const tags = Array.isArray(post.tags) ? post.tags : [];
 
   return (
     <>
-      {/* Hero */}
-      <section
-        className="relative flex min-h-[400px] items-center justify-center py-16 text-center text-white"
-        style={{ background: post.gradient }}
-      >
-        <div className="absolute inset-0 bg-black/20" />
-        <Container className="relative">
+      {/* Hero with cover image */}
+      <section className="relative min-h-[420px] md:min-h-[480px]">
+        {post.cover_image ? (
+          <>
+            <div className="absolute inset-0">
+              <img
+                src={post.cover_image}
+                alt={post.title}
+                className="h-full w-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-black/70" />
+            </div>
+          </>
+        ) : (
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                "linear-gradient(135deg, #1a1a1f 0%, #36454f 50%, #1a1a1f 100%)",
+            }}
+          />
+        )}
+        <Container className="relative flex min-h-[420px] flex-col items-center justify-center py-16 text-center text-white md:min-h-[480px]">
           <div className="mx-auto max-w-3xl">
-            <Badge className="mb-4 bg-white/20 text-white hover:bg-white/30">
-              {post.category}
-            </Badge>
+            {post.category && (
+              <Badge className="mb-4 bg-white/20 text-white hover:bg-white/30">
+                {post.category}
+              </Badge>
+            )}
             <h1 className="font-serif text-3xl font-medium leading-tight tracking-tight md:text-4xl lg:text-5xl">
               {post.title}
             </h1>
-            <div className="mt-4 flex items-center justify-center gap-4 text-sm text-white/80">
+            <div className="mt-4 flex items-center justify-center gap-4 text-sm text-white/85">
               <span className="flex items-center gap-1.5">
                 <Calendar className="h-4 w-4" />
-                {post.date}
+                {dateStr}
               </span>
               <span className="flex items-center gap-1.5">
                 <Clock className="h-4 w-4" />
-                {post.readMinutes} {t("blog.minRead")}
+                {readMinutes} min read
               </span>
             </div>
           </div>
@@ -106,56 +196,48 @@ export default function BlogPostPage() {
 
       <Container className="py-12 md:py-16">
         <div className="mx-auto max-w-3xl">
-          {/* Back link */}
-          <Link
-            href="/blog"
-            className="mb-8 inline-flex items-center text-sm text-muted-foreground hover:text-accent-text"
-          >
-            <ArrowLeft className="mr-1 h-4 w-4" />
-            {t("blog.backToBlog")}
-          </Link>
+          {/* Client-side actions (Share / Save / CTA) */}
+          <BlogPostActions
+            title={post.title}
+            backLabel="← Back to Blog"
+            shareLabel="Share"
+            saveLabel="Save"
+            shareArticleLabel="Share Article"
+            shopCollectionLabel="Shop Collection"
+            enjoyedTitle="Enjoyed this article?"
+            enjoyedDesc="Share it with your friends and explore our premium collection."
+          />
 
-          {/* Actions */}
-          <div className="mb-8 flex justify-end gap-2">
-            <Button variant="outline" size="sm" onClick={handleShare}>
-              <Share2 className="mr-1.5 h-3.5 w-3.5" />
-              Share
-            </Button>
-            <Button variant="outline" size="sm">
-              <Heart className="mr-1.5 h-3.5 w-3.5" />
-              Save
-            </Button>
-          </div>
+          {/* Article content */}
+          <article className="prose prose-sm max-w-none md:prose-base">
+            {renderContent(post.content)}
+          </article>
 
-          {/* Content */}
-          <div className="prose prose-sm max-w-none md:prose-base">
-            {post.content.map((paragraph: string, i: number) => (
-              <p key={i} className="mb-4 text-base leading-relaxed text-foreground/90">
-                {paragraph}
-              </p>
-            ))}
-          </div>
+          {/* Tags */}
+          {tags.length > 0 && (
+            <div className="mt-8 flex flex-wrap items-center gap-2">
+              <span className="flex items-center gap-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                <Tag className="h-3 w-3" />
+                Tags
+              </span>
+              {tags.map((tag) => (
+                <Badge key={tag} variant="secondary" className="text-xs">
+                  {tag}
+                </Badge>
+              ))}
+            </div>
+          )}
 
           <Separator className="my-8" />
 
-          {/* Share CTA */}
-          <div className="rounded-lg bg-muted/30 p-6 text-center">
-            <p className="font-serif text-lg font-medium">Enjoyed this article?</p>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Share it with your friends and explore our premium collection.
-            </p>
-            <div className="mt-4 flex justify-center gap-2">
-              <Button onClick={handleShare} variant="outline">
-                <Share2 className="mr-2 h-4 w-4" />
-                Share Article
-              </Button>
-              <Button asChild>
-                <Link href="/shop">
-                  Shop Collection
-                  <ChevronRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-            </div>
+          {/* Back to blog link */}
+          <div className="text-center">
+            <Button asChild variant="outline">
+              <Link href="/blog">
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Browse all articles
+              </Link>
+            </Button>
           </div>
         </div>
       </Container>

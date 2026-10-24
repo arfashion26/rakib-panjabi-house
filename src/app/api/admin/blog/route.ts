@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { createServerClientHelper, createAdminClient } from "@/lib/supabase";
 
 async function verifyAdmin() {
@@ -14,6 +15,20 @@ async function verifyAdmin() {
   if (!profile || profile.status !== "ACTIVE") return null;
   if (!["SUPER_ADMIN", "ADMIN", "MANAGER"].includes(profile.role)) return null;
   return profile;
+}
+
+/** Revalidate blog-related paths so the new/updated post shows up immediately. */
+function revalidateBlogPaths(slug?: string) {
+  try {
+    revalidatePath("/blog");
+    revalidatePath("/blog", "layout");
+    if (slug) {
+      revalidatePath(`/blog/${slug}`);
+      revalidatePath(`/blog/${slug}`, "page");
+    }
+  } catch {
+    // Non-fatal — ISR will catch up on the next periodic refresh
+  }
 }
 
 /**
@@ -56,7 +71,19 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { title, slug, excerpt, content, category, cover_image, status } = body;
+    const {
+      title,
+      slug,
+      excerpt,
+      content,
+      category,
+      cover_image,
+      status,
+      meta_title,
+      meta_description,
+      tags,
+      is_featured,
+    } = body;
 
     if (!title) {
       return NextResponse.json({ success: false, error: "Title is required" }, { status: 400 });
@@ -75,6 +102,10 @@ export async function POST(req: NextRequest) {
         category: category || "General",
         cover_image: cover_image || null,
         status: status || "DRAFT",
+        meta_title: meta_title || null,
+        meta_description: meta_description || null,
+        tags: Array.isArray(tags) ? tags : [],
+        is_featured: typeof is_featured === "boolean" ? is_featured : false,
         author_id: null, // will be set by RLS or trigger
         published_at: status === "PUBLISHED" ? new Date().toISOString() : null,
       })
@@ -84,6 +115,9 @@ export async function POST(req: NextRequest) {
     if (error) {
       return NextResponse.json({ success: false, error: error.message }, { status: 500 });
     }
+
+    // Purge cache so the new post is immediately visible
+    revalidateBlogPaths(finalSlug);
 
     return NextResponse.json({ success: true, post: data });
   } catch (e: any) {

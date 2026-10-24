@@ -15,6 +15,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
+import { ImageUpload } from "@/components/admin/image-upload";
 import { toast } from "sonner";
 
 interface BlogPost {
@@ -26,6 +27,10 @@ interface BlogPost {
   category: string | null;
   cover_image: string | null;
   status: string;
+  meta_title: string | null;
+  meta_description: string | null;
+  tags: string[] | null;
+  is_featured: boolean | null;
   created_at: string;
   published_at: string | null;
 }
@@ -135,14 +140,22 @@ export default function AdminBlogPage() {
               key={post.id}
               className="flex items-center gap-3 rounded-lg border border-border/60 bg-background p-3"
             >
-              {/* Icon */}
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-muted">
-                <FileText className="h-4 w-4 text-muted-foreground" />
-              </div>
+              {/* Cover image thumbnail or icon */}
+              {post.cover_image ? (
+                <img
+                  src={post.cover_image}
+                  alt={post.title}
+                  className="h-12 w-16 shrink-0 rounded-md object-cover"
+                />
+              ) : (
+                <div className="flex h-12 w-16 shrink-0 items-center justify-center rounded-md bg-muted">
+                  <FileText className="h-4 w-4 text-muted-foreground" />
+                </div>
+              )}
 
               {/* Info */}
               <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   <p className="truncate text-sm font-medium">{post.title}</p>
                   <Badge
                     variant="secondary"
@@ -154,6 +167,11 @@ export default function AdminBlogPage() {
                   >
                     {post.status}
                   </Badge>
+                  {post.is_featured && (
+                    <Badge variant="secondary" className="bg-amber-100 text-amber-700">
+                      Featured
+                    </Badge>
+                  )}
                 </div>
                 <p className="text-xs text-muted-foreground">
                   {post.category || "General"} ·{" "}
@@ -268,7 +286,12 @@ function PostEditor({
     excerpt: post?.excerpt || "",
     content: post?.content || "",
     category: post?.category || "General",
+    cover_image: post?.cover_image || "",
     status: post?.status || "DRAFT",
+    meta_title: post?.meta_title || "",
+    meta_description: post?.meta_description || "",
+    tags: Array.isArray(post?.tags) ? (post!.tags as string[]).join(", ") : "",
+    is_featured: !!post?.is_featured,
   });
   const [saving, setSaving] = React.useState(false);
 
@@ -281,10 +304,31 @@ function PostEditor({
     try {
       const url = isEditing ? `/api/admin/blog/${post!.id}` : "/api/admin/blog";
       const method = isEditing ? "PATCH" : "POST";
+
+      // Convert comma-separated tags into array
+      const tagsArray = form.tags
+        .split(",")
+        .map((t) => t.trim())
+        .filter(Boolean);
+
+      const payload: Record<string, any> = {
+        title: form.title,
+        slug: form.slug,
+        excerpt: form.excerpt,
+        content: form.content,
+        category: form.category,
+        cover_image: form.cover_image || null,
+        status: form.status,
+        meta_title: form.meta_title || null,
+        meta_description: form.meta_description || null,
+        tags: tagsArray,
+        is_featured: form.is_featured,
+      };
+
       const res = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify(payload),
       });
       const data = await res.json();
       if (data.success) {
@@ -302,11 +346,21 @@ function PostEditor({
 
   return (
     <Dialog open onOpenChange={onClose}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto max-w-2xl">
+      <DialogContent className="max-h-[90vh] overflow-y-auto max-w-3xl">
         <DialogHeader>
           <DialogTitle>{isEditing ? "Edit Post" : "New Blog Post"}</DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
+          {/* Cover image */}
+          <ImageUpload
+            label="Feature Image (Cover)"
+            value={form.cover_image}
+            onChange={(url) => setForm({ ...form, cover_image: url })}
+            folder="blog"
+            aspectRatio="aspect-[16/10]"
+            hint="Recommended size: 1600×1000px (16:10). Used as the blog post cover image."
+          />
+
           <div className="space-y-2">
             <Label>Title *</Label>
             <Input
@@ -333,6 +387,39 @@ function PostEditor({
               />
             </div>
           </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-2">
+              <Label>Tags (comma separated)</Label>
+              <Input
+                value={form.tags}
+                onChange={(e) => setForm({ ...form, tags: e.target.value })}
+                placeholder="panjabi, style, wedding"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Status</Label>
+              <select
+                value={form.status}
+                onChange={(e) => setForm({ ...form, status: e.target.value })}
+                className="h-9 w-full rounded-md border border-border bg-background px-3 text-sm"
+              >
+                <option value="DRAFT">Draft (not visible)</option>
+                <option value="PUBLISHED">Published (visible on site)</option>
+              </select>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="is_featured"
+              checked={form.is_featured}
+              onChange={(e) => setForm({ ...form, is_featured: e.target.checked })}
+              className="h-4 w-4 rounded border-border"
+            />
+            <Label htmlFor="is_featured" className="cursor-pointer text-sm font-normal">
+              Mark as Featured Post (shown highlighted on blog home)
+            </Label>
+          </div>
           <div className="space-y-2">
             <Label>Excerpt (short summary)</Label>
             <Textarea
@@ -347,21 +434,44 @@ function PostEditor({
             <Textarea
               value={form.content}
               onChange={(e) => setForm({ ...form, content: e.target.value })}
-              rows={8}
-              placeholder="Full post content..."
+              rows={10}
+              placeholder="Full post content. Use blank lines to separate paragraphs."
               className="font-mono text-xs"
             />
+            <p className="text-xs text-muted-foreground">
+              Tip: Separate paragraphs with a blank line. The content will be
+              rendered with proper paragraph spacing on the blog page.
+            </p>
           </div>
-          <div className="space-y-2">
-            <Label>Status</Label>
-            <select
-              value={form.status}
-              onChange={(e) => setForm({ ...form, status: e.target.value })}
-              className="h-9 w-full rounded-md border border-border bg-background px-3 text-sm"
-            >
-              <option value="DRAFT">Draft (not visible)</option>
-              <option value="PUBLISHED">Published (visible on site)</option>
-            </select>
+
+          {/* SEO Section */}
+          <div className="rounded-lg border border-border bg-muted/20 p-4">
+            <h4 className="mb-3 text-sm font-semibold">SEO Settings</h4>
+            <div className="space-y-3">
+              <div className="space-y-2">
+                <Label>Meta Title</Label>
+                <Input
+                  value={form.meta_title}
+                  onChange={(e) => setForm({ ...form, meta_title: e.target.value })}
+                  placeholder="SEO title (defaults to post title if empty)"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Recommended: 50–60 characters. Used in browser tab and search results.
+                </p>
+              </div>
+              <div className="space-y-2">
+                <Label>Meta Description</Label>
+                <Textarea
+                  value={form.meta_description}
+                  onChange={(e) => setForm({ ...form, meta_description: e.target.value })}
+                  rows={2}
+                  placeholder="SEO description (defaults to excerpt if empty)"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Recommended: 150–160 characters. Shown in search engine results.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
         <DialogFooter>
