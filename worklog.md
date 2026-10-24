@@ -192,3 +192,57 @@ Stage Summary:
   - Delete spinner animations (7 admin pages)
   - Review system, DB-driven settings, etc.
 - Dev server running and ready for new tasks
+
+---
+Task ID: 15
+Agent: main
+Task: Make blog posts fully DB-driven + admin-editable feature image, title, content, meta title, meta description
+
+Work Log:
+- Inspected /blog/[slug]/page.tsx — found it was using a hardcoded `samplePosts` map
+- Inspected /blog/page.tsx (list) — already DB-driven via /api/blog-posts (no change needed)
+- Inspected admin blog API + admin blog page — missing cover_image, meta_title,
+  meta_description, tags, is_featured fields in both API and editor UI
+- Verified blog_posts table in Supabase already has all needed columns
+  (cover_image, meta_title, meta_description, tags, is_featured, view_count,
+  like_count) — only the API + UI were not using them
+- Added /api/blog-posts/[slug] public endpoint (single published post fetch)
+- Updated /api/admin/blog POST + PATCH to persist cover_image, meta_title,
+  meta_description, tags, is_featured
+- Added revalidateBlogPaths() helper to purge /blog, /blog/[slug] cache on
+  create / update / delete (handles slug rename correctly by purging both old
+  and new slug paths)
+- Updated admin blog editor (/admin/blog/page.tsx) to include:
+  * Feature Image upload (ImageUpload component, 16:10 aspect)
+  * Meta Title + Meta Description fields in a SEO Settings section
+  * Tags input (comma-separated → array)
+  * is_featured checkbox
+  * Cover-image thumbnail + Featured badge in the post list
+- Rewrote /blog/[slug]/page.tsx as a server component:
+  * generateMetadata() returns post.meta_title || post.title, with
+    og:image, og:type=article, twitter card, canonical URL
+  * Renders cover image as a full-bleed hero with dark gradient overlay
+    (gradient fallback when no cover image)
+  * Splits content on blank lines into properly-spaced paragraphs
+    (whitespace-pre-line preserves intentional line breaks)
+  * Tags rendered as badges below article body
+- Extracted client-side actions (Share/Save/CTA buttons) into a new
+  BlogPostActions client component (server page can't use hooks/toast)
+- Added EN + BN translations for share/save/shopCollection/enjoyed/404 strings
+- Verified end-to-end:
+  * /blog/art-of-choosing-perfect-panjabi → 200, real DB content rendered
+  * <title> shows custom meta_title from DB
+  * <meta description> shows custom meta_description from DB
+  * og:image + og:type=article set correctly
+  * Cover image renders in hero
+  * Non-existent slug → 404 (notFound() triggers custom 404 page)
+  * TypeScript compiles clean (npx tsc --noEmit — no errors)
+- Committed (e5df9be) + pushed to origin/main
+
+Stage Summary:
+- Blog posts are now 100% DB-driven (no more hardcoded samplePosts)
+- Admin can fully edit every visible field: feature image, title, content,
+  meta title, meta description, tags, is_featured, status
+- SEO metadata is generated server-side per post (proper og:type=article,
+  og:image, canonical URL, twitter card)
+- ISR + on-demand revalidation ensures admin edits appear instantly
