@@ -90,17 +90,16 @@ export function MegaHero({ slides, categories, announcement }: MegaHeroProps) {
   }
 
   return (
-    <section className="relative bg-white">
+    <section className="relative z-0 bg-white">
       {/* Category bar — horizontal, below header.
-          This bar + slider are in a relative container so dropdowns
-          can overlap the slider with glass effect. */}
-      <div className="relative z-20 border-b border-border bg-white">
+          z-30 ensures dropdowns (z-40) appear above slider (z-10). */}
+      <div className="relative z-30 border-b border-border bg-white">
         <div className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-1 overflow-x-auto py-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div className="flex items-center gap-0.5 overflow-x-auto py-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:gap-1">
             {/* All Categories link */}
             <Link
               href="/shop"
-              className="shrink-0 rounded-md px-3 py-1.5 text-sm font-semibold uppercase tracking-wide text-primary hover:bg-accent hover:text-accent-foreground"
+              className="shrink-0 rounded-md px-2 py-1.5 text-xs font-semibold uppercase tracking-wide text-primary hover:bg-accent hover:text-accent-foreground sm:px-3 sm:text-sm"
             >
               All
             </Link>
@@ -118,7 +117,7 @@ export function MegaHero({ slides, categories, announcement }: MegaHeroProps) {
                   <Link
                     href={`/shop/${cat.slug}`}
                     className={cn(
-                      "flex items-center gap-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
+                      "flex items-center gap-1 rounded-md px-2 py-1.5 text-xs font-medium transition-colors sm:px-3 sm:text-sm",
                       hoveredCategory === cat.id
                         ? "bg-accent text-accent-foreground"
                         : "text-primary hover:bg-accent hover:text-accent-foreground"
@@ -126,15 +125,15 @@ export function MegaHero({ slides, categories, announcement }: MegaHeroProps) {
                   >
                     {cat.name}
                     {subs.length > 0 && (
-                      <ChevronDown className="h-3.5 w-3.5" />
+                      <ChevronDown className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                     )}
                   </Link>
 
                   {/* Dropdown — glass effect, overlaps slider.
-                      z-[100] + absolute top-full makes it float above
-                      the slider with a semi-transparent backdrop blur. */}
+                      z-40 + absolute top-full floats above slider.
+                      No overflow-hidden on parent → dropdown visible. */}
                   {subs.length > 0 && hoveredCategory === cat.id && (
-                    <div className="absolute left-0 top-full z-[100] min-w-[220px] rounded-xl border border-white/20 bg-white/80 py-2 shadow-2xl backdrop-blur-xl">
+                    <div className="absolute left-0 top-full z-40 min-w-[220px] rounded-xl border border-gray-200 bg-white/95 py-2 shadow-2xl backdrop-blur-xl">
                       <div className="px-4 py-1.5">
                         <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400">
                           {cat.name}
@@ -189,8 +188,9 @@ export function MegaHero({ slides, categories, announcement }: MegaHeroProps) {
         </div>
       </form>
 
-      {/* Full-screen slider — fills remaining viewport */}
-      <div className="relative mx-auto max-w-7xl px-0 sm:px-6 lg:px-8">
+      {/* Full-screen slider — z-10 so dropdowns (z-40) appear above.
+          overflow-visible on outer wrapper so dropdowns aren't clipped. */}
+      <div className="relative z-10 mx-auto max-w-7xl overflow-visible px-0 sm:px-6 lg:px-8">
         <div className="relative overflow-hidden sm:rounded-lg border border-border/60 bg-muted">
           {total === 0 ? (
             <div className="flex aspect-[2/1] items-center justify-center bg-gradient-to-br from-primary via-primary to-primary/80 text-center text-primary-foreground/70">
