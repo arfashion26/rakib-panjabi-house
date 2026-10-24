@@ -211,13 +211,13 @@ export function MegaHero({ slides, categories, announcement }: MegaHeroProps) {
                   <Link
                     key={sub.id}
                     href={`/shop/${sub.slug}`}
-                    className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-accent/20 hover:text-accent"
+                    className="flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-accent hover:text-accent-foreground"
                   >
                     {sub.image && (
                       <img
                         src={sub.image}
                         alt=""
-                        className="h-5 w-5 rounded-full object-cover"
+                        className="h-5 w-5 rounded-full object-cover ring-1 ring-black/5"
                       />
                     )}
                     {sub.name}
