@@ -20,8 +20,14 @@ async function verifyAdmin() {
 /** Revalidate blog-related paths so the new/updated post shows up immediately. */
 function revalidateBlogPaths(slug?: string) {
   try {
+    // Public list / archive pages
+    revalidatePath("/");
     revalidatePath("/blog");
     revalidatePath("/blog", "layout");
+    // The public API endpoint — without this, the homepage + /blog archive
+    // keep showing deleted posts because they fetch from this endpoint.
+    revalidatePath("/api/blog-posts");
+
     if (slug) {
       revalidatePath(`/blog/${slug}`);
       revalidatePath(`/blog/${slug}`, "page");

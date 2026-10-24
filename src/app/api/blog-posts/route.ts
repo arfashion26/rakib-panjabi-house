@@ -5,8 +5,19 @@ import { createAdminClient } from "@/lib/supabase";
  * GET /api/blog-posts
  * Public endpoint — returns all PUBLISHED blog posts.
  *
- * Cache: 1 hour at CDN + 5 min stale-while-revalidate.
+ * IMPORTANT: This endpoint MUST stay fresh — admin blog edits (create /
+ * update / delete) need to be reflected immediately on the homepage blog
+ * section and the /blog archive page. If we cache this for an hour, deleted
+ * posts keep showing up on the listing pages even though /blog/[slug]
+ * correctly returns 404.
+ *
+ * Cache strategy:
+ *   - force-dynamic: never cached by Next.js server-side
+ *   - Cache-Control: no-store (browser fetch also stays fresh)
  */
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export async function GET() {
   try {
     const admin = createAdminClient();
@@ -24,7 +35,8 @@ export async function GET() {
       { success: true, posts: data || [] },
       {
         headers: {
-          "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=300",
+          // Browser / CDN must always revalidate — never serve stale list
+          "Cache-Control": "no-store, max-age=0, must-revalidate",
         },
       }
     );
