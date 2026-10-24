@@ -188,10 +188,11 @@ export function MegaHero({ slides, categories, announcement }: MegaHeroProps) {
         </div>
       </form>
 
-      {/* Full-screen slider — z-10 so dropdowns (z-40) appear above.
-          overflow-visible on outer wrapper so dropdowns aren't clipped. */}
-      <div className="relative z-10 mx-auto max-w-7xl overflow-visible px-0 sm:px-6 lg:px-8">
-        <div className="relative overflow-hidden sm:rounded-lg border border-border/60 bg-muted">
+      {/* Full-screen slider — z-0 so dropdowns (z-40) appear above.
+          overflow-visible on outer wrapper so dropdowns aren't clipped.
+          Inner slider keeps overflow-hidden for rounded corners only. */}
+      <div className="relative z-0 mx-auto max-w-7xl overflow-visible px-0 sm:px-6 lg:px-8">
+        <div className="relative overflow-visible sm:rounded-lg border border-border/60 bg-muted">
           {total === 0 ? (
             <div className="flex aspect-[2/1] items-center justify-center bg-gradient-to-br from-primary via-primary to-primary/80 text-center text-primary-foreground/70">
               <div>
@@ -215,7 +216,7 @@ export function MegaHero({ slides, categories, announcement }: MegaHeroProps) {
                     <img
                       src={slide.image || slide.mobileImage}
                       alt={slide.title || `Slide ${idx + 1}`}
-                      className="h-full w-full object-cover"
+                      className="h-full w-full object-cover sm:rounded-lg"
                       loading={idx === 0 ? "eager" : "lazy"}
                       fetchPriority={idx === 0 ? "high" : "low"}
                       decoding="async"
