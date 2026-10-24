@@ -401,3 +401,20 @@ Stage Summary:
 - Hover state on sub-category items is now clearly visible — solid gold
   background with dark text, consistent with the parent trigger style
 - Committed (98de5d0) + pushed to origin/main
+
+---
+Task ID: 20
+Agent: main
+Task: Larger admin sidebar logo
+
+Work Log:
+- Desktop sidebar logo: h-14 (56px) → h-24 (96px) — now properly visible
+  in the 256px-wide sidebar
+- Mobile top-bar logo: h-8 (32px) → h-12 (48px) — consistent with desktop
+- No layout breakage — aspect-[2/1] ratio preserved, container uses
+  object-contain so logo scales cleanly
+
+Stage Summary:
+- Admin sidebar logo is now significantly larger and gives the admin
+  dashboard a more premium brand presence
+- Committed (514cecd) + pushed to origin/main
