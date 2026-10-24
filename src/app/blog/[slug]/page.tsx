@@ -9,7 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { createAdminClient } from "@/lib/supabase";
 import { siteConfig } from "@/lib/brand";
-import { BlogPostActions } from "@/components/blog/blog-post-actions";
+import { BlogPostTopBar, BlogPostBottomCta } from "@/components/blog/blog-post-actions";
 
 export const revalidate = 300; // 5 min ISR — refresh post data periodically
 export const dynamicParams = true; // allow new slugs to be generated on-demand
@@ -148,19 +148,17 @@ export default async function BlogPostPage({ params }: PageProps) {
 
   return (
     <>
-      {/* Hero with cover image */}
-      <section className="relative min-h-[420px] md:min-h-[480px]">
+      {/* Hero with cover image — title overlays the image */}
+      <section className="relative min-h-[360px] md:min-h-[440px]">
         {post.cover_image ? (
-          <>
-            <div className="absolute inset-0">
-              <img
-                src={post.cover_image}
-                alt={post.title}
-                className="h-full w-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-black/70" />
-            </div>
-          </>
+          <div className="absolute inset-0">
+            <img
+              src={post.cover_image}
+              alt={post.title}
+              className="h-full w-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-black/45 to-black/75" />
+          </div>
         ) : (
           <div
             className="absolute inset-0"
@@ -170,17 +168,17 @@ export default async function BlogPostPage({ params }: PageProps) {
             }}
           />
         )}
-        <Container className="relative flex min-h-[420px] flex-col items-center justify-center py-16 text-center text-white md:min-h-[480px]">
+        <Container className="relative flex min-h-[360px] flex-col items-center justify-center py-12 text-center text-white md:min-h-[440px] md:py-14">
           <div className="mx-auto max-w-3xl">
             {post.category && (
-              <Badge className="mb-4 bg-white/20 text-white hover:bg-white/30">
+              <Badge className="mb-3 bg-white/20 text-white hover:bg-white/30">
                 {post.category}
               </Badge>
             )}
             <h1 className="font-serif text-3xl font-medium leading-tight tracking-tight md:text-4xl lg:text-5xl">
               {post.title}
             </h1>
-            <div className="mt-4 flex items-center justify-center gap-4 text-sm text-white/85">
+            <div className="mt-3 flex items-center justify-center gap-4 text-sm text-white/85">
               <span className="flex items-center gap-1.5">
                 <Calendar className="h-4 w-4" />
                 {dateStr}
@@ -194,18 +192,15 @@ export default async function BlogPostPage({ params }: PageProps) {
         </Container>
       </section>
 
-      <Container className="py-12 md:py-16">
+      {/* Article body — starts immediately under the cover image */}
+      <Container className="py-8 md:py-12">
         <div className="mx-auto max-w-3xl">
-          {/* Client-side actions (Share / Save / CTA) */}
-          <BlogPostActions
+          {/* Slim top bar: back link (left) + share/save buttons (right) */}
+          <BlogPostTopBar
             title={post.title}
             backLabel="← Back to Blog"
             shareLabel="Share"
             saveLabel="Save"
-            shareArticleLabel="Share Article"
-            shopCollectionLabel="Shop Collection"
-            enjoyedTitle="Enjoyed this article?"
-            enjoyedDesc="Share it with your friends and explore our premium collection."
           />
 
           {/* Article content */}
@@ -230,8 +225,16 @@ export default async function BlogPostPage({ params }: PageProps) {
 
           <Separator className="my-8" />
 
+          {/* Bottom CTA — Enjoyed this article? */}
+          <BlogPostBottomCta
+            shareArticleLabel="Share Article"
+            shopCollectionLabel="Shop Collection"
+            enjoyedTitle="Enjoyed this article?"
+            enjoyedDesc="Share it with your friends and explore our premium collection."
+          />
+
           {/* Back to blog link */}
-          <div className="text-center">
+          <div className="mt-8 text-center">
             <Button asChild variant="outline">
               <Link href="/blog">
                 <ArrowLeft className="mr-2 h-4 w-4" />

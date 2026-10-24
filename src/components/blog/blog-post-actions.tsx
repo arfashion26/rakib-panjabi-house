@@ -6,31 +6,24 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
-interface BlogPostActionsProps {
+interface BlogPostTopBarProps {
   title: string;
   backLabel: string;
   shareLabel: string;
   saveLabel: string;
-  shareArticleLabel: string;
-  shopCollectionLabel: string;
-  enjoyedTitle: string;
-  enjoyedDesc: string;
 }
 
 /**
- * Client-side actions for the blog post detail page.
- * Handles Share / Save button clicks using browser APIs + toast feedback.
+ * Slim top bar for the blog post detail page.
+ * Renders the "← Back to Blog" link (left) and Share/Save buttons (right).
+ * Designed to sit immediately below the cover image with a small gap.
  */
-export function BlogPostActions({
+export function BlogPostTopBar({
   title,
   backLabel,
   shareLabel,
   saveLabel,
-  shareArticleLabel,
-  shopCollectionLabel,
-  enjoyedTitle,
-  enjoyedDesc,
-}: BlogPostActionsProps) {
+}: BlogPostTopBarProps) {
   const [saved, setSaved] = React.useState(false);
 
   function handleShare() {
@@ -50,18 +43,15 @@ export function BlogPostActions({
   }
 
   return (
-    <>
-      {/* Back link */}
+    <div className="mb-6 flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
       <Link
         href="/blog"
-        className="mb-8 inline-flex items-center text-sm text-muted-foreground hover:text-accent-text"
+        className="inline-flex items-center text-sm text-muted-foreground hover:text-accent-text"
       >
         <ArrowLeft className="mr-1 h-4 w-4" />
         {backLabel}
       </Link>
-
-      {/* Actions */}
-      <div className="mb-8 flex justify-end gap-2">
+      <div className="flex items-center gap-2">
         <Button variant="outline" size="sm" onClick={handleShare}>
           <Share2 className="mr-1.5 h-3.5 w-3.5" />
           {shareLabel}
@@ -77,24 +67,54 @@ export function BlogPostActions({
           {saveLabel}
         </Button>
       </div>
+    </div>
+  );
+}
 
-      {/* Share CTA */}
-      <div className="mt-12 rounded-lg bg-muted/30 p-6 text-center">
-        <p className="font-serif text-lg font-medium">{enjoyedTitle}</p>
-        <p className="mt-1 text-sm text-muted-foreground">{enjoyedDesc}</p>
-        <div className="mt-4 flex justify-center gap-2">
-          <Button onClick={handleShare} variant="outline">
-            <Share2 className="mr-2 h-4 w-4" />
-            {shareArticleLabel}
-          </Button>
-          <Button asChild>
-            <Link href="/shop">
-              {shopCollectionLabel}
-              <ChevronRight className="ml-2 h-4 w-4" />
-            </Link>
-          </Button>
-        </div>
+interface BlogPostBottomCtaProps {
+  shareArticleLabel: string;
+  shopCollectionLabel: string;
+  enjoyedTitle: string;
+  enjoyedDesc: string;
+}
+
+/**
+ * Bottom CTA card shown after the article content.
+ * Encourages sharing and links to the shop.
+ */
+export function BlogPostBottomCta({
+  shareArticleLabel,
+  shopCollectionLabel,
+  enjoyedTitle,
+  enjoyedDesc,
+}: BlogPostBottomCtaProps) {
+  function handleShare() {
+    if (navigator.share) {
+      navigator
+        .share({ url: window.location.href })
+        .catch(() => {});
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      toast.success("Link copied to clipboard");
+    }
+  }
+
+  return (
+    <div className="mt-12 rounded-lg bg-muted/30 p-6 text-center">
+      <p className="font-serif text-lg font-medium">{enjoyedTitle}</p>
+      <p className="mt-1 text-sm text-muted-foreground">{enjoyedDesc}</p>
+      <div className="mt-4 flex justify-center gap-2">
+        <Button onClick={handleShare} variant="outline">
+          <Share2 className="mr-2 h-4 w-4" />
+          {shareArticleLabel}
+        </Button>
+        <Button asChild>
+          <Link href="/shop">
+            {shopCollectionLabel}
+            <ChevronRight className="ml-2 h-4 w-4" />
+          </Link>
+        </Button>
       </div>
-    </>
+    </div>
   );
 }

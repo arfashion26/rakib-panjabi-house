@@ -346,135 +346,149 @@ function PostEditor({
 
   return (
     <Dialog open onOpenChange={onClose}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto max-w-3xl">
-        <DialogHeader>
-          <DialogTitle>{isEditing ? "Edit Post" : "New Blog Post"}</DialogTitle>
+      <DialogContent className="max-h-[92vh] flex w-[95vw] max-w-4xl flex-col gap-0 overflow-hidden p-0 sm:max-w-4xl">
+        {/* Sticky header */}
+        <DialogHeader className="shrink-0 border-b border-border bg-background px-6 py-4">
+          <DialogTitle className="text-lg">{isEditing ? "Edit Post" : "New Blog Post"}</DialogTitle>
         </DialogHeader>
-        <div className="space-y-4">
-          {/* Cover image */}
-          <ImageUpload
-            label="Feature Image (Cover)"
-            value={form.cover_image}
-            onChange={(url) => setForm({ ...form, cover_image: url })}
-            folder="blog"
-            aspectRatio="aspect-[16/10]"
-            hint="Recommended size: 1600×1000px (16:10). Used as the blog post cover image."
-          />
 
-          <div className="space-y-2">
-            <Label>Title *</Label>
-            <Input
-              value={form.title}
-              onChange={(e) => setForm({ ...form, title: e.target.value })}
-              placeholder="Post title"
+        {/* Scrollable body */}
+        <div className="flex-1 overflow-y-auto px-6 py-5">
+          <div className="space-y-5">
+            {/* Cover image */}
+            <ImageUpload
+              label="Feature Image (Cover)"
+              value={form.cover_image}
+              onChange={(url) => setForm({ ...form, cover_image: url })}
+              folder="blog"
+              aspectRatio="aspect-[16/10]"
+              hint="Recommended size: 1600×1000px (16:10). Used as the blog post cover image."
             />
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-2">
-              <Label>Slug</Label>
-              <Input
-                value={form.slug}
-                onChange={(e) => setForm({ ...form, slug: e.target.value })}
-                placeholder="auto-generated from title"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>Category</Label>
-              <Input
-                value={form.category}
-                onChange={(e) => setForm({ ...form, category: e.target.value })}
-                placeholder="Style Guide"
-              />
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-2">
-              <Label>Tags (comma separated)</Label>
-              <Input
-                value={form.tags}
-                onChange={(e) => setForm({ ...form, tags: e.target.value })}
-                placeholder="panjabi, style, wedding"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>Status</Label>
-              <select
-                value={form.status}
-                onChange={(e) => setForm({ ...form, status: e.target.value })}
-                className="h-9 w-full rounded-md border border-border bg-background px-3 text-sm"
-              >
-                <option value="DRAFT">Draft (not visible)</option>
-                <option value="PUBLISHED">Published (visible on site)</option>
-              </select>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              id="is_featured"
-              checked={form.is_featured}
-              onChange={(e) => setForm({ ...form, is_featured: e.target.checked })}
-              className="h-4 w-4 rounded border-border"
-            />
-            <Label htmlFor="is_featured" className="cursor-pointer text-sm font-normal">
-              Mark as Featured Post (shown highlighted on blog home)
-            </Label>
-          </div>
-          <div className="space-y-2">
-            <Label>Excerpt (short summary)</Label>
-            <Textarea
-              value={form.excerpt}
-              onChange={(e) => setForm({ ...form, excerpt: e.target.value })}
-              rows={2}
-              placeholder="Brief summary shown in blog listing"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label>Content</Label>
-            <Textarea
-              value={form.content}
-              onChange={(e) => setForm({ ...form, content: e.target.value })}
-              rows={10}
-              placeholder="Full post content. Use blank lines to separate paragraphs."
-              className="font-mono text-xs"
-            />
-            <p className="text-xs text-muted-foreground">
-              Tip: Separate paragraphs with a blank line. The content will be
-              rendered with proper paragraph spacing on the blog page.
-            </p>
-          </div>
 
-          {/* SEO Section */}
-          <div className="rounded-lg border border-border bg-muted/20 p-4">
-            <h4 className="mb-3 text-sm font-semibold">SEO Settings</h4>
-            <div className="space-y-3">
+            <div className="space-y-2">
+              <Label>Title *</Label>
+              <Input
+                value={form.title}
+                onChange={(e) => setForm({ ...form, title: e.target.value })}
+                placeholder="Post title"
+                className="h-10 text-sm"
+              />
+            </div>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label>Meta Title</Label>
+                <Label>Slug</Label>
                 <Input
-                  value={form.meta_title}
-                  onChange={(e) => setForm({ ...form, meta_title: e.target.value })}
-                  placeholder="SEO title (defaults to post title if empty)"
+                  value={form.slug}
+                  onChange={(e) => setForm({ ...form, slug: e.target.value })}
+                  placeholder="auto-generated from title"
+                  className="h-10 text-sm"
                 />
-                <p className="text-xs text-muted-foreground">
-                  Recommended: 50–60 characters. Used in browser tab and search results.
-                </p>
               </div>
               <div className="space-y-2">
-                <Label>Meta Description</Label>
-                <Textarea
-                  value={form.meta_description}
-                  onChange={(e) => setForm({ ...form, meta_description: e.target.value })}
-                  rows={2}
-                  placeholder="SEO description (defaults to excerpt if empty)"
+                <Label>Category</Label>
+                <Input
+                  value={form.category}
+                  onChange={(e) => setForm({ ...form, category: e.target.value })}
+                  placeholder="Style Guide"
+                  className="h-10 text-sm"
                 />
-                <p className="text-xs text-muted-foreground">
-                  Recommended: 150–160 characters. Shown in search engine results.
-                </p>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label>Tags (comma separated)</Label>
+                <Input
+                  value={form.tags}
+                  onChange={(e) => setForm({ ...form, tags: e.target.value })}
+                  placeholder="panjabi, style, wedding"
+                  className="h-10 text-sm"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Status</Label>
+                <select
+                  value={form.status}
+                  onChange={(e) => setForm({ ...form, status: e.target.value })}
+                  className="h-10 w-full rounded-md border border-border bg-background px-3 text-sm"
+                >
+                  <option value="DRAFT">Draft (not visible)</option>
+                  <option value="PUBLISHED">Published (visible on site)</option>
+                </select>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="is_featured"
+                checked={form.is_featured}
+                onChange={(e) => setForm({ ...form, is_featured: e.target.checked })}
+                className="h-4 w-4 rounded border-border"
+              />
+              <Label htmlFor="is_featured" className="cursor-pointer text-sm font-normal">
+                Mark as Featured Post (shown highlighted on blog home &amp; homepage)
+              </Label>
+            </div>
+            <div className="space-y-2">
+              <Label>Excerpt (short summary)</Label>
+              <Textarea
+                value={form.excerpt}
+                onChange={(e) => setForm({ ...form, excerpt: e.target.value })}
+                rows={3}
+                placeholder="Brief summary shown in blog listing"
+                className="text-sm"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Content</Label>
+              <Textarea
+                value={form.content}
+                onChange={(e) => setForm({ ...form, content: e.target.value })}
+                rows={14}
+                placeholder="Full post content. Use blank lines to separate paragraphs."
+                className="font-mono text-xs"
+              />
+              <p className="text-xs text-muted-foreground">
+                Tip: Separate paragraphs with a blank line. The content will be
+                rendered with proper paragraph spacing on the blog page.
+              </p>
+            </div>
+
+            {/* SEO Section */}
+            <div className="rounded-lg border border-border bg-muted/20 p-4">
+              <h4 className="mb-3 text-sm font-semibold">SEO Settings</h4>
+              <div className="space-y-3">
+                <div className="space-y-2">
+                  <Label>Meta Title</Label>
+                  <Input
+                    value={form.meta_title}
+                    onChange={(e) => setForm({ ...form, meta_title: e.target.value })}
+                    placeholder="SEO title (defaults to post title if empty)"
+                    className="h-10 text-sm"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Recommended: 50–60 characters. Used in browser tab and search results.
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <Label>Meta Description</Label>
+                  <Textarea
+                    value={form.meta_description}
+                    onChange={(e) => setForm({ ...form, meta_description: e.target.value })}
+                    rows={3}
+                    placeholder="SEO description (defaults to excerpt if empty)"
+                    className="text-sm"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Recommended: 150–160 characters. Shown in search engine results.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
         </div>
-        <DialogFooter>
+
+        {/* Sticky footer */}
+        <DialogFooter className="shrink-0 border-t border-border bg-background px-6 py-4">
           <Button variant="outline" onClick={onClose} disabled={saving}>Cancel</Button>
           <Button onClick={save} disabled={saving}>
             {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
