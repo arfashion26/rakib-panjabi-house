@@ -5,9 +5,13 @@ import { usePathname } from "next/navigation";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { WhatsAppButton } from "@/components/layout/whatsapp-button";
+import { NavigationLoader } from "@/components/ui/navigation-loader";
 
 /**
  * AppShell — Wraps all pages with Header + Footer.
+ *
+ * Also mounts the NavigationLoader overlay which shows a branded spinning
+ * circle whenever the user navigates between pages.
  *
  * Excludes header/footer for:
  * - /admin/* (admin panel has its own sidebar)
@@ -34,12 +38,20 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     pathname === "/thank-you" ||
     pathname.startsWith("/api");
 
+  // The NavigationLoader should appear on ALL routes (including admin +
+  // dashboard) so users get feedback during any navigation.
   if (isStandaloneRoute) {
-    return <>{children}</>;
+    return (
+      <>
+        <NavigationLoader />
+        {children}
+      </>
+    );
   }
 
   return (
     <div className="flex min-h-screen flex-col">
+      <NavigationLoader />
       <SiteHeader />
       <main className="flex-1">{children}</main>
       <SiteFooter />
