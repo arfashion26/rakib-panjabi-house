@@ -184,6 +184,18 @@ export async function signOut() {
 }
 
 /**
+ * Sign out the current admin and redirect to the admin login page.
+ * Used by the admin dashboard sidebar Sign Out button.
+ */
+export async function signOutAdmin() {
+  const supabase = await createServerClientHelper();
+  await supabase.auth.signOut();
+  revalidatePath("/", "layout");
+  revalidatePath("/admin", "layout");
+  redirect("/admin/login");
+}
+
+/**
  * Send a password reset email.
  */
 export async function resetPassword(email: string) {

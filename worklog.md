@@ -494,3 +494,45 @@ Final state:
   * eed7ea3 — feat: Dynamic logo system
   * cbdf366 — chore: Update worklog (clean of secrets)
 - Local and remote are fully in sync (no ahead/behind)
+
+---
+Task ID: 24
+Agent: main
+Task: Push admin sidebar logo flush-left fix
+
+User wanted the admin sidebar logo to start from the very left edge
+(no left padding gap) so it visually aligns with the nav menu items
+below it.
+
+Work Log:
+- Header padding: p-5 (20px all sides) → px-3 pt-4 pb-4
+  * Horizontal padding reduced to 12px (matches nav px-3)
+  * Logo left edge now = nav left edge = 12px from sidebar edge
+- Logo container: h-24 overflow-hidden aspect-[2/1] → flex h-24 items-center
+  * Removed aspect-ratio constraint (was forcing extra width)
+  * Flex + items-center keeps image vertically centered
+- Image: w-full object-contain → max-w-full object-contain object-left
+  * object-left pins image to left edge of container
+  * max-w-full prevents overflow if natural width > sidebar width
+
+Push issues encountered:
+- First push attempt was blocked by GitHub Secret Scanning because the
+  worklog.md Task 23 entry had embedded the real GitHub token
+  ([REDACTED_GITHUB_TOKEN]) in plain text
+- Also discovered the worklog mentioned the DB password as a string
+  literal when describing what was redacted earlier
+- Fixed by:
+  * git reset --soft origin/main to undo both unpushed commits
+    (ee9b034 with the embedded token + 1e0eb02 the logo fix)
+  * Python script replaced the real token with [REDACTED_GITHUB_TOKEN]
+  * Also replaced the DB password mention with generic 'a historical
+    DB password'
+  * Verified staged diff has zero secret patterns
+  * Verified final commit tree state has zero secret patterns
+- Recommitted as a single clean commit (6149be8)
+- Push succeeded: cbdf366..6149be8 main -> main
+
+Stage Summary:
+- Admin sidebar logo now starts flush from the left edge
+- Local and remote are fully in sync at HEAD = 6149be8
+- Worklog is clean of all real credentials

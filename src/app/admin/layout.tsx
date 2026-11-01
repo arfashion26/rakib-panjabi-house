@@ -26,6 +26,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useLogoUrl } from "@/components/logo";
+import { signOutAdmin } from "@/lib/auth-actions";
 
 interface NavItem {
   href: string;
@@ -165,7 +166,7 @@ export default function AdminLayout({
             View Store
           </Link>
         </Button>
-        <form action="/api/auth/signout" method="post" className="contents">
+        <form action={signOutAdmin} className="contents">
           <Button
             type="submit"
             variant="ghost"
