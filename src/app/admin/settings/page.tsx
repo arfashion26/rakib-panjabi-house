@@ -1,7 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { Save, Store, Truck, Mail, Loader2, Image as ImageIcon, DollarSign, Search } from "lucide-react";
+import Link from "next/link";
+import { Save, Store, Truck, Mail, Loader2, Image as ImageIcon, DollarSign, Search, Shield, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -468,6 +469,46 @@ export default function AdminSettingsPage() {
         </div>
 
         <Separator />
+
+        {/* Users & Roles — quick access card linking to /admin/users */}
+        <div className="rounded-lg border border-border/60 bg-background p-6">
+          <div className="mb-4 flex items-center gap-2">
+            <Shield className="h-5 w-5 text-accent-text" />
+            <h2 className="font-serif text-lg font-medium">Users &amp; Roles</h2>
+          </div>
+          <p className="mb-4 text-xs text-muted-foreground">
+            Create staff members or admins with limited or full access. Manage their
+            roles, change passwords, or remove admin access. Only Admins and Super
+            Admins can create new users.
+          </p>
+          <div className="grid gap-3 sm:grid-cols-3">
+            <div className="rounded-md border border-border/40 bg-muted/20 p-3">
+              <div className="mb-1 text-xs font-semibold uppercase tracking-wider text-accent-text">
+                Admin
+              </div>
+              <p className="text-xs text-muted-foreground">Full access to everything.</p>
+            </div>
+            <div className="rounded-md border border-border/40 bg-muted/20 p-3">
+              <div className="mb-1 text-xs font-semibold uppercase tracking-wider text-blue-600">
+                Manager
+              </div>
+              <p className="text-xs text-muted-foreground">Products, orders, blog. No settings.</p>
+            </div>
+            <div className="rounded-md border border-border/40 bg-muted/20 p-3">
+              <div className="mb-1 text-xs font-semibold uppercase tracking-wider text-green-600">
+                Staff
+              </div>
+              <p className="text-xs text-muted-foreground">Orders only. Limited access.</p>
+            </div>
+          </div>
+          <Button asChild variant="outline" className="mt-4">
+            <Link href="/admin/users">
+              <Shield className="mr-2 h-4 w-4" />
+              Manage Users &amp; Roles
+              <ChevronRight className="ml-2 h-4 w-4" />
+            </Link>
+          </Button>
+        </div>
 
         {/* Custom Tracking Code */}
         <CustomCodeEditor />

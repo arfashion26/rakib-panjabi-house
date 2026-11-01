@@ -232,7 +232,7 @@ export default function AdminCustomersPage() {
 
         <TabsContent value="admins">
           <div className="rounded-lg border border-border/60 bg-background p-6">
-            <AdminUserManager users={allUsers} />
+            <AdminUserManager />
           </div>
         </TabsContent>
       </Tabs>

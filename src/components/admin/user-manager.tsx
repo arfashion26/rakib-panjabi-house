@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { UserPlus, Trash2, Shield, Loader2, Eye, EyeOff } from "lucide-react";
+import { UserPlus, Trash2, Shield, Loader2, Eye, EyeOff, RefreshCw, Mail, Key, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -31,7 +31,45 @@ interface AdminUser {
   created_at: string;
 }
 
-export function AdminUserManager({ users }: { users: AdminUser[] }) {
+interface RoleInfo {
+  value: string;
+  label: string;
+  description: string;
+}
+
+const ROLES: RoleInfo[] = [
+  {
+    value: "ADMIN",
+    label: "Admin (Full Access)",
+    description: "Can manage everything: products, orders, customers, settings, AND create new users.",
+  },
+  {
+    value: "MANAGER",
+    label: "Manager (Limited Access)",
+    description: "Can manage products, categories, orders, and blog posts. Cannot access settings or create users.",
+  },
+  {
+    value: "STAFF",
+    label: "Staff (Orders Only)",
+    description: "Can only view and manage orders. No access to products, settings, or user management.",
+  },
+];
+
+/**
+ * AdminUserManager
+ *
+ * Self-contained component for the admin to:
+ *  - View all admin/staff users
+ *  - Create new users with email + password + role
+ *  - Change an existing user's role (full access ↔ limited access)
+ *  - Remove a user's admin access (demote to CUSTOMER)
+ *
+ * Fetches its own data from /api/admin/customers (which returns all profiles).
+ * No parent prop wiring needed.
+ */
+export function AdminUserManager() {
+  const [users, setUsers] = React.useState<AdminUser[]>([]);
+  const [loading, setLoading] = React.useState(true);
   const [open, setOpen] = React.useState(false);
   const [creating, setCreating] = React.useState(false);
   const [showPassword, setShowPassword] = React.useState(false);
@@ -42,6 +80,25 @@ export function AdminUserManager({ users }: { users: AdminUser[] }) {
     role: "STAFF",
   });
 
+  const fetchUsers = React.useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/admin/customers");
+      const data = await res.json();
+      if (data.success && data.users) {
+        setUsers(data.users);
+      }
+    } catch {
+      toast.error("Failed to load users");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  React.useEffect(() => {
+    fetchUsers();
+  }, [fetchUsers]);
+
   async function handleCreate() {
     if (!newUser.email || !newUser.password || !newUser.name) {
       toast.error("Please fill all fields");
@@ -49,6 +106,11 @@ export function AdminUserManager({ users }: { users: AdminUser[] }) {
     }
     if (newUser.password.length < 8) {
       toast.error("Password must be at least 8 characters");
+      return;
+    }
+    // Basic email format check
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newUser.email)) {
+      toast.error("Please enter a valid email address");
       return;
     }
 
@@ -65,7 +127,7 @@ export function AdminUserManager({ users }: { users: AdminUser[] }) {
         toast.success(`${newUser.name} added as ${newUser.role}`);
         setOpen(false);
         setNewUser({ email: "", name: "", password: "", role: "STAFF" });
-        window.location.reload();
+        fetchUsers();
       } else {
         toast.error(data.error || "Failed to create user");
       }
@@ -87,7 +149,7 @@ export function AdminUserManager({ users }: { users: AdminUser[] }) {
 
       if (data.success) {
         toast.success("Role updated");
-        window.location.reload();
+        fetchUsers();
       } else {
         toast.error(data.error || "Failed to update role");
       }
@@ -121,13 +183,42 @@ export function AdminUserManager({ users }: { users: AdminUser[] }) {
         <p className="text-sm text-muted-foreground">
           {adminUsers.length} admin/staff member{adminUsers.length !== 1 ? "s" : ""}
         </p>
-        <Button onClick={() => setOpen(true)}>
-          <UserPlus className="mr-2 h-4 w-4" />
-          Add Staff/Admin
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" onClick={fetchUsers} disabled={loading}>
+            <RefreshCw className={`mr-2 h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+            Refresh
+          </Button>
+          <Button onClick={() => setOpen(true)}>
+            <UserPlus className="mr-2 h-4 w-4" />
+            Add User
+          </Button>
+        </div>
       </div>
 
-      {adminUsers.length === 0 ? (
+      {/* Role legend */}
+      <div className="mb-6 grid gap-2 sm:grid-cols-3">
+        {ROLES.map((r) => (
+          <div
+            key={r.value}
+            className="rounded-lg border border-border/60 bg-muted/30 p-3"
+          >
+            <div className="mb-1 flex items-center gap-2">
+              <Badge variant="secondary" className={roleColors[r.value]}>
+                {r.label.split(" ")[0]}
+              </Badge>
+            </div>
+            <p className="text-xs leading-relaxed text-muted-foreground">
+              {r.description}
+            </p>
+          </div>
+        ))}
+      </div>
+
+      {loading ? (
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+        </div>
+      ) : adminUsers.length === 0 ? (
         <div className="rounded-lg border border-dashed border-border p-8 text-center">
           <Shield className="mx-auto mb-3 h-12 w-12 text-muted-foreground/40" />
           <p className="text-sm font-medium">No admin users yet</p>
@@ -149,6 +240,9 @@ export function AdminUserManager({ users }: { users: AdminUser[] }) {
                 <div>
                   <p className="text-sm font-medium">{user.name || "Unnamed"}</p>
                   <p className="text-xs text-muted-foreground">{user.email}</p>
+                  <p className="text-[10px] text-muted-foreground/70">
+                    Joined {new Date(user.created_at).toLocaleDateString()}
+                  </p>
                 </div>
               </div>
 
@@ -158,12 +252,12 @@ export function AdminUserManager({ users }: { users: AdminUser[] }) {
                   onValueChange={(v) => handleRoleChange(user.id, v)}
                   disabled={user.role === "SUPER_ADMIN"}
                 >
-                  <SelectTrigger size="sm" className="w-[130px]">
+                  <SelectTrigger size="sm" className="w-[140px]">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="SUPER_ADMIN" disabled>Super Admin</SelectItem>
-                    <SelectItem value="ADMIN">Admin</SelectItem>
+                    <SelectItem value="ADMIN">Admin (Full)</SelectItem>
                     <SelectItem value="MANAGER">Manager</SelectItem>
                     <SelectItem value="STAFF">Staff</SelectItem>
                     <SelectItem value="CUSTOMER">Remove Access</SelectItem>
@@ -192,13 +286,19 @@ export function AdminUserManager({ users }: { users: AdminUser[] }) {
       )}
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent>
+        <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>Add Staff/Admin Member</DialogTitle>
+            <DialogTitle className="flex items-center gap-2">
+              <UserPlus className="h-5 w-5" />
+              Create New User
+            </DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="new-name">Full Name *</Label>
+              <Label htmlFor="new-name">
+                <UserPlus className="mr-1 inline h-3.5 w-3.5" />
+                Full Name *
+              </Label>
               <Input
                 id="new-name"
                 placeholder="e.g. Mahmud Hasan"
@@ -207,17 +307,26 @@ export function AdminUserManager({ users }: { users: AdminUser[] }) {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="new-email">Email *</Label>
+              <Label htmlFor="new-email">
+                <Mail className="mr-1 inline h-3.5 w-3.5" />
+                Login Email *
+              </Label>
               <Input
                 id="new-email"
                 type="email"
-                placeholder="staff@example.com"
+                placeholder="staff@alrakib.com"
                 value={newUser.email}
                 onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
               />
+              <p className="text-xs text-muted-foreground">
+                This email will be used to log in to the admin dashboard.
+              </p>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="new-password">Temporary Password *</Label>
+              <Label htmlFor="new-password">
+                <Key className="mr-1 inline h-3.5 w-3.5" />
+                Temporary Password *
+              </Label>
               <div className="relative">
                 <Input
                   id="new-password"
@@ -236,11 +345,11 @@ export function AdminUserManager({ users }: { users: AdminUser[] }) {
                 </button>
               </div>
               <p className="text-xs text-muted-foreground">
-                The user can change this password after first login.
+                The user can change this password after first login via Settings → Change Password.
               </p>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="new-role">Role *</Label>
+              <Label htmlFor="new-role">Access Level *</Label>
               <Select
                 value={newUser.role}
                 onValueChange={(v) => setNewUser({ ...newUser, role: v })}
@@ -249,14 +358,24 @@ export function AdminUserManager({ users }: { users: AdminUser[] }) {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="ADMIN">Admin (full access)</SelectItem>
-                  <SelectItem value="MANAGER">Manager (products + orders)</SelectItem>
-                  <SelectItem value="STAFF">Staff (orders only)</SelectItem>
+                  {ROLES.map((r) => (
+                    <SelectItem key={r.value} value={r.value}>
+                      {r.label}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
-              <p className="text-xs text-muted-foreground">
-                Super Admin cannot be created here. Only existing Super Admin can promote users.
-              </p>
+              <div className="rounded-md bg-muted/40 p-2">
+                <p className="text-xs text-muted-foreground">
+                  {ROLES.find((r) => r.value === newUser.role)?.description}
+                </p>
+              </div>
+              <div className="flex items-start gap-1.5 rounded-md bg-amber-50 p-2 text-amber-800 dark:bg-amber-950/30 dark:text-amber-200">
+                <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                <p className="text-xs">
+                  Super Admin cannot be created here. Only an existing Super Admin can promote users to Super Admin.
+                </p>
+              </div>
             </div>
           </div>
           <DialogFooter>

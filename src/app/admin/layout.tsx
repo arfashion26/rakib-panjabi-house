@@ -21,6 +21,7 @@ import {
   Star,
   FolderOpen,
   MessageSquare,
+  Shield,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -53,6 +54,7 @@ const navItems: NavItem[] = [
   { href: "/admin/product-reviews", label: "P. Reviews", icon: MessageSquare, group: "content" },
   { href: "/admin/media", label: "Media", icon: FolderOpen, group: "content" },
 
+  { href: "/admin/users", label: "Users & Roles", icon: Shield, group: "system" },
   { href: "/admin/settings", label: "Settings", icon: Settings, group: "system" },
 ];
 
