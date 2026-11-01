@@ -536,3 +536,50 @@ Stage Summary:
 - Admin sidebar logo now starts flush from the left edge
 - Local and remote are fully in sync at HEAD = 6149be8
 - Worklog is clean of all real credentials
+
+---
+Task ID: 25
+Agent: main
+Task: Fix admin Sign Out — was redirecting to wrong URL (/api/auth/signout)
+
+User reported: clicking Sign Out in the admin dashboard navigated to
+https://alrakib.com/api/auth/signout (a 404 — this route doesn't exist).
+Expected behavior: should sign out via Supabase auth and redirect to
+https://alrakib.com/admin/login.
+
+Root cause:
+- src/app/admin/layout.tsx used <form action="/api/auth/signout" method="post">
+- /api/auth/signout is a NextAuth route, but this project uses Supabase auth
+- The NextAuth route was never implemented, so the form POST hit a 404
+
+Fix:
+- Added a new signOutAdmin() server action in src/lib/auth-actions.ts:
+  * Calls supabase.auth.signOut() to clear the Supabase session
+  * revalidatePath("/", "layout") and revalidatePath("/admin", "layout")
+    to purge cached auth state
+  * redirect("/admin/login") to send the user to the admin login page
+    (the existing signOut() action redirects to "/" which is the
+    customer-facing homepage — wrong for an admin context)
+- Updated src/app/admin/layout.tsx:
+  * Imported signOutAdmin from "@/lib/auth-actions"
+  * Replaced <form action="/api/auth/signout"> with <form action={signOutAdmin}>
+    — this is the standard Next.js pattern for invoking server actions
+    from client components (works even with JavaScript disabled)
+
+Push note: First push attempt was blocked by Secret Scanning because
+the Task 24 worklog entry (which I auto-appended in the previous turn)
+had re-embedded the GitHub token + DB password as string literals when
+describing what was redacted. Fixed by:
+- git reset --soft origin/main to undo the unpushed worklog commit
+- Python script to replace all real token/password strings with
+  [REDACTED_GITHUB_TOKEN] / generic phrasing
+- Verified staged diff has zero secret patterns
+- Verified final commit tree state has zero secret patterns
+- Recommitted as a single clean commit (bd0752f)
+- Push succeeded: 6149be8..bd0752f main -> main
+
+Stage Summary:
+- Admin Sign Out now correctly: clears Supabase session → redirects to
+  /admin/login (no more 404 on /api/auth/signout)
+- Local and remote fully in sync at HEAD = bd0752f
+- Worklog is clean of all real credentials
