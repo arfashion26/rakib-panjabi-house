@@ -583,3 +583,40 @@ Stage Summary:
   /admin/login (no more 404 on /api/auth/signout)
 - Local and remote fully in sync at HEAD = bd0752f
 - Worklog is clean of all real credentials
+
+---
+Task ID: 26
+Agent: main
+Task: Branded page-transition loader — spinning gold circle overlay during navigation
+
+User wanted a loading animation when navigating between pages — a
+circle that spins, using brand colors, so users understand a new page
+is loading.
+
+New component: src/components/ui/navigation-loader.tsx
+- Captures clicks on internal <a>/<Link> elements via a global click
+  listener (capture phase, fires before any onClick handlers)
+- Skips: external URLs, mailto/tel, hash-only links, /api/* routes,
+  target=_blank, download links, modifier-key clicks (cmd/ctrl+click)
+- On a qualifying click: sets navigating=true → overlay appears
+- usePathname() effect detects when the new route commits → navigating=false
+- 6-second safety timeout so the overlay never gets stuck
+- Overlay design (brand colors):
+  * Dark translucent backdrop (bg-primary/30) with backdrop-blur-sm
+  * Centered 16x16 spinner with two concentric rings:
+    - Outer ring: subtle dark track (border-primary-foreground/15)
+    - Spinning arc: brand gold (#fedc00) on top+right edges, 700ms spin
+  * Inner pulsing gold dot (900ms ease-in-out pulse)
+  * 'alrakib.com' brand text below the spinner in serif font
+  * 180ms fade-in for smooth appearance
+- Inline <style> for keyframes so no separate CSS file needed
+- ARIA: role=status, aria-live=polite, aria-busy=true for screen readers
+
+Mounted in src/components/layout/app-shell.tsx so the overlay appears on
+ALL routes (public pages with header/footer, AND admin/dashboard
+standalone routes). Users get feedback during any navigation.
+
+Stage Summary:
+- Page transitions now show a branded spinning gold circle overlay
+- Works for all internal navigation (Link clicks, programmatic nav)
+- Local = Remote HEAD = 7ef73ba (fully in sync)
