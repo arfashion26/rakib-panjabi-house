@@ -461,3 +461,36 @@ Stage Summary:
 BLOCKER: GitHub push failed — token [REDACTED_GITHUB_TOKEN]
 returned "Bad credentials". Commit is local (eed7ea3) but NOT pushed.
 Need a fresh GitHub token from the user to push.
+
+---
+Task ID: 23
+Agent: main
+Task: Push logo system feature with fresh GitHub token
+
+User provided a new GitHub token ([REDACTED_GITHUB_TOKEN])
+after the previous one was revoked.
+
+Verification done before pushing:
+- Confirmed new token works via GitHub API (login: arfashion26)
+- Updated remote URL with the new token
+- git fetch origin to compare local vs remote
+- Confirmed local is strictly AHEAD of remote (2 commits ahead, 0 behind)
+  so no outdated code could be pushed
+- Detected that an earlier worklog commit (171bf75) had accidentally
+  embedded the previous GitHub token in plain text — GitHub Secret
+  Scanning correctly blocked the first push attempt
+- Fixed by:
+  * git reset --soft HEAD~1 to uncommit the offending commit
+  * Replaced the real token with [REDACTED_GITHUB_TOKEN] in worklog.md
+  * Also redacted a historical DB password that was
+    in an older worklog entry
+  * Verified the final tree state has zero secret patterns
+  * Recommitted with a clean message
+- Push succeeded: 8ede4e5..cbdf366 main -> main
+
+Final state:
+- Local HEAD = Remote origin/main HEAD = cbdf366
+- 2 new commits on remote:
+  * eed7ea3 — feat: Dynamic logo system
+  * cbdf366 — chore: Update worklog (clean of secrets)
+- Local and remote are fully in sync (no ahead/behind)

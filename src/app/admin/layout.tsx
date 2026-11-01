@@ -90,14 +90,15 @@ export default function AdminLayout({
   const sidebarContent = (
     <div className="flex h-full flex-col bg-primary text-primary-foreground">
       {/* Logo / Brand — dynamic logo from DB (matches public site logo).
-          Larger size to match the mobile header logo presence. */}
-      <div className="border-b border-primary-foreground/10 p-5">
+          Larger size to match the mobile header logo presence.
+          px-3 aligns the logo's left edge with the nav items below it. */}
+      <div className="border-b border-primary-foreground/10 px-3 pt-4 pb-4">
         <Link href="/admin" className="block">
-          <div className="relative h-24 overflow-hidden aspect-[2/1] sm:h-32">
+          <div className="relative flex h-24 items-center sm:h-32">
             <img
               src={logoUrl}
               alt="Al-Rakib .com"
-              className="h-full w-full object-contain"
+              className="h-full max-w-full object-contain object-left"
             />
           </div>
         </Link>
