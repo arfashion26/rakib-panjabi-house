@@ -10,41 +10,143 @@ interface LogoProps {
   className?: string;
 }
 
-// Cache logo URL across all Logo instances on the same page
-let cachedLogoUrl: string | null = null;
-let fetchPromise: Promise<string> | null = null;
+/**
+ * Logo URL caching strategy:
+ *
+ * - cachedLogoUrl + fetchPromise: in-memory cache for the CURRENT page
+ *   session. All Logo instances on the same page share one fetch.
+ * - localStorage "logo_cache_v1": persists across page navigations and
+ *   reloads so the logo renders instantly on first paint without waiting
+ *   for the fetch. Without this, every full page reload would show the
+ *   fallback `/logo.png` for a frame before the fetched URL replaces it.
+ * - cachedVersion: a version counter stored in localStorage. When the
+ *   admin uploads a new logo, the settings page calls `invalidateLogoCache()`
+ *   which bumps this version. On the next mount, the Logo component
+ *   detects the version change and refetches the URL.
+ *
+ * The version + cache-busting query param (`?v=N`) ensure the browser
+ * never shows a stale image even if the URL itself is unchanged.
+ */
 
-async function fetchLogoUrl(): Promise<string> {
-  if (cachedLogoUrl) return cachedLogoUrl;
+const CACHE_KEY = "logo_cache_v1";
+const VERSION_KEY = "logo_cache_version_v1";
+
+let cachedLogoUrl: string | null = null;
+let cachedVersion: number = 0;
+let fetchPromise: Promise<{ url: string; version: number }> | null = null;
+
+// Hydrate from localStorage on module load (client-side only)
+if (typeof window !== "undefined") {
+  try {
+    const stored = window.localStorage.getItem(CACHE_KEY);
+    if (stored) cachedLogoUrl = stored;
+    const v = window.localStorage.getItem(VERSION_KEY);
+    if (v) cachedVersion = parseInt(v, 10) || 0;
+  } catch {
+    // localStorage may be disabled (private mode) — fall back to in-memory only
+  }
+}
+
+async function fetchLogoUrl(currentVersion: number): Promise<{ url: string; version: number }> {
+  // If we have a cached URL and the version matches, return immediately.
+  if (cachedLogoUrl && cachedVersion === currentVersion) {
+    return { url: cachedLogoUrl, version: cachedVersion };
+  }
+  // Otherwise fetch fresh. Dedupe concurrent fetches.
   if (fetchPromise) return fetchPromise;
-  fetchPromise = fetch("/api/brand-assets")
+
+  fetchPromise = fetch("/api/brand-assets", { cache: "no-store" })
     .then((r) => r.json())
     .then((data) => {
       const url = data?.logoUrl || "/logo.png";
       cachedLogoUrl = url;
-      return url;
+      cachedVersion = currentVersion;
+      // Persist to localStorage so the next page load renders instantly
+      try {
+        window.localStorage.setItem(CACHE_KEY, url);
+        window.localStorage.setItem(VERSION_KEY, String(currentVersion));
+      } catch {
+        // ignore
+      }
+      return { url, version: currentVersion };
     })
     .catch(() => {
-      cachedLogoUrl = "/logo.png";
-      return cachedLogoUrl;
+      const fallback = "/logo.png";
+      cachedLogoUrl = fallback;
+      return { url: fallback, version: currentVersion };
+    })
+    .finally(() => {
+      fetchPromise = null;
     });
   return fetchPromise;
 }
 
 /**
+ * Invalidate the logo cache. Called by the admin settings page after
+ * saving a new logo. Bumps the version so all Logo instances refetch.
+ */
+export function invalidateLogoCache() {
+  cachedVersion += 1;
+  cachedLogoUrl = null;
+  fetchPromise = null;
+  try {
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(VERSION_KEY, String(cachedVersion));
+      window.localStorage.removeItem(CACHE_KEY);
+    }
+  } catch {
+    // ignore
+  }
+  // Dispatch a custom event so mounted Logo components can update
+  // their state without waiting for a remount.
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new CustomEvent("logo-cache-invalidated", { detail: { version: cachedVersion } }));
+  }
+}
+
+/**
  * Hook to fetch the brand logo URL on the client.
- * Uses an in-memory cache so all components share one fetch.
+ * Uses an in-memory + localStorage cache so all components share one fetch.
  * Falls back to /logo.png if the API is unreachable.
+ *
+ * The returned URL includes a cache-busting query param (`?v=N`) so the
+ * browser never serves a stale image from its HTTP cache.
  */
 export function useLogoUrl(): string {
   const [logoUrl, setLogoUrl] = React.useState<string>(cachedLogoUrl || "/logo.png");
+  const [version, setVersion] = React.useState<number>(cachedVersion);
+
   React.useEffect(() => {
-    if (!cachedLogoUrl) {
-      fetchLogoUrl().then(setLogoUrl);
-    } else if (logoUrl !== cachedLogoUrl) {
-      setLogoUrl(cachedLogoUrl);
+    let cancelled = false;
+    fetchLogoUrl(version).then(({ url }) => {
+      if (!cancelled && url !== logoUrl) {
+        setLogoUrl(url);
+      }
+    });
+
+    // Listen for cache invalidation events (fired by invalidateLogoCache)
+    function handleInvalidate(e: Event) {
+      const detail = (e as CustomEvent).detail;
+      const newVersion = detail?.version ?? cachedVersion;
+      setVersion(newVersion);
+      fetchLogoUrl(newVersion).then(({ url }) => {
+        if (!cancelled) setLogoUrl(url);
+      });
     }
-  }, [logoUrl]);
+    window.addEventListener("logo-cache-invalidated", handleInvalidate);
+
+    return () => {
+      cancelled = true;
+      window.removeEventListener("logo-cache-invalidated", handleInvalidate);
+    };
+  }, [version, logoUrl]);
+
+  // Append cache-busting query param if the URL is from the DB (not the
+  // default /logo.png which never changes)
+  if (logoUrl && logoUrl !== "/logo.png" && logoUrl !== "/logo.jpg") {
+    const sep = logoUrl.includes("?") ? "&" : "?";
+    return `${logoUrl}${sep}v=${version}`;
+  }
   return logoUrl;
 }
 

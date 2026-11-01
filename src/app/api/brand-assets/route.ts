@@ -6,11 +6,17 @@ import { getBrandAssets } from "@/lib/services/settings";
  * Public endpoint — returns the brand logo URL, favicon URL, and USD rate.
  * Used by client-side Logo component and the currency toggle.
  *
- * Falls back to /logo.jpg, /favicon.ico, and 110 if not set.
+ * IMPORTANT: This endpoint MUST stay fresh — admin logo/favicon/rate edits
+ * need to be reflected immediately. If we cache for an hour, the new logo
+ * won't appear on the live site until the cache expires.
  *
- * Cache: 1 hour at CDN, 1 hour in browser. Logo/rate rarely changes,
- * so aggressive caching is safe and reduces DB hits significantly.
+ * Cache strategy:
+ *   - force-dynamic: never cached by Next.js server-side
+ *   - Cache-Control: no-store — browser fetch also stays fresh
  */
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export async function GET() {
   try {
     const assets = await getBrandAssets();
@@ -18,7 +24,7 @@ export async function GET() {
       { success: true, ...assets },
       {
         headers: {
-          "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400",
+          "Cache-Control": "no-store, max-age=0, must-revalidate",
         },
       }
     );
@@ -26,13 +32,13 @@ export async function GET() {
     return NextResponse.json(
       {
         success: true,
-        logoUrl: "/logo.jpg",
-        faviconUrl: "/favicon.ico",
+        logoUrl: "/logo.png",
+        faviconUrl: "/logo.png",
         usdRate: 110,
       },
       {
         headers: {
-          "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400",
+          "Cache-Control": "no-store, max-age=0, must-revalidate",
         },
       }
     );

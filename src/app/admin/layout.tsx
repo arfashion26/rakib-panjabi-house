@@ -25,7 +25,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Logo } from "@/components/logo";
+import { useLogoUrl } from "@/components/logo";
 
 interface NavItem {
   href: string;
@@ -71,6 +71,10 @@ export default function AdminLayout({
 }) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = React.useState(false);
+  // Dynamic logo URL — fetched from /api/brand-assets (DB-driven).
+  // When admin uploads a new logo via Settings → Brand Assets, this updates
+  // across the admin sidebar, mobile top bar, and the public site.
+  const logoUrl = useLogoUrl();
 
   // Don't show admin sidebar on login page — it should be a standalone page
   if (pathname === "/admin/login") {
@@ -85,12 +89,13 @@ export default function AdminLayout({
 
   const sidebarContent = (
     <div className="flex h-full flex-col bg-primary text-primary-foreground">
-      {/* Logo / Brand — rectangular logo, no text label */}
+      {/* Logo / Brand — dynamic logo from DB (matches public site logo).
+          Larger size to match the mobile header logo presence. */}
       <div className="border-b border-primary-foreground/10 p-5">
         <Link href="/admin" className="block">
-          <div className="relative h-24 overflow-hidden aspect-[2/1]">
+          <div className="relative h-24 overflow-hidden aspect-[2/1] sm:h-32">
             <img
-              src="/logo.png"
+              src={logoUrl}
               alt="Al-Rakib .com"
               className="h-full w-full object-contain"
             />
@@ -188,9 +193,9 @@ export default function AdminLayout({
           </SheetContent>
         </Sheet>
         <div className="flex items-center gap-2">
-          <div className="relative h-12 overflow-hidden aspect-[2/1]">
+          <div className="relative h-14 overflow-hidden aspect-[2/1] sm:h-16">
             <img
-              src="/logo.png"
+              src={logoUrl}
               alt="Al-Rakib .com"
               className="h-full w-full object-contain"
             />

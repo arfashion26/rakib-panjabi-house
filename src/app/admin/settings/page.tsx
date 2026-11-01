@@ -11,6 +11,7 @@ import { ImageUpload } from "@/components/admin/image-upload";
 import { PaymentMethodsConfig } from "@/components/admin/payment-methods-config";
 import { CustomCodeEditor } from "@/components/admin/custom-code-editor";
 import { ChangePasswordSection } from "@/components/admin/change-password-section";
+import { invalidateLogoCache } from "@/components/logo";
 import { toast } from "sonner";
 
 export default function AdminSettingsPage() {
@@ -48,12 +49,19 @@ export default function AdminSettingsPage() {
   });
 
   // Load settings from DB
+  // We track the previously-loaded logo/favicon URLs so we only invalidate
+  // the client-side cache when they actually change (not on every save).
+  const initialLogoUrl = React.useRef<string>("");
+  const initialFaviconUrl = React.useRef<string>("");
+
   React.useEffect(() => {
     fetch("/api/admin/settings")
       .then((r) => r.json())
       .then((data) => {
         if (data.success && data.settings) {
           setForm((prev) => ({ ...prev, ...data.settings }));
+          initialLogoUrl.current = data.settings.logo_url || "";
+          initialFaviconUrl.current = data.settings.favicon_url || "";
         }
         setLoading(false);
       })
@@ -75,6 +83,21 @@ export default function AdminSettingsPage() {
       const data = await res.json();
       if (data.success) {
         toast.success("Settings saved successfully");
+
+        // If the logo or favicon changed, invalidate the client-side cache
+        // so the new image appears immediately across the site (header,
+        // footer, mobile, admin sidebar, browser tab) without requiring a
+        // full page reload.
+        const logoChanged = (form.logo_url || "") !== initialLogoUrl.current;
+        const faviconChanged = (form.favicon_url || "") !== initialFaviconUrl.current;
+        if (logoChanged || faviconChanged) {
+          invalidateLogoCache();
+          initialLogoUrl.current = form.logo_url || "";
+          initialFaviconUrl.current = form.favicon_url || "";
+          // Reload the page so the favicon + all logo instances update
+          // (favicon in particular requires a reload to refresh in the tab)
+          setTimeout(() => window.location.reload(), 600);
+        }
       } else {
         toast.error(data.error || "Failed to save settings");
       }
@@ -122,11 +145,10 @@ export default function AdminSettingsPage() {
             <h2 className="font-serif text-lg font-medium">Brand Assets</h2>
           </div>
           <p className="mb-4 text-xs text-muted-foreground">
-            Upload your store logo and favicon. Logo appears in the header, footer,
-            and emails. Favicon appears in browser tabs. If left empty, defaults to
-            <code className="mx-1 rounded bg-muted px-1.5 py-0.5 text-[10px]">/logo.jpg</code>
-            and
-            <code className="mx-1 rounded bg-muted px-1.5 py-0.5 text-[10px]">/favicon.ico</code>.
+            Upload your store logo and favicon. The logo appears in the header,
+            footer, mobile menu, admin sidebar, and emails. The favicon appears
+            in browser tabs. If left empty, defaults to
+            <code className="mx-1 rounded bg-muted px-1.5 py-0.5 text-[10px]">/logo.png</code>.
           </p>
           <div className="grid gap-6 sm:grid-cols-2">
             <ImageUpload
@@ -134,8 +156,8 @@ export default function AdminSettingsPage() {
               value={form.logo_url || ""}
               onChange={(url) => update("logo_url", url)}
               folder="brand"
-              aspectRatio="aspect-square"
-              hint="Recommended: 400×400px (square). Used in header, footer, emails."
+              aspectRatio="aspect-[2/1]"
+              hint="Recommended: 480×240px (2:1 landscape). Used in header, footer, mobile menu, and admin sidebar."
             />
             <ImageUpload
               label="Favicon"

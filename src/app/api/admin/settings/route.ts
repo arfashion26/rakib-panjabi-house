@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { createServerClientHelper, createAdminClient } from "@/lib/supabase";
 
 async function verifyAdmin() {
@@ -127,6 +128,23 @@ export async function PUT(req: NextRequest) {
           });
         }
       }
+    }
+
+    // Purge caches so the new settings (logo, favicon, USD rate, SEO, etc.)
+    // appear immediately on the live site.
+    try {
+      // The public brand-assets endpoint is used by the client-side Logo
+      // component and the currency toggle. Without this, the new logo won't
+      // appear until the cache expires.
+      revalidatePath("/api/brand-assets");
+      // Homepage + root layout consume brand assets and SEO metadata.
+      revalidatePath("/");
+      revalidatePath("/", "layout");
+      // Admin pages also display the logo in the sidebar.
+      revalidatePath("/admin");
+      revalidatePath("/admin", "layout");
+    } catch {
+      // Non-fatal — ISR will catch up on the next periodic refresh
     }
 
     return NextResponse.json({ success: true });
