@@ -620,3 +620,55 @@ Stage Summary:
 - Page transitions now show a branded spinning gold circle overlay
 - Works for all internal navigation (Link clicks, programmatic nav)
 - Local = Remote HEAD = 7ef73ba (fully in sync)
+
+---
+Task ID: 27
+Agent: main
+Task: Make user management discoverable — dedicated /admin/users page
+
+User reported: 'Admin should be able to create users with limited or
+full access. I can't find this feature — does it exist? If yes, where
+is it managed? If no, build it and add to the settings page.'
+
+Investigation:
+- The user management system ALREADY existed:
+  * /api/admin/create-user (POST) — creates Supabase auth user with
+    email + password + role (ADMIN/MANAGER/STAFF). Only SUPER_ADMIN or
+    ADMIN can call it.
+  * /api/admin/update-user-role (POST) — changes a user's role
+  * AdminUserManager component in src/components/admin/user-manager.tsx
+  * The component was mounted at the BOTTOM of /admin/customers page
+    (in the 'admins' tab), making it nearly impossible to find.
+
+Work Log:
+- Created new route /admin/users (src/app/admin/users/page.tsx):
+  * Title 'Users & Roles' with Shield icon
+  * Three role-legend cards at the top (Admin / Manager / Staff)
+  * Mounts the AdminUserManager component
+- Refactored AdminUserManager to be self-contained:
+  * Was a 'dumb' component receiving users as a prop from parent page
+  * Now fetches its own data from /api/admin/customers
+  * Added Refresh button, loading spinner
+  * Improved create-user dialog: icons next to labels, email format
+    validation, role description shown when selecting, warning box
+    about Super Admin restriction
+  * After create/role-change, refetches list (was reloading whole page)
+- Admin sidebar: added 'Users & Roles' nav item (Shield icon) in the
+  'system' group, above Settings
+- Settings page: added 'Users & Roles' quick-access card with 3
+  role-summary cards + 'Manage Users & Roles' button linking to /admin/users
+- Customers page: updated AdminUserManager call (no longer passes
+  users prop, since the component fetches its own data)
+
+Verification:
+- /admin → 307 (login redirect, expected)
+- /admin/users → 307 (login redirect, expected)
+- /admin/settings → 307 (login redirect, expected)
+- TypeScript compiles clean
+
+Stage Summary:
+- Admin can now create users with limited (Manager/Staff) or full
+  (Admin) access from TWO discoverable locations:
+  1. Sidebar → 'Users & Roles' (new dedicated nav item)
+  2. Settings → 'Users & Roles' card (links to the same page)
+- Local = Remote HEAD = 7df1338 (fully in sync)
