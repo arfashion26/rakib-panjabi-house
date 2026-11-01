@@ -119,7 +119,7 @@ Work Log:
 - Supabase REST API works (verified via curl with service role key)
 - BLOCKER: Database pooler connection fails — "tenant/user postgres.diraphksavgifippktuh not found"
   - Tried multiple regions (us-east-1, ap-south-1)
-  - Tried multiple passwords (Rakib2026House, 7HD#Mak56N7bai=)
+  - Tried multiple passwords (REDACTED)
   - Tried both ports (5432 session, 6543 transaction)
   - node-postgres doesn't support SNI-based routing required by new Supabase pooler
   - Prisma db execute also fails with same error
@@ -418,3 +418,46 @@ Stage Summary:
 - Admin sidebar logo is now significantly larger and gives the admin
   dashboard a more premium brand presence
 - Committed (514cecd) + pushed to origin/main
+
+---
+Task ID: 22
+Agent: main
+Task: Dynamic logo system — admin-uploaded logo must appear instantly across the whole site + admin sidebar logo size bigger
+
+Two problems found and fixed:
+
+1. ADMIN SIDEBAR LOGO WAS HARDCODED (src/app/admin/layout.tsx)
+   - Was using <img src='/logo.png'> directly, ignoring the DB-driven logo URL
+   - Switched to useLogoUrl() hook (same as the public site header/footer)
+   - Bumped desktop sidebar logo: h-24 → h-24 sm:h-32 (96px mobile, 128px desktop)
+   - Bumped mobile top bar logo: h-12 → h-14 sm:h-16
+   - Removed unused Logo import
+
+2. ADMIN LOGO UPLOAD DIDN'T PROPAGATE TO THE LIVE SITE
+   - /api/brand-assets was cached for 1 hour (s-maxage=3600)
+   - Settings PUT handler didn't call revalidatePath
+   - So after admin uploaded a new logo, public site kept serving old cached URL
+
+   Fixes:
+   - /api/brand-assets/route.ts: force-dynamic + no-store Cache-Control
+   - /api/admin/settings/route.ts: revalidatePath after PUT for /api/brand-assets, /, /admin + layouts
+   - src/components/logo.tsx (useLogoUrl): localStorage persistence + version counter + invalidateLogoCache() export + cache-busting ?v=N query param + custom event listener for live updates
+   - src/app/admin/settings/page.tsx: tracks previously-loaded logo/favicon URLs, calls invalidateLogoCache() after a successful save if logo/favicon changed, reloads page after 600ms so favicon + all logos update everywhere
+   - Fixed Brand Assets upload: was aspect-square but logo is 2:1 landscape → changed to aspect-[2/1]
+
+Verification:
+- Homepage: 200 ✓
+- /admin: 307 (login redirect, expected) ✓
+- /api/brand-assets: 200, returns real DB values (logoUrl=/logo.png, faviconUrl=<supabase URL>, usdRate=130) ✓
+- TypeScript compiles clean ✓
+
+Stage Summary:
+- Admin sidebar logo is now bigger AND uses the DB-driven URL
+- Admin can upload a logo via Settings → Brand Assets and it will appear
+  immediately on: header, footer, mobile menu, admin sidebar, browser tab
+- The reload-after-save ensures even the favicon (which is cached
+  aggressively by browsers) updates correctly
+
+BLOCKER: GitHub push failed — token [REDACTED_GITHUB_TOKEN]
+returned "Bad credentials". Commit is local (eed7ea3) but NOT pushed.
+Need a fresh GitHub token from the user to push.
