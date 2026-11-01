@@ -108,14 +108,14 @@ export function NavigationLoader() {
       aria-live="polite"
       aria-busy="true"
       role="status"
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-primary/30 backdrop-blur-sm"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-white/70 backdrop-blur-sm"
       style={{ animation: "navloader-fade-in 180ms ease-out" }}
     >
       {/* Branded spinner — two concentric rings with brand gold accent */}
       <div className="relative flex flex-col items-center gap-4">
         <div className="relative h-16 w-16">
-          {/* Outer ring — subtle dark track */}
-          <div className="absolute inset-0 rounded-full border-4 border-primary-foreground/15" />
+          {/* Outer ring — subtle gray track on white background */}
+          <div className="absolute inset-0 rounded-full border-4 border-black/10" />
           {/* Spinning gold arc */}
           <div
             className="absolute inset-0 rounded-full border-4 border-transparent"
@@ -131,8 +131,8 @@ export function NavigationLoader() {
             style={{ animation: "navloader-pulse 900ms ease-in-out infinite" }}
           />
         </div>
-        {/* Brand text under the spinner */}
-        <p className="font-serif text-sm font-medium uppercase tracking-[0.25em] text-primary-foreground/90">
+        {/* Brand text under the spinner — black on white backdrop */}
+        <p className="font-serif text-sm font-medium uppercase tracking-[0.25em] text-black">
           alrakib.com
         </p>
       </div>
