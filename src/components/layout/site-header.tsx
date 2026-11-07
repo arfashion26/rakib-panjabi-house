@@ -392,10 +392,10 @@ function DesktopHeader() {
               <BigSearchBar />
             </div>
 
-            {/* Right: Animated Bangladesh flag + Cart button.
-                The flag gently waves (CSS animation in the component) and
-                sits to the LEFT of the cart icon. */}
-            <div className="flex shrink-0 items-center gap-3 lg:gap-4">
+            {/* Right: Bangladesh flag + Cart button.
+                Internal gap matches the parent flex gap so the flag has
+                equal spacing on both sides (search bar ↔ flag ↔ cart). */}
+            <div className="flex shrink-0 items-center gap-4 lg:gap-6">
               <BangladeshFlag className="h-10 w-14 lg:h-12 lg:w-16" />
               <Button
                 variant="ghost"
