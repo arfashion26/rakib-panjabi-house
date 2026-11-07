@@ -672,3 +672,51 @@ Stage Summary:
   1. Sidebar → 'Users & Roles' (new dedicated nav item)
   2. Settings → 'Users & Roles' card (links to the same page)
 - Local = Remote HEAD = 7df1338 (fully in sync)
+
+---
+Task ID: 28
+Agent: main
+Task: Image zoom functionality — hover over product image shows a zoom button that opens a full-screen viewer
+
+User requested: when hovering over a product image (card or detail
+page), a zoom button should appear. Clicking it should let the user
+zoom into the image.
+
+New component: src/components/ui/image-zoom.tsx
+- ImageZoomButton — small zoom-icon button, opacity-0 → group-hover:opacity-100
+- Clicking opens a full-screen modal (z-[200]) with dark backdrop
+- Modal features:
+  * Zoom in/out via toolbar buttons (1x to 5x, step 0.5x)
+  * Zoom percentage displayed in the toolbar
+  * Rotate 90° clockwise button
+  * Reset button (restores zoom, rotation, position)
+  * Mouse wheel to zoom in/out smoothly (0.15 step)
+  * Click+drag (or touch-drag) to pan when zoomed in
+  * Close via X button, clicking outside, or Escape
+- Body scroll locked while modal is open
+- Cursor changes to grab/grabbing when pannable
+- Hint text at top: 'Drag to pan · Scroll to zoom · Esc to close'
+- Touch support for mobile (single-finger pan)
+- Image draggable={false} to prevent native image drag
+
+Wired into product card (src/components/product/product-card.tsx):
+- Zoom button at bottom-right of the product image
+- Only shown when product has an image (not for placeholder)
+- Click does NOT trigger parent Link navigation (stopPropagation)
+
+Wired into product detail (src/components/product/product-detail-content.tsx):
+- Main image container now has 'group' class
+- Zoom button at bottom-right of main image
+- Hidden for color-swatch placeholders (URLs starting with '#') and
+  for 'RPH' placeholder case
+
+Verification:
+- Homepage: 200
+- /shop: 200
+- /product/biomil-4-follow-up-formula-milk-powder-2-3-years-350g: 200
+- TypeScript compiles clean
+
+Stage Summary:
+- Product images (cards + detail page) now show a zoom button on hover
+- Clicking opens a full-screen modal with zoom/pan/rotate controls
+- Local = Remote HEAD = 24cd99d (fully in sync)
