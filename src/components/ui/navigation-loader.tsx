@@ -1,40 +1,41 @@
 "use client";
 
 import * as React from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 
 /**
  * NavigationLoader
  *
  * Shows a branded spinning-circle overlay while the user navigates between
  * pages. The overlay appears the instant a Link is clicked and disappears
- * once the new route's pathname is committed.
+ * once the new route is committed.
  *
  * How it works:
  * 1. On mount, we attach a global `click` listener that inspects every
  *    clicked anchor. If the href targets a different internal path, we
  *    set `navigating=true` and show the overlay.
- * 2. `usePathname()` updates when the new route is committed. A useEffect
- *    watching pathname clears `navigating=false` — hiding the overlay.
- * 3. A 4-second safety timeout hides the overlay even if something goes
- *    wrong (e.g. the new page hangs) so the user is never stuck.
- *
- * The spinner uses the brand gold (#fedc00 = bg-accent) on a dark
- * translucent backdrop, matching the premium look of the rest of the site.
+ * 2. `usePathname()` + `useSearchParams()` update when the new route is
+ *    committed. A useEffect watching them clears `navigating=false`.
+ * 3. Listens for a custom 'navigation-start' window event so programmatic
+ *    router.push() calls (which don't fire click events on anchors) can
+ *    also trigger the overlay. Used by the shop sidebar category switcher.
+ * 4. A 6-second safety timeout hides the overlay even if something goes
+ *    wrong so the user is never stuck.
  */
 export function NavigationLoader() {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [navigating, setNavigating] = React.useState(false);
   const timeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Hide the overlay whenever the pathname changes (navigation completed)
+  // Hide the overlay whenever the route (pathname OR search params) changes
   React.useEffect(() => {
     setNavigating(false);
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
       timeoutRef.current = null;
     }
-  }, [pathname]);
+  }, [pathname, searchParams]);
 
   // Listen for clicks on internal links to start the overlay
   React.useEffect(() => {
@@ -90,8 +91,23 @@ export function NavigationLoader() {
       }, 6000);
     }
 
+    // Listen for programmatic navigation events (e.g. router.push() from
+    // the shop sidebar when switching categories — those don't fire click
+    // events on anchors, so the click listener won't catch them).
+    function handleProgrammaticNav() {
+      setNavigating(true);
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      timeoutRef.current = setTimeout(() => {
+        setNavigating(false);
+      }, 6000);
+    }
+
     document.addEventListener("click", handleClick, true);
-    return () => document.removeEventListener("click", handleClick, true);
+    window.addEventListener("navigation-start", handleProgrammaticNav);
+    return () => {
+      document.removeEventListener("click", handleClick, true);
+      window.removeEventListener("navigation-start", handleProgrammaticNav);
+    };
   }, []);
 
   // Clean up the safety timeout on unmount

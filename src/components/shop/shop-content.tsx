@@ -94,10 +94,22 @@ export function ShopContent({
     if (searchParams.maxPrice) params.set("maxPrice", searchParams.maxPrice);
     if (value) params.set(key, value);
     else params.delete(key);
+
+    // Dispatch a custom event so the global NavigationLoader overlay shows
+    // during the programmatic router.push() below (programmatic navigations
+    // don't fire click events on anchors, so the loader's click listener
+    // wouldn't catch them).
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("navigation-start"));
+    }
+
     router.push(`/shop?${params.toString()}`);
   }
 
   function clearFilters() {
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("navigation-start"));
+    }
     router.push("/shop");
   }
 
@@ -120,8 +132,10 @@ export function ShopContent({
           <button
             onClick={() => updateParam("category", "")}
             className={cn(
-              "block w-full rounded-md px-3 py-1.5 text-left text-sm transition-colors",
-              !categoryParam ? "bg-accent/10 font-medium text-accent-text" : "text-muted-foreground hover:bg-accent/5 hover:text-foreground"
+              "block w-full rounded-md border-l-2 px-3 py-2 text-left text-sm transition-all",
+              !categoryParam
+                ? "border-accent bg-accent font-semibold text-accent-foreground shadow-sm"
+                : "border-transparent text-muted-foreground hover:bg-accent/10 hover:text-foreground"
             )}
           >
             {t("products.allCategories")}
@@ -129,30 +143,38 @@ export function ShopContent({
           {/* Show main categories with their sub-categories nested */}
           {categories.filter((c) => !c.parent_id).map((cat) => {
             const subs = categories.filter((s) => s.parent_id === cat.id);
+            const isActive = categoryParam === cat.slug;
             return (
               <div key={cat.id}>
                 <button
                   onClick={() => updateParam("category", cat.slug)}
                   className={cn(
-                    "block w-full rounded-md px-3 py-1.5 text-left text-sm capitalize transition-colors",
-                    categoryParam === cat.slug ? "bg-accent/10 font-medium text-accent-text" : "text-muted-foreground hover:bg-accent/5 hover:text-foreground"
+                    "block w-full rounded-md border-l-2 px-3 py-2 text-left text-sm capitalize transition-all",
+                    isActive
+                      ? "border-accent bg-accent font-semibold text-accent-foreground shadow-sm"
+                      : "border-transparent text-muted-foreground hover:bg-accent/10 hover:text-foreground"
                   )}
                 >
                   {cat.name}
                 </button>
                 {/* Sub-categories — indented under parent */}
-                {subs.map((sub) => (
-                  <button
-                    key={sub.id}
-                    onClick={() => updateParam("category", sub.slug)}
-                    className={cn(
-                      "block w-full rounded-md py-1 pl-6 pr-3 text-left text-xs capitalize transition-colors",
-                      categoryParam === sub.slug ? "bg-accent/10 font-medium text-accent-text" : "text-muted-foreground hover:bg-accent/5 hover:text-foreground"
-                    )}
-                  >
-                    ↳ {sub.name}
-                  </button>
-                ))}
+                {subs.map((sub) => {
+                  const subActive = categoryParam === sub.slug;
+                  return (
+                    <button
+                      key={sub.id}
+                      onClick={() => updateParam("category", sub.slug)}
+                      className={cn(
+                        "block w-full rounded-md border-l-2 py-1.5 pl-7 pr-3 text-left text-xs capitalize transition-all",
+                        subActive
+                          ? "border-accent bg-accent font-semibold text-accent-foreground shadow-sm"
+                          : "border-transparent text-muted-foreground hover:bg-accent/10 hover:text-foreground"
+                      )}
+                    >
+                      ↳ {sub.name}
+                    </button>
+                  );
+                })}
               </div>
             );
           })}
