@@ -82,3 +82,6 @@ Desktop.ini
 *.tmp
 *.bak
 *.cachetool-results/
+
+# User-uploaded reference images (kept locally only)
+upload/

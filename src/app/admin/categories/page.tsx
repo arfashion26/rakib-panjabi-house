@@ -250,99 +250,117 @@ export default function AdminCategoriesPage() {
       {/* Add/Edit Dialog */}
       {editing && (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
-          <DialogContent className="sm:max-w-lg">
-            <DialogHeader>
-              <DialogTitle>{editing.id ? "Edit Category" : "Add New Category"}</DialogTitle>
+          <DialogContent className="max-h-[92vh] flex w-[95vw] max-w-2xl flex-col gap-0 overflow-hidden p-0 sm:max-w-2xl">
+            {/* Sticky header */}
+            <DialogHeader className="shrink-0 border-b border-border bg-background px-6 py-4">
+              <DialogTitle className="text-lg">
+                {editing.id ? "Edit Category" : "Add New Category"}
+              </DialogTitle>
             </DialogHeader>
-            <div className="space-y-4 py-4">
-              {/* Parent Category selector — for sub-categories */}
-              <div className="space-y-2">
-                <Label htmlFor="cat-parent">Parent Category (leave empty for main category)</Label>
-                <select
-                  id="cat-parent"
-                  value={editing.parent_id || ""}
-                  onChange={(e) => setEditing({ ...editing, parent_id: e.target.value || null })}
-                  className="h-9 w-full rounded-md border border-border bg-background px-3 text-sm"
-                >
-                  <option value="">— Main Category (no parent) —</option>
-                  {categories
-                    .filter((c) => !c.parent_id) // only main categories can be parents
-                    .filter((c) => c.id !== editing.id) // can't be own parent
-                    .map((cat) => (
-                      <option key={cat.id} value={cat.id}>
-                        {cat.name}
-                      </option>
-                    ))}
-                </select>
-                <p className="text-[10px] text-muted-foreground">
-                  Select a parent category to make this a sub-category. Sub-categories
-                  appear as dropdown items under their parent in the navigation menu.
-                </p>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="cat-name">Category Name *</Label>
-                <Input
-                  id="cat-name"
-                  value={editing.name}
-                  onChange={(e) => setEditing({ ...editing, name: e.target.value })}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="cat-slug">Slug (URL)</Label>
-                <Input
-                  id="cat-slug"
-                  placeholder="auto-generated if empty"
-                  value={editing.slug}
-                  onChange={(e) => setEditing({ ...editing, slug: e.target.value })}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="cat-desc">Description</Label>
-                <Textarea
-                  id="cat-desc"
-                  rows={3}
-                  value={editing.description || ""}
-                  onChange={(e) => setEditing({ ...editing, description: e.target.value })}
-                />
-              </div>
-              {/* Category Image Upload */}
-              <ImageUpload
-                label="Category Image"
-                value={editing.image || ""}
-                onChange={(url) => setEditing({ ...editing, image: url })}
-                folder={`categories/${editing.slug || "general"}`}
-                aspectRatio="aspect-[3/4]"
-                hint="Recommended: 450×600px (portrait). Shown on homepage featured categories."
-              />
-              <div className="grid grid-cols-2 gap-3">
+
+            {/* Scrollable body */}
+            <div className="flex-1 overflow-y-auto px-6 py-5">
+              <div className="space-y-5">
+                {/* Parent Category selector — for sub-categories */}
                 <div className="space-y-2">
-                  <Label htmlFor="cat-order">Display Order</Label>
-                  <Input
-                    id="cat-order"
-                    type="number"
-                    value={editing.order}
-                    onChange={(e) => setEditing({ ...editing, order: parseInt(e.target.value) || 0 })}
+                  <Label htmlFor="cat-parent">Parent Category (leave empty for main category)</Label>
+                  <select
+                    id="cat-parent"
+                    value={editing.parent_id || ""}
+                    onChange={(e) => setEditing({ ...editing, parent_id: e.target.value || null })}
+                    className="h-10 w-full rounded-md border border-border bg-background px-3 text-sm"
+                  >
+                    <option value="">— Main Category (no parent) —</option>
+                    {categories
+                      .filter((c) => !c.parent_id) // only main categories can be parents
+                      .filter((c) => c.id !== editing.id) // can't be own parent
+                      .map((cat) => (
+                        <option key={cat.id} value={cat.id}>
+                          {cat.name}
+                        </option>
+                      ))}
+                  </select>
+                  <p className="text-[10px] text-muted-foreground">
+                    Select a parent category to make this a sub-category. Sub-categories
+                    appear as dropdown items under their parent in the navigation menu.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="cat-name">Category Name *</Label>
+                    <Input
+                      id="cat-name"
+                      value={editing.name}
+                      onChange={(e) => setEditing({ ...editing, name: e.target.value })}
+                      className="h-10"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="cat-slug">Slug (URL)</Label>
+                    <Input
+                      id="cat-slug"
+                      placeholder="auto-generated if empty"
+                      value={editing.slug}
+                      onChange={(e) => setEditing({ ...editing, slug: e.target.value })}
+                      className="h-10"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="cat-desc">Description</Label>
+                  <Textarea
+                    id="cat-desc"
+                    rows={3}
+                    value={editing.description || ""}
+                    onChange={(e) => setEditing({ ...editing, description: e.target.value })}
                   />
                 </div>
-                <div className="flex items-end gap-3 pb-2">
-                  <label className="flex items-center gap-2">
-                    <Switch
-                      checked={editing.is_featured}
-                      onCheckedChange={(v) => setEditing({ ...editing, is_featured: v })}
+
+                {/* Category Image Upload */}
+                <ImageUpload
+                  label="Category Image"
+                  value={editing.image || ""}
+                  onChange={(url) => setEditing({ ...editing, image: url })}
+                  folder={`categories/${editing.slug || "general"}`}
+                  aspectRatio="aspect-[3/4]"
+                  hint="Recommended: 450×600px (portrait). Shown on homepage featured categories."
+                />
+
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="cat-order">Display Order</Label>
+                    <Input
+                      id="cat-order"
+                      type="number"
+                      value={editing.order}
+                      onChange={(e) => setEditing({ ...editing, order: parseInt(e.target.value) || 0 })}
+                      className="h-10"
                     />
-                    <span className="text-sm">Featured</span>
-                  </label>
+                  </div>
+                  <div className="flex items-center gap-6 pt-6">
+                    <label className="flex cursor-pointer items-center gap-2">
+                      <Switch
+                        checked={editing.is_featured}
+                        onCheckedChange={(v) => setEditing({ ...editing, is_featured: v })}
+                      />
+                      <span className="text-sm">Featured</span>
+                    </label>
+                    <label className="flex cursor-pointer items-center gap-2">
+                      <Switch
+                        checked={editing.is_active}
+                        onCheckedChange={(v) => setEditing({ ...editing, is_active: v })}
+                      />
+                      <span className="text-sm">Active</span>
+                    </label>
+                  </div>
                 </div>
               </div>
-              <label className="flex items-center gap-2">
-                <Switch
-                  checked={editing.is_active}
-                  onCheckedChange={(v) => setEditing({ ...editing, is_active: v })}
-                />
-                <span className="text-sm">Active (visible on site)</span>
-              </label>
             </div>
-            <DialogFooter>
+
+            {/* Sticky footer */}
+            <DialogFooter className="shrink-0 border-t border-border bg-background px-6 py-4">
               <Button variant="outline" onClick={() => setIsOpen(false)}>Cancel</Button>
               <Button onClick={() => handleSave(editing)} disabled={saving}>
                 {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
