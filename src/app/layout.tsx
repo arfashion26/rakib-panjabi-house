@@ -8,6 +8,7 @@ import { LanguageProvider } from "@/i18n/language-context";
 import { CurrencyProvider } from "@/i18n/currency-context";
 import { getCustomCode } from "@/lib/services/custom-code";
 import { getBrandAssets } from "@/lib/services/settings";
+import { CustomCodeRender } from "@/components/ui/custom-code-render";
 
 // Poppins — used everywhere (body, headings, UI, buttons, etc.)
 const poppins = Poppins({
@@ -182,9 +183,11 @@ export default async function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
         />
-        {/* Custom tracking code for <head> (Google Analytics, FB Pixel, GTM, etc.) */}
+        {/* Custom tracking code for <head> (Google Analytics, FB Pixel, GTM, etc.)
+            Uses CustomCodeRender so <script> tags actually EXECUTE —
+            dangerouslySetInnerHTML on a <div> silently ignores scripts. */}
         {customCode.head && (
-          <div dangerouslySetInnerHTML={{ __html: customCode.head }} />
+          <CustomCodeRender code={customCode.head} keyPrefix="head" />
         )}
       </head>
       <body
@@ -192,7 +195,7 @@ export default async function RootLayout({
       >
         {/* Custom tracking code for top of <body> (GTM noscript, early pixels) */}
         {customCode.body_top && (
-          <div dangerouslySetInnerHTML={{ __html: customCode.body_top }} />
+          <CustomCodeRender code={customCode.body_top} keyPrefix="body-top" />
         )}
         <ThemeProvider
           attribute="class"
@@ -209,7 +212,7 @@ export default async function RootLayout({
         </ThemeProvider>
         {/* Custom tracking code for bottom of <body> (chat widgets, conversion pixels) */}
         {customCode.body_bottom && (
-          <div dangerouslySetInnerHTML={{ __html: customCode.body_bottom }} />
+          <CustomCodeRender code={customCode.body_bottom} keyPrefix="body-bottom" />
         )}
       </body>
     </html>
