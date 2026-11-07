@@ -27,6 +27,7 @@ import { ProductCard } from "@/components/product/product-card";
 import { cn } from "@/lib/utils";
 import { calculateDiscount } from "@/lib/types";
 import { toast } from "sonner";
+import { ImageZoomButton } from "@/components/ui/image-zoom";
 
 interface ProductImage {
   id: string;
@@ -242,7 +243,7 @@ export function ProductDetailContent({
           )}
 
           {/* Main image */}
-          <div className="relative aspect-[4/5] flex-1 overflow-hidden rounded-xl border border-border/60 bg-muted">
+          <div className="group relative aspect-[4/5] flex-1 overflow-hidden rounded-xl border border-border/60 bg-muted">
             {allImages[selectedImageIdx] !== "placeholder" && allImages[selectedImageIdx].startsWith("#") ? (
               <div className="absolute inset-0" style={{ backgroundColor: allImages[selectedImageIdx] }} />
             ) : allImages[selectedImageIdx] !== "placeholder" ? (
@@ -275,6 +276,16 @@ export function ProductDetailContent({
                 </Badge>
               )}
             </div>
+
+            {/* Zoom button — bottom right, appears on hover.
+                Opens a full-screen modal where the image can be zoomed/panned. */}
+            {allImages[selectedImageIdx] !== "placeholder" && !allImages[selectedImageIdx].startsWith("#") && (
+              <ImageZoomButton
+                src={allImages[selectedImageIdx]}
+                alt={product.name}
+                className="absolute bottom-3 right-3"
+              />
+            )}
           </div>
         </div>
 

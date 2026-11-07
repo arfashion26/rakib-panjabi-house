@@ -9,6 +9,7 @@ import { useCart, useWishlist } from "@/lib/store";
 import { cn } from "@/lib/utils";
 import { calculateDiscount } from "@/lib/types";
 import { toast } from "sonner";
+import { ImageZoomButton } from "@/components/ui/image-zoom";
 
 interface ProductCardProps {
   product: {
@@ -142,6 +143,16 @@ export function ProductCard({
         >
           <Heart className={cn("h-3.5 w-3.5", hasInWishlist ? "fill-red-500 text-red-500" : "text-gray-600")} />
         </button>
+
+        {/* Zoom button — bottom right, appears on hover.
+            Opens a full-screen modal where the image can be zoomed/panned. */}
+        {hasImageUrl && (
+          <ImageZoomButton
+            src={images[0]}
+            alt={product.name}
+            className="absolute bottom-2 right-2"
+          />
+        )}
       </div>
 
       {/* Info section — white bg, brand-colored text */}
