@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { createServerClientHelper, createAdminClient } from "@/lib/supabase";
 
 async function verifyAdmin() {
@@ -18,6 +19,20 @@ async function verifyAdmin() {
   if (!profile || profile.status !== "ACTIVE") return null;
   if (!["SUPER_ADMIN", "ADMIN", "MANAGER"].includes(profile.role)) return null;
   return profile;
+}
+
+/** Purge caches so category changes appear immediately on the live site. */
+function revalidateCategoryPaths() {
+  try {
+    revalidatePath("/");
+    revalidatePath("/", "layout");
+    revalidatePath("/shop");
+    revalidatePath("/shop", "layout");
+    revalidatePath("/api/categories");
+    revalidatePath("/api/nav-menu");
+  } catch {
+    // Non-fatal — ISR will catch up on the next periodic refresh
+  }
 }
 
 /**
@@ -93,6 +108,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: error.message }, { status: 400 });
     }
 
+    // Purge caches so the new category appears immediately on the live site
+    revalidateCategoryPaths();
+
     return NextResponse.json({ success: true, category });
   } catch (error: any) {
     return NextResponse.json(
@@ -140,6 +158,10 @@ export async function PUT(request: NextRequest) {
     if (error) {
       return NextResponse.json({ success: false, error: error.message }, { status: 500 });
     }
+
+    // Purge caches so the category changes (image, description, name, etc.)
+    // appear immediately on the live site
+    revalidateCategoryPaths();
 
     return NextResponse.json({ success: true });
   } catch (error: any) {
@@ -190,6 +212,9 @@ export async function DELETE(request: NextRequest) {
     if (error) {
       return NextResponse.json({ success: false, error: error.message }, { status: 500 });
     }
+
+    // Purge caches so the deletion appears immediately on the live site
+    revalidateCategoryPaths();
 
     return NextResponse.json({ success: true });
   } catch (error: any) {

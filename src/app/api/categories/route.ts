@@ -4,11 +4,20 @@ import { createAdminClient } from "@/lib/supabase";
 /**
  * GET /api/categories
  * Public endpoint — returns all active categories.
- * Used by Shop mega menu and other public pages.
+ * Used by Shop mega menu, header navigation, and other public pages.
  *
- * Cache: 1 hour at CDN + 5 min stale-while-revalidate.
- * Categories rarely change, so this is safe to cache aggressively.
+ * IMPORTANT: This endpoint MUST stay fresh — admin category edits
+ * (image, description, name, featured flag, etc.) need to be reflected
+ * immediately on the live site. If we cache for an hour, the changes
+ * won't appear until the cache expires.
+ *
+ * Cache strategy:
+ *   - force-dynamic: never cached by Next.js server-side
+ *   - Cache-Control: no-store — browser fetch also stays fresh
  */
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export async function GET() {
   try {
     const admin = createAdminClient();
@@ -26,7 +35,7 @@ export async function GET() {
       { success: true, categories: data || [] },
       {
         headers: {
-          "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=300",
+          "Cache-Control": "no-store, max-age=0, must-revalidate",
         },
       }
     );
