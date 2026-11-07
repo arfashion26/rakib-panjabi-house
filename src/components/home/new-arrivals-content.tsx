@@ -41,7 +41,7 @@ export function NewArrivalsContent({ products }: { products: Product[] }) {
               {t("newArrivals.description")}
             </p>
           </div>
-          <ButtonLink href="/new-arrivals" variant="ghost" className="shrink-0">
+          <ButtonLink href="/new-arrivals" variant="primary" className="shrink-0 shadow-sm">
             {t("newArrivals.viewAll")}
             <ArrowRight className="ml-2 h-4 w-4" />
           </ButtonLink>

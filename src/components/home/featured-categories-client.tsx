@@ -79,9 +79,12 @@ export function FeaturedCategoriesClient({ featured }: { featured: FeaturedCateg
                     {cat.description}
                   </p>
                 )}
-                <div className="mt-4 inline-flex items-center gap-2 text-sm font-medium uppercase tracking-wider text-accent-text">
+                {/* Shop Now button — solid gold background box so it's
+                    clearly visible as a clickable button on the dark
+                    gradient overlay. */}
+                <div className="mt-4 inline-flex w-fit items-center gap-2 rounded-md bg-accent px-4 py-2 text-xs font-bold uppercase tracking-wider text-accent-foreground shadow-md transition-all group-hover:gap-3 group-hover:bg-accent/90">
                   {t("categories.shopNow")}
-                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                 </div>
               </div>
 

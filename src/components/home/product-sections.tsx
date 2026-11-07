@@ -42,7 +42,7 @@ export function TrendingProducts({ products }: { products: Product[] }) {
               Our most-loved pieces that everyone is talking about this season.
             </p>
           </div>
-          <ButtonLink href="/best-sellers" variant="ghost" className="shrink-0">
+          <ButtonLink href="/best-sellers" variant="primary" className="shrink-0 shadow-sm">
             View All
             <ArrowRight className="ml-2 h-4 w-4" />
           </ButtonLink>
