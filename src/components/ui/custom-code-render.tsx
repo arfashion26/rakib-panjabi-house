@@ -1,8 +1,10 @@
 import * as React from "react";
 
 interface ParsedCustomCode {
-  /** Raw script contents (the inner JS code, one entry per <script> tag) */
+  /** Inline script bodies (one per <script>...</script> tag without src) */
   scripts: string[];
+  /** External script srcs (from <script src="..."> tags) */
+  externalSrcs: string[];
   /** HTML chunks that are NOT scripts (noscript, comments, plain HTML).
    * Rendered via dangerouslySetInnerHTML so the browser sees the markup. */
   html: string;
@@ -18,32 +20,30 @@ interface ParsedCustomCode {
  *   the Custom Code editor.
  *
  *   To make scripts actually execute, we split the snippet into:
- *     1. <script>...</script> blocks → rendered as real <script> elements
- *        with dangerouslySetInnerHTML on the script tag itself (which the
- *        browser DOES execute)
- *     2. everything else (noscript, comments, meta tags, plain HTML) →
+ *     1. inline <script>...</script> blocks → rendered as real <script>
+ *        elements (which the browser DOES execute on initial HTML parse)
+ *     2. external <script src="..."> tags → also rendered as real
+ *        <script src="..."> elements so the browser fetches + executes them
+ *     3. everything else (noscript, comments, meta tags, plain HTML) →
  *        rendered via dangerouslySetInnerHTML on a <div> (browser renders
  *        the markup but doesn't try to execute anything)
  */
 export function parseCustomCode(raw: string): ParsedCustomCode {
   if (!raw || typeof raw !== "string") {
-    return { scripts: [], html: "" };
+    return { scripts: [], externalSrcs: [], html: "" };
   }
 
   const scripts: string[] = [];
+  const externalSrcs: string[] = [];
   let html = raw;
 
-  // Extract <script>...</script> blocks (non-src, inline scripts).
+  // Match <script ...>...</script> (with optional attributes).
   // We keep the script *content* (the JS code) so it can be re-rendered
   // inside a real <script> tag below. <script src="..."> tags (external)
-  // are also captured by extracting their src and re-emitting a real
-  // script tag with that src.
-  const externalSrcs: string[] = [];
-
-  // Match <script ...>...</script> (with optional attributes)
+  // are also captured by extracting their src.
   html = html.replace(
     /<script\b([^>]*)>([\s\S]*?)<\/script>/gi,
-    (fullMatch, attrs: string, inner: string) => {
+    (_fullMatch, attrs: string, inner: string) => {
       // Check if it's an external script (has src="...")
       const srcMatch = /src\s*=\s*["']([^"']+)["']/i.exec(attrs);
       if (srcMatch) {
@@ -57,15 +57,7 @@ export function parseCustomCode(raw: string): ParsedCustomCode {
     }
   );
 
-  // For external scripts, we'll emit them as src-based script tags.
-  // Encode them as inline JS that creates a script element with the src.
-  for (const src of externalSrcs) {
-    scripts.push(
-      `(function(){var s=document.createElement('script');s.src=${JSON.stringify(src)};s.async=true;document.head.appendChild(s);})();`
-    );
-  }
-
-  return { scripts, html };
+  return { scripts, externalSrcs, html };
 }
 
 /**
@@ -74,6 +66,10 @@ export function parseCustomCode(raw: string): ParsedCustomCode {
  *
  * The `keyPrefix` prop disambiguates multiple CustomCodeRender instances
  * on the same page (head vs body_top vs body_bottom).
+ *
+ * Scripts are rendered with a `suppressHydrationWarning` flag because
+ * the Facebook Pixel and similar scripts modify the DOM immediately on
+ * execution, which would otherwise trigger React hydration warnings.
  */
 export function CustomCodeRender({
   code,
@@ -83,16 +79,32 @@ export function CustomCodeRender({
   keyPrefix: string;
 }) {
   if (!code) return null;
-  const { scripts, html } = parseCustomCode(code);
+  const { scripts, externalSrcs, html } = parseCustomCode(code);
 
   return (
     <>
+      {/* External scripts — render as real <script src> tags so the
+          browser fetches + executes them. async by default for
+          analytics scripts (matches typical paste-in behavior). */}
+      {externalSrcs.map((src, idx) => (
+        <script
+          key={`${keyPrefix}-ext-${idx}`}
+          src={src}
+          async
+          defer
+        />
+      ))}
+      {/* Inline scripts — render as real <script> tags with the JS code
+          inside. The browser executes these on initial HTML parse. */}
       {scripts.map((script, idx) => (
         <script
           key={`${keyPrefix}-script-${idx}`}
           dangerouslySetInnerHTML={{ __html: script }}
         />
       ))}
+      {/* Leftover HTML (noscript, comments, meta tags) — render via
+          dangerouslySetInnerHTML on a div. Scripts have already been
+          extracted so this is purely markup. */}
       {html.trim() && (
         <div
           key={`${keyPrefix}-html`}
