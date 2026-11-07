@@ -46,6 +46,7 @@ import {
 } from "@/components/ui/navigation-menu";
 import { useLogoUrl } from "@/components/logo";
 import { useCurrency } from "@/i18n/currency-context";
+import { BangladeshFlag } from "@/components/ui/bangladesh-flag";
 
 /**
  * Top utility bar — gold accent
@@ -376,24 +377,26 @@ function DesktopHeader() {
       </div>
 
       {/* Main bar — dark background (logo is gold, needs contrast).
-          Logo (left) | Big rectangular search bar (center) | Cart button (right) */}
+          Logo (left) | Big rectangular search bar (center) | BD flag + Cart (right) */}
       <div className="border-b border-primary-foreground/10 bg-primary text-primary-foreground">
         <div className="mx-auto max-w-7xl px-4 lg:px-6">
-          <div className="flex h-32 items-center justify-between gap-6">
+          <div className="flex h-32 items-center justify-between gap-4 lg:gap-6">
             {/* Left: Logo */}
             <div className="flex shrink-0 items-center">
               <HeaderLogo size="md" />
             </div>
 
-            {/* Center: Big rectangular search bar (takes most of the space) */}
-            <div className="flex-1 max-w-3xl">
+            {/* Center: Big rectangular search bar (slightly narrower to make
+                room for the animated Bangladesh flag on the right). */}
+            <div className="flex-1 max-w-2xl lg:max-w-3xl">
               <BigSearchBar />
             </div>
 
-            {/* Right: Cart button only (wishlist + account removed per request).
-                Bigger, with gold background so it stands out on the dark
-                main bar. Uses bg-accent (gold) so it's clearly visible. */}
-            <div className="flex shrink-0 items-center">
+            {/* Right: Animated Bangladesh flag + Cart button.
+                The flag gently waves (CSS animation in the component) and
+                sits to the LEFT of the cart icon. */}
+            <div className="flex shrink-0 items-center gap-3 lg:gap-4">
+              <BangladeshFlag className="h-10 w-14 lg:h-12 lg:w-16" />
               <Button
                 variant="ghost"
                 aria-label="Cart"
