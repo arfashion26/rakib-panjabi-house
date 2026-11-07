@@ -89,19 +89,24 @@ export default function AdminCategoriesPage() {
         ? `/api/admin/categories?id=${category.id}`
         : "/api/admin/categories";
 
+      // IMPORTANT: send empty strings as null (not undefined) so the API
+      // can clear the field. Using `|| undefined` would drop the key from
+      // the JSON entirely, leaving the old value untouched in the DB.
+      const payload: Record<string, any> = {
+        name: category.name,
+        slug: category.slug || null,
+        description: category.description ? category.description : null,
+        image: category.image ? category.image : null,
+        order: category.order,
+        isFeatured: category.is_featured,
+        isActive: category.is_active,
+        parentId: category.parent_id || null,
+      };
+
       const res = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: category.name,
-          slug: category.slug || undefined,
-          description: category.description || undefined,
-          image: category.image || undefined,
-          order: category.order,
-          isFeatured: category.is_featured,
-          isActive: category.is_active,
-          parentId: category.parent_id || null,
-        }),
+        body: JSON.stringify(payload),
       });
       const data = await res.json();
 
