@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Plus, Edit, Trash2, Loader2, X, AlertCircle } from "lucide-react";
+import { Plus, Edit, Trash2, Loader2, X, AlertCircle, ArrowUp, ArrowDown, Home, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { ImageUpload } from "@/components/admin/image-upload";
+import { HomepageCategoryOrder } from "@/components/admin/homepage-category-order";
 import {
   Dialog,
   DialogContent,
@@ -174,11 +175,18 @@ export default function AdminCategoriesPage() {
           </Button>
         </div>
       ) : (
-        <div className="overflow-hidden rounded-lg border border-border/60 bg-background">
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[600px]">
-              <thead className="border-b border-border bg-muted/30">
-                <tr>
+        <>
+          {/* Homepage Category Order — controls the display order of
+              categories on the homepage's "Featured Categories" section. */}
+          <div className="mb-6">
+            <HomepageCategoryOrder categories={categories} />
+          </div>
+
+          <div className="overflow-hidden rounded-lg border border-border/60 bg-background">
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[600px]">
+                <thead className="border-b border-border bg-muted/30">
+                  <tr>
                   <th className="p-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Name</th>
                   <th className="p-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Slug</th>
                   <th className="p-3 text-center text-xs font-semibold uppercase tracking-wider text-muted-foreground">Order</th>
@@ -236,6 +244,7 @@ export default function AdminCategoriesPage() {
             </table>
           </div>
         </div>
+        </>
       )}
 
       {/* Add/Edit Dialog */}

@@ -21,6 +21,9 @@ export async function isDatabaseReady(): Promise<boolean> {
 
 /**
  * Fetch all active categories from database.
+ *
+ * Sorted by the `order` column (DB-side). Use `sortCategoriesByHomepageOrder`
+ * to apply the admin-configured homepage display order on top.
  */
 export async function getCategories(): Promise<Category[]> {
   const supabase = await createServerClientHelper();
@@ -32,6 +35,64 @@ export async function getCategories(): Promise<Category[]> {
 
   if (error || !data) return [];
   return data as Category[];
+}
+
+/**
+ * Fetch the admin-configured homepage category order.
+ * Stored as a JSON array of category IDs in the settings table under
+ * the key `homepage_category_order`.
+ *
+ * Returns an empty array if not set or DB is unreachable.
+ */
+export async function getHomepageCategoryOrder(): Promise<string[]> {
+  try {
+    const admin = createAdminClient();
+    const { data, error } = await admin
+      .from("settings")
+      .select("value")
+      .eq("key", "homepage_category_order")
+      .maybeSingle();
+    if (error || !data?.value) return [];
+    const parsed = JSON.parse(data.value);
+    return Array.isArray(parsed) ? parsed.filter((id: any) => typeof id === "string") : [];
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * Fetch categories pre-sorted by the admin-configured homepage display
+ * order. Categories not in the order array fall to the end, keeping
+ * their original relative order. Sub-categories stay grouped under
+ * their parent.
+ *
+ * Convenience wrapper combining getCategories + getHomepageCategoryOrder
+ * + the sortCategoriesByHomepageOrder helper from @/lib/category-order.
+ */
+export async function getHomepageOrderedCategories(): Promise<Category[]> {
+  const [cats, order] = await Promise.all([
+    getCategories(),
+    getHomepageCategoryOrder(),
+  ]);
+
+  if (!order.length) return cats;
+
+  // Sort using the pure helper (kept in a non-server-action file so it
+  // doesn't need to be async).
+  // Inline the logic here to avoid an extra import.
+  const orderIndex = new Map<string, number>();
+  order.forEach((id, idx) => orderIndex.set(id, idx));
+
+  const mains = cats.filter((c) => !c.parent_id);
+  const subs = cats.filter((c) => c.parent_id);
+
+  const sortedMains = [...mains].sort((a, b) => {
+    const ai = orderIndex.has(a.id) ? orderIndex.get(a.id)! : Number.MAX_SAFE_INTEGER;
+    const bi = orderIndex.has(b.id) ? orderIndex.get(b.id)! : Number.MAX_SAFE_INTEGER;
+    return ai - bi;
+  });
+
+  return [...sortedMains, ...subs];
 }
 
 /**
