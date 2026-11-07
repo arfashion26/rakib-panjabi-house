@@ -40,7 +40,7 @@ export function FeaturedCategoriesClient({ featured }: { featured: FeaturedCateg
               {t("categories.subtitle")}
             </p>
           </div>
-          <ButtonLink href="/shop" variant="ghost" className="shrink-0">
+          <ButtonLink href="/shop" variant="primary" className="shrink-0 shadow-sm">
             {t("categories.viewAll")}
             <ArrowRight className="ml-2 h-4 w-4" />
           </ButtonLink>
