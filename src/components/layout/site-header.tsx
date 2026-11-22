@@ -423,14 +423,10 @@ function DesktopHeader() {
  * Big rectangular search bar — visible in the desktop header (gold bg).
  * Now powered by SearchAutocomplete: live product suggestions dropdown
  * as the user types (debounced, matches name/sku/search_keywords).
+ * The dropdown is constrained to the search box width.
  */
 function BigSearchBar() {
-  return (
-    <SearchAutocomplete
-      variant="big"
-      className="flex h-14 w-full items-stretch"
-    />
-  );
+  return <SearchAutocomplete className="h-14 w-full" />;
 }
 
 /**
@@ -477,7 +473,6 @@ function SearchBar() {
  */
 function MobileHeader() {
   const [open, setOpen] = React.useState(false);
-  const [searchOpen, setSearchOpen] = React.useState(false);
   const [expandedCats, setExpandedCats] = React.useState<Set<string>>(new Set());
   const pathname = usePathname();
   const totalItems = useCart((s) => s.getTotalItems());
@@ -709,18 +704,8 @@ function MobileHeader() {
             </div>
           </Link>
 
-          {/* Right: Search + Cart */}
+          {/* Right: Cart only */}
           <div className="flex items-center gap-1">
-            {/* Search — opens a full-screen autocomplete overlay */}
-            <Button
-              variant="ghost"
-              size="icon"
-              aria-label="Search products"
-              className="h-10 w-10 text-primary-foreground hover:bg-accent hover:text-accent-foreground"
-              onClick={() => setSearchOpen(true)}
-            >
-              <Search className="h-5 w-5" />
-            </Button>
             {/* Cart — smaller on mobile, fits better with bigger logo */}
             <Button
               variant="ghost"
@@ -739,36 +724,6 @@ function MobileHeader() {
           </div>
         </div>
       </div>
-
-      {/* Full-screen mobile search overlay with autocomplete */}
-      {searchOpen && (
-        <div className="fixed inset-0 z-[60] bg-background md:hidden">
-          {/* Top row: back + title */}
-          <div className="flex items-center gap-2 border-b border-border bg-primary px-3 py-3">
-            <Button
-              variant="ghost"
-              size="icon"
-              aria-label="Close search"
-              className="h-10 w-10 text-primary-foreground hover:bg-accent hover:text-accent-foreground"
-              onClick={() => setSearchOpen(false)}
-            >
-              <X className="h-5 w-5" />
-            </Button>
-            <span className="text-sm font-semibold uppercase tracking-wider text-primary-foreground">
-              Search
-            </span>
-          </div>
-          {/* Search input + dropdown */}
-          <div className="p-3">
-            <SearchAutocomplete
-              variant="overlay"
-              autoFocus
-              onSubmit={() => setSearchOpen(false)}
-              className="h-12"
-            />
-          </div>
-        </div>
-      )}
     </div>
   );
 }

@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Search, Loader2, X } from "lucide-react";
+import { Search, Loader2 } from "lucide-react";
 import { formatPrice } from "@/lib/types";
 
 export interface SuggestionProduct {
@@ -16,10 +16,7 @@ export interface SuggestionProduct {
 }
 
 interface SearchAutocompleteProps {
-  /** Visual variant. "big" = the gold desktop header bar (input + Search button).
-   *  "overlay" = the full-width mobile search sheet (single input, no button). */
-  variant?: "big" | "overlay";
-  /** Autofocus the input on mount (mobile overlay). */
+  /** Autofocus the input on mount. */
   autoFocus?: boolean;
   /** Called when the user submits the form with Enter (no suggestion picked). */
   onSubmit?: (q: string) => void;
@@ -29,16 +26,16 @@ interface SearchAutocompleteProps {
 /**
  * Reusable product search box with a live suggestions dropdown.
  *
- * Used by:
- *   - Desktop site header (BigSearchBar replacement) — variant="big"
- *   - Mobile header search overlay — variant="overlay"
+ * Used by the desktop site header (BigSearchBar). The suggestions dropdown
+ * is absolutely positioned relative to the input box, so it always appears
+ * directly below the box and is constrained to the box's width — never
+ * full-screen wide.
  *
  * Debounces 300ms, requires ≥2 chars, fetches /api/search-suggest,
  * shows product image + name + price (+ strikethrough if discounted),
  * a "View all results for '<q>'" link, and a small loading spinner.
  */
 export function SearchAutocomplete({
-  variant = "big",
   autoFocus = false,
   onSubmit,
   className,
@@ -110,17 +107,14 @@ export function SearchAutocomplete({
   const showDropdown =
     open && trimmed.length >= 2 && (loading || suggestions.length > 0);
 
-  const isBig = variant === "big";
-
   return (
-    <div ref={wrapperRef} className={className ?? "relative w-full"}>
-      <form onSubmit={handleSubmit} className="flex h-full items-stretch">
+    <div ref={wrapperRef} className={`relative ${className ?? "w-full"}`}>
+      <form
+        onSubmit={handleSubmit}
+        className="flex h-full w-full items-stretch"
+      >
         <div className="relative flex flex-1 items-stretch">
-          <Search
-            className={`pointer-events-none absolute left-4 top-1/2 z-10 -translate-y-1/2 text-muted-foreground ${
-              isBig ? "h-5 w-5" : "h-4 w-4"
-            }`}
-          />
+          <Search className="pointer-events-none absolute left-4 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
           <input
             ref={inputRef}
             type="search"
@@ -129,46 +123,22 @@ export function SearchAutocomplete({
             onFocus={() => trimmed.length >= 2 && setOpen(true)}
             placeholder="Search products…"
             aria-label="Search products"
-            className={`h-full w-full border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none ${
-              isBig
-                ? "rounded-l-md border border-r-0 pl-12 text-sm shadow-sm transition-shadow focus:border-accent focus:ring-2 focus:ring-accent/30 sm:text-base"
-                : "rounded-md border pl-10 text-base focus:border-accent focus:ring-2 focus:ring-accent/30"
-            }`}
+            className="h-full w-full rounded-l-md border border-r-0 border-border bg-background pl-12 text-sm text-foreground shadow-sm transition-shadow placeholder:text-muted-foreground focus:border-accent focus:bg-background focus:outline-none focus:ring-2 focus:ring-accent/30 sm:text-base"
           />
-          {/* Clear button (overlay variant, when text present) */}
-          {!isBig && q && (
-            <button
-              type="button"
-              onClick={() => {
-                setQ("");
-                setSuggestions([]);
-                inputRef.current?.focus();
-              }}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-              aria-label="Clear search"
-            >
-              <X className="h-4 w-4" />
-            </button>
-          )}
         </div>
-        {isBig && (
-          <button
-            type="submit"
-            className="flex h-full items-center gap-2 rounded-r-md bg-accent px-6 text-sm font-semibold uppercase tracking-wider text-accent-foreground transition-colors hover:bg-accent/90"
-          >
-            <Search className="h-4 w-4" />
-            Search
-          </button>
-        )}
+        <button
+          type="submit"
+          className="flex h-full items-center gap-2 rounded-r-md bg-accent px-6 text-sm font-semibold uppercase tracking-wider text-accent-foreground transition-colors hover:bg-accent/90"
+        >
+          <Search className="h-4 w-4" />
+          Search
+        </button>
       </form>
 
-      {/* Suggestions dropdown */}
+      {/* Suggestions dropdown — positioned directly below the input box,
+          constrained to the box width (never full-screen wide). */}
       {showDropdown && (
-        <div
-          className={`absolute z-50 mt-1 max-h-[70vh] overflow-y-auto rounded-lg border border-border bg-background shadow-2xl ${
-            isBig ? "left-0 right-0 w-full" : "left-0 right-0 w-full"
-          }`}
-        >
+        <div className="absolute left-0 right-0 top-full z-50 mt-1 max-h-[70vh] w-full overflow-y-auto rounded-lg border border-border bg-background shadow-2xl">
           {loading && suggestions.length === 0 && (
             <div className="flex items-center gap-2 p-4 text-sm text-muted-foreground">
               <Loader2 className="h-4 w-4 animate-spin" />
