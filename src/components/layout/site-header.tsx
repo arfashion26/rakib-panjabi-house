@@ -401,7 +401,7 @@ function DesktopHeader() {
               <Button
                 variant="ghost"
                 aria-label="Cart"
-                className="relative h-16 w-16 gap-1 rounded-lg border border-accent/30 bg-accent text-accent-foreground shadow-sm hover:bg-accent/90"
+                className="relative h-28 w-28 gap-1 rounded-lg border border-accent/30 bg-accent text-accent-foreground shadow-sm hover:bg-accent/90"
                 onClick={openCart}
               >
                 <ShoppingCart className="h-24 w-24" />
@@ -711,7 +711,7 @@ function MobileHeader() {
               variant="ghost"
               size="icon"
               aria-label="Cart"
-              className="relative h-10 w-10 rounded-lg border border-accent/30 bg-accent text-accent-foreground hover:bg-accent/90"
+              className="relative h-16 w-16 rounded-lg border border-accent/30 bg-accent text-accent-foreground hover:bg-accent/90"
               onClick={openCart}
             >
               <ShoppingCart className="h-14 w-14" />
