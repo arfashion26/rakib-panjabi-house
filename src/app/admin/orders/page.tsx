@@ -991,8 +991,65 @@ function InvoiceDialog({ order, onClose }: { order: Order; onClose: () => void }
     addressLines.push("No address on file");
   }
 
+  // Delivery charge shown on the invoice. Older orders were saved with
+  // shipping_total = 0 even though the charge was folded into grand_total
+  // (checkout used to hardcode shippingCost: 0). So we recover the actual
+  // charge the customer paid from the totals math:
+  //   grand_total = subtotal - discount + shipping + tax
+  //   => shipping = grand_total - subtotal + discount - tax
+  // We prefer the stored value when it is positive (new, correctly-saved
+  // orders) and fall back to the derived value otherwise. The result is 0
+  // (rendered as "Free") only for genuinely free orders — gift cards,
+  // FREE_SHIPPING coupons, or orders above the free-shipping threshold.
+  const derivedShipping = Math.max(
+    0,
+    order.grand_total -
+      (order.subtotal ?? order.grand_total) +
+      (order.discount_total ?? 0) -
+      (order.tax_total ?? 0)
+  );
+  const shippingAmount =
+    order.shipping_total != null && order.shipping_total > 0
+      ? order.shipping_total
+      : derivedShipping;
+
   function handlePrint() {
-    window.print();
+    const sheet = invoiceRef.current;
+    if (!sheet) {
+      window.print();
+      return;
+    }
+    // Open the invoice in a fresh window with the app's stylesheets copied
+    // over, then print just that window. This sidesteps the Radix Dialog
+    // overlay / fixed positioning / CSS cascade that broke the previous
+    // in-page print (splitting the invoice across two pages and mangling
+    // the table borders). The new window contains ONLY the invoice sheet,
+    // so it prints cleanly on a single page.
+    const win = window.open("", "_blank", "width=820,height=1000");
+    if (!win) {
+      toast.error("Please allow pop-ups to print the invoice.");
+      return;
+    }
+    const styles = Array.from(
+      document.head.querySelectorAll("style, link[rel='stylesheet']")
+    )
+      .map((n) => n.outerHTML)
+      .join("\n");
+    win.document.open();
+    win.document.write(
+      `<!DOCTYPE html><html><head><meta charset="utf-8" />` +
+        `<title>Invoice ${order.order_number}</title>${styles}` +
+        `<style>@page{margin:12mm;}html,body{margin:0;padding:0;background:#fff;color:#000;}` +
+        `.invoice-sheet{border:none!important;box-shadow:none!important;border-radius:0!important;margin:0!important;}` +
+        `</style></head><body>${sheet.outerHTML}</body></html>`
+    );
+    win.document.close();
+    win.focus();
+    // Let styles + the logo image settle before invoking the print dialog.
+    setTimeout(() => {
+      win.print();
+      setTimeout(() => win.close(), 300);
+    }, 400);
   }
 
   return (
@@ -1028,7 +1085,6 @@ function InvoiceDialog({ order, onClose }: { order: Order; onClose: () => void }
                 src={logoUrl}
                 alt="alrakib.com"
                 className="h-16 w-auto object-contain"
-                crossOrigin="anonymous"
               />
             </div>
             {/* Brand name (left) + invoice meta (right) */}
@@ -1157,8 +1213,8 @@ function InvoiceDialog({ order, onClose }: { order: Order; onClose: () => void }
                       Delivery Charge
                     </td>
                     <td className="py-2 pl-2 text-right">
-                      {order.shipping_total > 0
-                        ? formatPrice(order.shipping_total)
+                      {shippingAmount > 0
+                        ? formatPrice(shippingAmount)
                         : "Free"}
                     </td>
                   </tr>

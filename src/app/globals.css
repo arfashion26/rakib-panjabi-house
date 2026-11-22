@@ -259,103 +259,26 @@
 }
 
 /* ============================================================
-   Print styles for the admin invoice dialog.
-   When the admin clicks "Print Invoice", window.print() is called
-   and ONLY the .invoice-sheet is shown — the dialog chrome, the
-   rest of the admin dashboard, and everything marked .invoice-no-print
-   is hidden.
-
-   STRATEGY: the invoice sheet lives inside a Radix <Dialog>, which
-   wraps it in a fixed-position portal with `transform` (for the open
-   animation) and `overflow:auto`/`max-height` on the content. Those
-   create a new containing block + clip box, so a naive
-   `.invoice-sheet { position:absolute; top:0 }` lands INSIDE the
-   clipped dialog and prints broken. We therefore reset the transform /
-   overflow / position / max-height of the dialog AND its ancestors
-   for print, then lift the sheet to the top of the page.
+   Print styles for the admin invoice.
+   The "Print Invoice" button opens the invoice sheet in a fresh
+   window and prints that (see handlePrint in admin/orders/page.tsx),
+   which avoids the Radix Dialog overlay/CSS cascade entirely. The
+   rules below are only a minimal fallback for a direct Ctrl+P and
+   intentionally do NOT reset borders/padding/position on every
+   element (that earlier approach destroyed the invoice's own table
+   layout and split it across two pages).
    ============================================================ */
 @media print {
   @page {
-    margin: 0;
+    margin: 12mm;
   }
-
-  html,
-  body {
-    margin: 0 !important;
-    padding: 0 !important;
-    background: #fff !important;
-    height: auto !important;
-    overflow: visible !important;
+  /* Hide screen-only dialog chrome when printing this page directly. */
+  .invoice-no-print {
+    display: none !important;
   }
-
-  /* Hide every element's box. We keep visibility (not display) so the
-     sheet can still be re-shown below without removing it from its
-     parent chain. */
-  body * {
-    visibility: hidden !important;
-  }
-
-  /* Neutralise the Radix dialog stack: any `transform`/`filter`/
-     `perspective` on an ancestor would turn the sheet's fixed/absolute
-     position into a local one (new containing block). Reset position,
-     transform and clipping everywhere so the sheet escapes the dialog. */
-  * {
-    position: static !important;
-    transform: none !important;
-    filter: none !important;
-    max-height: none !important;
-    max-width: none !important;
-    overflow: visible !important;
-    box-shadow: none !important;
-    border: none !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    background: transparent !important;
-  }
-
-  /* Re-show only the invoice sheet and its contents. */
-  .invoice-sheet,
-  .invoice-sheet * {
-    visibility: visible !important;
-  }
-
-  /* Lift the sheet to the top-left of the page, full width. Now that no
-     ancestor has a transform, `position:absolute` is relative to the
-     page (html/body), as we want. */
-  .invoice-sheet {
-    position: absolute !important;
-    left: 0 !important;
-    top: 0 !important;
-    right: 0 !important;
-    width: 100% !important;
-    max-width: none !important;
-    max-height: none !important;
-    margin: 0 !important;
-    padding: 24px !important;
-    border: none !important;
-    border-radius: 0 !important;
-    box-shadow: none !important;
-    overflow: visible !important;
-    transform: none !important;
-    background: #fff !important;
-    color: #000 !important;
-  }
-
-  /* Make sure colors/black text print correctly. */
+  /* Keep colors intact. */
   * {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
-  }
-
-  /* Avoid breaking rows across pages. */
-  table {
-    page-break-inside: auto;
-  }
-  tr {
-    page-break-inside: avoid;
-    page-break-after: auto;
-  }
-  thead {
-    display: table-header-group;
   }
 }
