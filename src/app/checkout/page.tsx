@@ -107,6 +107,13 @@ export default function CheckoutPage() {
     payment: "cod",
     note: "",
   });
+  // Inline field errors (shown as red text under each field + red border).
+  // Cleared per-field as the user edits that field.
+  const [errors, setErrors] = React.useState<{
+    name?: string;
+    phone?: string;
+    address?: string;
+  }>({});
 
   // Load payment methods + gift card order on mount
   React.useEffect(() => {
@@ -155,6 +162,10 @@ export default function CheckoutPage() {
 
   function updateField<K extends keyof typeof form>(key: K, value: (typeof form)[K]) {
     setForm((prev) => ({ ...prev, [key]: value }));
+    // Clear the error for this field as soon as the user starts fixing it.
+    setErrors((prev) =>
+      key in prev ? { ...prev, [key]: undefined } : prev
+    );
   }
 
   async function applyCoupon() {
@@ -200,16 +211,61 @@ export default function CheckoutPage() {
   }
 
   function validate() {
-    if (!form.name.trim()) {
-      toast.error(locale === "bn" ? "আপনার নাম লিখুন" : "Please enter your name");
-      return false;
+    const nextErrors: { name?: string; phone?: string; address?: string } = {};
+
+    // Name — required, at least 2 characters.
+    const nameTrim = form.name.trim();
+    if (!nameTrim) {
+      nextErrors.name =
+        locale === "bn" ? "আপনার নাম লিখুন" : "Please enter your name";
+    } else if (nameTrim.length < 2) {
+      nextErrors.name =
+        locale === "bn"
+          ? "নাম কমপক্ষে ২ অক্ষরের হতে হবে"
+          : "Name is too short";
     }
-    if (!form.phone.trim()) {
-      toast.error(locale === "bn" ? "ফোন নাম্বার লিখুন" : "Please enter your phone number");
-      return false;
+
+    // Phone — required, valid Bangladeshi mobile number.
+    // Accepts 01XXXXXXXXX (11 digits) or 8801XXXXXXXXX (13 digits).
+    const phoneTrim = form.phone.trim();
+    if (!phoneTrim) {
+      nextErrors.phone =
+        locale === "bn" ? "ফোন নাম্বার লিখুন" : "Please enter your phone number";
+    } else {
+      const digits = phoneTrim.replace(/[^0-9]/g, "");
+      const validLocal = /^01[3-9]\d{8}$/.test(digits);
+      const validIntl = /^8801[3-9]\d{8}$/.test(digits);
+      if (!validLocal && !validIntl) {
+        nextErrors.phone =
+          locale === "bn"
+            ? "সঠিক ফোন নাম্বার দিন (যেমন: 01XXXXXXXXX)"
+            : "Enter a valid phone number (e.g. 01XXXXXXXXX)";
+      }
     }
-    if (!giftCardOrder && !form.address.trim()) {
-      toast.error(locale === "bn" ? "ডেলিভারি ঠিকানা লিখুন" : "Please enter your delivery address");
+
+    // Address — required for physical delivery (skipped for gift cards).
+    // Must be detailed enough to ship to (at least 10 characters).
+    if (!giftCardOrder) {
+      const addrTrim = form.address.trim();
+      if (!addrTrim) {
+        nextErrors.address =
+          locale === "bn"
+            ? "ডেলিভারি ঠিকানা লিখুন"
+            : "Please enter your delivery address";
+      } else if (addrTrim.length < 10) {
+        nextErrors.address =
+          locale === "bn"
+            ? "সম্পূর্ণ ঠিকানা লিখুন (বাড়ি, রোড, এরিয়া, থানা)"
+            : "Please enter a complete address (house, road, area)";
+      }
+    }
+
+    setErrors(nextErrors);
+
+    if (Object.keys(nextErrors).length > 0) {
+      // Toast the first problem so it is noticeable even if the field is
+      // off-screen, plus the inline red hints pin each issue in place.
+      toast.error(nextErrors.name || nextErrors.phone || nextErrors.address || "");
       return false;
     }
     return true;
@@ -373,10 +429,20 @@ export default function CheckoutPage() {
                     placeholder={locale === "bn" ? "আপনার পুরো নাম" : "Your full name"}
                     value={form.name}
                     onChange={(e) => updateField("name", e.target.value)}
-                    className="pl-10"
+                    className={cn(
+                      "pl-10",
+                      errors.name &&
+                        "border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500/30"
+                    )}
                     required
+                    aria-invalid={!!errors.name}
                   />
                 </div>
+                {errors.name && (
+                  <p className="text-xs font-medium text-red-500">
+                    {errors.name}
+                  </p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -389,10 +455,20 @@ export default function CheckoutPage() {
                     placeholder="+880 1716-243949"
                     value={form.phone}
                     onChange={(e) => updateField("phone", e.target.value)}
-                    className="pl-10"
+                    className={cn(
+                      "pl-10",
+                      errors.phone &&
+                        "border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500/30"
+                    )}
                     required
+                    aria-invalid={!!errors.phone}
                   />
                 </div>
+                {errors.phone && (
+                  <p className="text-xs font-medium text-red-500">
+                    {errors.phone}
+                  </p>
+                )}
               </div>
 
               {/* Hide address for gift card orders (digital delivery) */}
@@ -411,8 +487,19 @@ export default function CheckoutPage() {
                       onChange={(e) => updateField("address", e.target.value)}
                       rows={3}
                       required
-                      className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/30"
+                      aria-invalid={!!errors.address}
+                      className={cn(
+                        "w-full rounded-md border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/30",
+                        errors.address
+                          ? "border-red-500 focus:border-red-500 focus:ring-red-500/30"
+                          : "border-input"
+                      )}
                     />
+                    {errors.address && (
+                      <p className="text-xs font-medium text-red-500">
+                        {errors.address}
+                      </p>
+                    )}
                   </div>
 
                   <div className="space-y-2">

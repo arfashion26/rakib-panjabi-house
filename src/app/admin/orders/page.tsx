@@ -37,6 +37,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { formatPrice } from "@/lib/types";
+import { useLogoUrl } from "@/components/logo";
 import { toast } from "sonner";
 
 interface OrderItem {
@@ -970,6 +971,7 @@ function TimelineRow({
 function InvoiceDialog({ order, onClose }: { order: Order; onClose: () => void }) {
   const addr = parseAddress(order.shipping_address_json);
   const invoiceRef = React.useRef<HTMLDivElement>(null);
+  const logoUrl = useLogoUrl();
 
   // Customer-facing name/phone/address come from the shipping address (the
   // info the customer gave at checkout); fall back to the order-level
@@ -1016,13 +1018,22 @@ function InvoiceDialog({ order, onClose }: { order: Order; onClose: () => void }
           ref={invoiceRef}
           className="invoice-sheet rounded-lg border border-border bg-white p-6 text-black"
         >
-          {/* Invoice header */}
+          {/* Invoice header — logo + brand name on the left, invoice meta on the right. */}
           <div className="flex items-start justify-between border-b-2 border-black pb-4">
-            <div>
-              <h1 className="font-serif text-2xl font-bold tracking-tight">
-                alrakib.com
-              </h1>
-              <p className="text-xs text-gray-600">Rakib Panjabi House</p>
+            <div className="flex items-center gap-3">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={logoUrl}
+                alt="alrakib.com"
+                className="h-14 w-auto object-contain"
+                crossOrigin="anonymous"
+              />
+              <div>
+                <h1 className="font-serif text-2xl font-bold tracking-tight">
+                  alrakib.com
+                </h1>
+                <p className="text-xs text-gray-600">Invoice</p>
+              </div>
             </div>
             <div className="text-right">
               <h2 className="text-lg font-bold uppercase tracking-wider">
@@ -1114,6 +1125,52 @@ function InvoiceDialog({ order, onClose }: { order: Order; onClose: () => void }
                 )}
               </tbody>
               <tfoot>
+                {/* Full breakdown: subtotal, discount, delivery charge, tax,
+                    then grand total — so the customer can see exactly how the
+                    total was reached (including the delivery charge). */}
+                {order.subtotal != null && (
+                  <tr className="border-t border-gray-300">
+                    <td colSpan={3} className="py-2 text-right text-gray-600">
+                      Subtotal
+                    </td>
+                    <td className="py-2 pl-2 text-right">
+                      {formatPrice(order.subtotal)}
+                    </td>
+                  </tr>
+                )}
+                {order.discount_total != null &&
+                  order.discount_total > 0 && (
+                    <tr>
+                      <td colSpan={3} className="py-2 text-right text-green-700">
+                        Discount
+                      </td>
+                      <td className="py-2 pl-2 text-right text-green-700">
+                        −{formatPrice(order.discount_total)}
+                      </td>
+                    </tr>
+                  )}
+                {order.shipping_total != null && (
+                  <tr>
+                    <td colSpan={3} className="py-2 text-right text-gray-600">
+                      Delivery Charge
+                    </td>
+                    <td className="py-2 pl-2 text-right">
+                      {order.shipping_total > 0
+                        ? formatPrice(order.shipping_total)
+                        : "Free"}
+                    </td>
+                  </tr>
+                )}
+                {order.tax_total != null && order.tax_total > 0 && (
+                  <tr>
+                    <td colSpan={3} className="py-2 text-right text-gray-600">
+                      Tax
+                    </td>
+                    <td className="py-2 pl-2 text-right">
+                      {formatPrice(order.tax_total)}
+                    </td>
+                  </tr>
+                )}
                 <tr className="border-t-2 border-black">
                   <td colSpan={3} className="py-3 text-right font-bold">
                     Grand Total
