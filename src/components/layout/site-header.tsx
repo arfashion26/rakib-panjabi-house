@@ -401,10 +401,10 @@ function DesktopHeader() {
               <Button
                 variant="ghost"
                 aria-label="Cart"
-                className="relative h-28 w-28 gap-1 rounded-lg border border-accent/30 bg-accent text-accent-foreground shadow-sm hover:bg-accent/90"
+                className="relative h-16 w-16 gap-1 rounded-lg border border-accent/30 bg-accent text-accent-foreground shadow-sm hover:bg-accent/90"
                 onClick={openCart}
               >
-                <ShoppingCart className="h-24 w-24" />
+                <ShoppingCart className="h-14 w-14" />
                 {totalItems > 0 && (
                   <span className="absolute -right-1.5 -top-1.5 flex h-7 min-w-7 items-center justify-center rounded-full bg-primary px-1.5 text-xs font-bold text-accent shadow ring-2 ring-primary">
                     {totalItems > 99 ? "99+" : totalItems}
@@ -711,10 +711,10 @@ function MobileHeader() {
               variant="ghost"
               size="icon"
               aria-label="Cart"
-              className="relative h-16 w-16 rounded-lg border border-accent/30 bg-accent text-accent-foreground hover:bg-accent/90"
+              className="relative h-10 w-10 rounded-lg border border-accent/30 bg-accent text-accent-foreground hover:bg-accent/90"
               onClick={openCart}
             >
-              <ShoppingCart className="h-14 w-14" />
+              <ShoppingCart className="h-8 w-8" />
               {totalItems > 0 && (
                 <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[9px] font-bold text-accent ring-2 ring-primary">
                   {totalItems > 99 ? "99+" : totalItems}
