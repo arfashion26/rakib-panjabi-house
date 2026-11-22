@@ -265,38 +265,63 @@
    rest of the admin dashboard, and everything marked .invoice-no-print
    is hidden.
 
-   NOTE: we use display:none (not visibility:hidden) for everything
-   except the invoice sheet, and re-show the sheet with its own rules.
-   visibility:hidden leaves elements occupying space and keeps Radix
-   Dialog overlay / fixed positioning in play, which clipped and broke
-   the printed invoice. display:none removes them from the layout
-   entirely so the sheet prints cleanly from the top of the page.
+   STRATEGY: the invoice sheet lives inside a Radix <Dialog>, which
+   wraps it in a fixed-position portal with `transform` (for the open
+   animation) and `overflow:auto`/`max-height` on the content. Those
+   create a new containing block + clip box, so a naive
+   `.invoice-sheet { position:absolute; top:0 }` lands INSIDE the
+   clipped dialog and prints broken. We therefore reset the transform /
+   overflow / position / max-height of the dialog AND its ancestors
+   for print, then lift the sheet to the top of the page.
    ============================================================ */
 @media print {
-  /* Reset page margins so the invoice uses the full printable area. */
   @page {
     margin: 0;
   }
 
-  /* Hide the whole document body. */
+  html,
   body {
     margin: 0 !important;
     padding: 0 !important;
     background: #fff !important;
+    height: auto !important;
+    overflow: visible !important;
   }
+
+  /* Hide every element's box. We keep visibility (not display) so the
+     sheet can still be re-shown below without removing it from its
+     parent chain. */
   body * {
     visibility: hidden !important;
   }
 
-  /* Show only the invoice sheet and its contents. */
+  /* Neutralise the Radix dialog stack: any `transform`/`filter`/
+     `perspective` on an ancestor would turn the sheet's fixed/absolute
+     position into a local one (new containing block). Reset position,
+     transform and clipping everywhere so the sheet escapes the dialog. */
+  * {
+    position: static !important;
+    transform: none !important;
+    filter: none !important;
+    max-height: none !important;
+    max-width: none !important;
+    overflow: visible !important;
+    box-shadow: none !important;
+    border: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+  }
+
+  /* Re-show only the invoice sheet and its contents. */
   .invoice-sheet,
   .invoice-sheet * {
     visibility: visible !important;
   }
 
-  /* Lift the invoice sheet out of the Radix Dialog / fixed overlay stack
-     and place it at the top-left of the page, full width. Also neutralise
-     any max-height/overflow on ancestor dialogs that would clip it. */
+  /* Lift the sheet to the top-left of the page, full width. Now that no
+     ancestor has a transform, `position:absolute` is relative to the
+     page (html/body), as we want. */
   .invoice-sheet {
     position: absolute !important;
     left: 0 !important;

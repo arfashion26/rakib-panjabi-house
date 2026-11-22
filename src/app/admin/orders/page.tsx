@@ -1018,33 +1018,35 @@ function InvoiceDialog({ order, onClose }: { order: Order; onClose: () => void }
           ref={invoiceRef}
           className="invoice-sheet rounded-lg border border-border bg-white p-6 text-black"
         >
-          {/* Invoice header — logo + brand name on the left, invoice meta on the right. */}
-          <div className="flex items-start justify-between border-b-2 border-black pb-4">
-            <div className="flex items-center gap-3">
+          {/* Invoice header — logo centered at the top, brand + invoice
+              meta below it. */}
+          <div className="border-b-2 border-black pb-4">
+            {/* Logo centered */}
+            <div className="flex justify-center">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={logoUrl}
                 alt="alrakib.com"
-                className="h-14 w-auto object-contain"
+                className="h-16 w-auto object-contain"
                 crossOrigin="anonymous"
               />
-              <div>
-                <h1 className="font-serif text-2xl font-bold tracking-tight">
-                  alrakib.com
-                </h1>
-                <p className="text-xs text-gray-600">Invoice</p>
-              </div>
             </div>
-            <div className="text-right">
-              <h2 className="text-lg font-bold uppercase tracking-wider">
-                Invoice
-              </h2>
-              <p className="text-xs text-gray-600">
-                Order: {order.order_number}
-              </p>
-              <p className="text-xs text-gray-600">
-                Date: {fmtDate(order.placed_at, false)}
-              </p>
+            {/* Brand name (left) + invoice meta (right) */}
+            <div className="mt-3 flex items-start justify-between">
+              <h1 className="font-serif text-2xl font-bold tracking-tight">
+                alrakib.com
+              </h1>
+              <div className="text-right">
+                <h2 className="text-lg font-bold uppercase tracking-wider">
+                  Invoice
+                </h2>
+                <p className="text-xs text-gray-600">
+                  Order: {order.order_number}
+                </p>
+                <p className="text-xs text-gray-600">
+                  Date: {fmtDate(order.placed_at, false)}
+                </p>
+              </div>
             </div>
           </div>
 

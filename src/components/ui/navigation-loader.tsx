@@ -148,7 +148,7 @@ export function NavigationLoader() {
           />
         </div>
         {/* Brand text under the spinner — black on white backdrop */}
-        <p className="font-serif text-sm font-medium uppercase tracking-[0.25em] text-black">
+        <p className="font-serif text-sm font-bold uppercase tracking-[0.25em] text-black">
           alrakib.com
         </p>
       </div>

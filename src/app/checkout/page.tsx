@@ -150,7 +150,14 @@ export default function CheckoutPage() {
 
   const subtotal = giftCardOrder ? giftCardOrder.amount : getSubtotal();
   const couponDiscount = couponData?.discount || 0;
-  const codCharge = form.payment === "cod" && !giftCardOrder ? COD_CHARGES[form.area] : 0;
+  // Delivery charge: inside Dhaka ৳70 / outside Dhaka ৳120. Applies to
+  // physical orders paid by COD (gift-card/digital orders ship free).
+  // A FREE_SHIPPING coupon zeroes it out so the invoice shows "Free".
+  const freeShipping = !!couponData?.freeShipping;
+  const codCharge =
+    form.payment === "cod" && !giftCardOrder && !freeShipping
+      ? COD_CHARGES[form.area]
+      : 0;
   const total = Math.max(0, subtotal - couponDiscount) + codCharge;
 
   // Redirect to cart if empty AND no gift card order AND no order was placed
@@ -312,7 +319,10 @@ export default function CheckoutPage() {
         note: form.note,
         items: orderItems,
         subtotal,
-        shippingCost: 0,
+        // Persist the real delivery charge (inside/outside Dhaka, or 0 for
+        // gift cards / FREE_SHIPPING coupons) so the invoice shows the
+        // correct amount instead of always 0 / "Free".
+        shippingCost: codCharge,
         codCharge,
         total,
         coupon: couponData
