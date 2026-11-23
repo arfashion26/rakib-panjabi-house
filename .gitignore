@@ -85,3 +85,9 @@ Desktop.ini
 
 # User-uploaded reference images (kept locally only)
 upload/
+
+# === Secrets / Vercel migration (NEVER commit) ===
+.vercel.env.local
+.vercel.env.*
+scripts/vercel-env-migration.json
+!scripts/vercel-env-migrate.py
