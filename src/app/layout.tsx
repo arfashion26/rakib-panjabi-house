@@ -20,11 +20,15 @@ const poppins = Poppins({
 
 const siteUrl = "https://alrakib.com";
 
-// Always render dynamically so generateMetadata fetches fresh SEO
-// settings from DB on every request. Without this, Next.js caches
-// the metadata and admin changes don't appear until cache expires.
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
+// Cache the root layout's DB fetches (brand assets, custom code, SEO
+// settings) for 1 hour via ISR. Previously `force-dynamic` + `revalidate = 0`
+// forced a fresh server-side render on EVERY page request — which meant
+// every page load blocked on Supabase round-trips, hanging the whole site
+// past Vercel's response timeout. ISR renders once, caches at the edge,
+// and revalidates hourly (or on-demand via /api/revalidate when admin
+// saves changes). Visitors get instant pages; admin changes still appear
+// immediately via on-demand revalidation.
+export const revalidate = 3600;
 
 /**
  * Generate metadata dynamically — fetches custom favicon/logo URL from DB.

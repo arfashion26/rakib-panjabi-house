@@ -15,11 +15,15 @@ import { BlogPosts } from "@/components/home/blog-posts";
 // Revalidate homepage every hour (ISR — static + incremental).
 // Admin homepage edits trigger on-demand revalidation via /api/revalidate,
 // so changes appear immediately. This hourly revalidate is a fallback.
+//
+// NOTE: Previously `dynamic = "force-dynamic"` was set here, which forced a
+// fresh server-side render (and 3 Supabase round-trips) on EVERY visitor.
+// When Supabase is slow, this hangs every page load past Vercel's response
+// timeout — the whole site appeared to never load. We now rely on ISR:
+// the page is rendered once, cached at the edge for ~1h, and revalidated
+// on admin edits. This makes the homepage near-instant for visitors and
+// still picks up content changes via on-demand revalidation.
 export const revalidate = 3600;
-
-// Always render dynamically — ensures admin changes are visible immediately
-// on the homepage without waiting for ISR cache expiry.
-export const dynamic = "force-dynamic";
 
 // Cache homepage at the CDN/edge level for fast repeat visits.
 export const fetchCache = "force-cache";
