@@ -94,16 +94,26 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     /*
-     * Match all request paths except:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - _next/data (RSC payloads — handled by Next.js)
-     * - favicon.ico (favicon file)
-     * - public folder assets (images, fonts, etc.)
-     * - api routes (they do their own auth via service-role, no cookie
-     *   refresh needed; excluding them avoids running middleware on
-     *   every API call and prevents timeout cascades)
+     * ONLY run middleware on protected route prefixes.
+     *
+     * Previously matched ALL pages, which meant Supabase session refresh
+     * ran on every single page request. When Supabase is slow/unreachable
+     * this hangs every page load (the createServerClient + getSession
+     * path still does cookie/network work that can stall), causing
+     * the whole site to time out even though static assets serve fine.
+     *
+     * Now middleware runs ONLY on:
+     *   /admin/*      — admin auth gate
+     *   /dashboard/*  — customer dashboard auth gate
+     *
+     * Public pages (/, /shop, /about, /contact, /product/*, etc.) are
+     * served directly by Next.js with no middleware overhead and no
+     * network call on every request. Auth cookie refresh happens
+     * naturally on the next /admin or /dashboard visit.
+     *
+     * /admin/login is excluded so it stays accessible to logged-out users.
      */
-    "/((?!_next/static|_next/image|_next/data|favicon.ico|api/|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|css|js|map|woff|woff2|ttf|otf)$).*)",
+    "/admin/:path*",
+    "/dashboard/:path*",
   ],
 };
